@@ -12,6 +12,30 @@ These indices matter because they are how climate science connects with the real
 
 The definitions come from international standards bodies - the WMO Expert Team on Climate Change Detection and Indices (ETCCDI) defines 27 core indices, the Expert Team on Sector-specific Climate Indices (ET-SCI) extends these into health, agriculture, and energy domains, and individual research communities have added domain-specific measures like SPEI for drought and Huglin for viticulture.
 
+## Where does the data come from?
+
+**You supply the data.** This package does not download anything - it is a pure computation package. You give it vectors of daily temperatures, precipitation, or other weather variables, and it computes indices from them.
+
+The data can come from anywhere: NOAA's Global Historical Climatology Network, ERA5 reanalysis, national weather services, your own station observations, or a CSV on your desktop. As long as you have a numeric vector and a date vector, `climatekit` will compute the index.
+
+If you need to download weather data from within R, the [`readnoaa`](https://github.com/charlescoverdale/readnoaa) package provides daily station data from NOAA's Global Historical Climatology Network-daily (GHCNd) and pairs directly with `climatekit`:
+
+```r
+library(readnoaa)
+library(climatekit)
+
+# Download daily data for London Heathrow (2020-2024)
+weather <- noaa_daily("UKE00105915", from = "2020-01-01", to = "2024-12-31")
+
+# Compute frost days from the downloaded data
+ck_frost_days(weather$tmin, weather$date, period = "annual")
+
+# Compute drought index
+ck_spi(weather$precip, weather$date, scale = 3)
+```
+
+---
+
 ## Why does this package exist?
 
 R has the methods, but they are scattered across half a dozen packages with incompatible interfaces:
