@@ -114,6 +114,24 @@ test_that("SPI with known gamma-distributed data", {
   expect_true(sd(vals) < 2.0)
 })
 
+test_that("SPI fits per calendar month", {
+  # With seasonal precipitation (wet summers, dry winters),
+  # per-month fitting should produce values closer to 0 within each month
+  dates <- seq(as.Date("2010-01-01"), as.Date("2023-12-31"), by = "day")
+  set.seed(99)
+  doy <- as.integer(format(dates, "%j"))
+  # Strong seasonal signal: summer wet, winter dry
+  seasonal <- pmax(0, sin(2 * pi * doy / 365) * 8 + 2)
+  precip <- rgamma(length(dates), shape = 1, rate = 1) * seasonal
+  result <- ck_spi(precip, dates, scale = 3)
+
+  # Per-month fitting: January SPIs should be near 0 as a group
+  jan_vals <- result$value[format(result$period, "%m") == "01"]
+  if (length(jan_vals) >= 3) {
+    expect_true(abs(mean(jan_vals, na.rm = TRUE)) < 1.0)
+  }
+})
+
 test_that("SPI handles all-zero precipitation gracefully", {
   dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
   precip <- rep(0, length(dates))
@@ -123,10 +141,14 @@ test_that("SPI handles all-zero precipitation gracefully", {
 })
 
 test_that("SPEI warns on fitting failure rather than silently falling back", {
-  # With constant water balance, fitting should fail
+  # With constant water balance, fitting should fail and warn
   dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
   precip <- rep(5, length(dates))
   pet <- rep(3, length(dates))
-  # Constant difference -> zero variance -> fitting may warn
-  expect_s3_class(ck_spei(precip, pet, dates, scale = 3), "data.frame")
+  # Constant difference -> zero variance -> should warn about fitting failure
+  expect_warning(
+    result <- ck_spei(precip, pet, dates, scale = 3),
+    "SPEI fitting failed"
+  )
+  expect_s3_class(result, "data.frame")
 })

@@ -4,13 +4,12 @@
 \alias{ck_branas}
 \title{Branas Hydrothermal Index}
 \usage{
-ck_branas(precip, tmin, dates)
+ck_branas(precip, tavg, dates)
 }
 \arguments{
 \item{precip}{Numeric vector of daily precipitation (mm).}
 
-\item{tmin}{Numeric vector of daily minimum temperatures (degrees C), used as
-proxy for daily mean.}
+\item{tavg}{Numeric vector of daily mean temperatures (degrees C).}
 
 \item{dates}{Date vector of the same length as \code{precip}.}
 }
@@ -26,9 +25,9 @@ monthly precipitation for April-August.
 \examples{
 dates <- seq(as.Date("2024-04-01"), as.Date("2024-08-31"), by = "day")
 set.seed(42)
-tmin <- rnorm(length(dates), mean = 12, sd = 3)
+tavg <- rnorm(length(dates), mean = 12, sd = 3)
 precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
-ck_branas(precip, tmin, dates)
+ck_branas(precip, tavg, dates)
 }
 \references{
 Branas, J., Bernon, G., & Levadoux, L. (1946).

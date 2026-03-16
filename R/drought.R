@@ -41,8 +41,15 @@ ck_spi <- function(precip, dates, scale = 3) {
     accum[i] <- sum(monthly$total[(i - scale + 1):i], na.rm = TRUE)
   }
 
-  # Fit gamma and transform to standard normal
-  spi_values <- .gamma_to_normal(accum)
+  # Fit gamma per calendar month (WMO-1090 standard)
+  cal_month <- as.integer(format(monthly$month, "%m"))
+  spi_values <- rep(NA_real_, n)
+  for (m in 1:12) {
+    idx <- which(cal_month == m & !is.na(accum))
+    if (length(idx) >= 3) {
+      spi_values[idx] <- .gamma_to_normal(accum[idx])
+    }
+  }
 
   result <- data.frame(
     period = monthly$month,
@@ -107,8 +114,15 @@ ck_spei <- function(precip, pet, dates, scale = 3) {
     accum[i] <- sum(monthly$total[(i - scale + 1):i], na.rm = TRUE)
   }
 
-  # Fit log-logistic and transform
-  spei_values <- .loglogistic_to_normal(accum)
+  # Fit log-logistic per calendar month (Vicente-Serrano et al. 2010)
+  cal_month <- as.integer(format(monthly$month, "%m"))
+  spei_values <- rep(NA_real_, n)
+  for (m in 1:12) {
+    idx <- which(cal_month == m & !is.na(accum))
+    if (length(idx) >= 3) {
+      spei_values[idx] <- .loglogistic_to_normal(accum[idx])
+    }
+  }
 
   result <- data.frame(
     period = monthly$month,

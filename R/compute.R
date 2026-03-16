@@ -51,7 +51,7 @@ ck_compute <- function(data, index, ...) {
     pet              = list(fn = ck_pet, args = c("tmin", "tmax", "lat", "dates")),
     huglin           = list(fn = ck_huglin, args = c("tmin", "tmax", "dates", "lat")),
     winkler          = list(fn = ck_winkler, args = c("tavg", "dates")),
-    branas           = list(fn = ck_branas, args = c("precip", "tmin", "dates")),
+    branas           = list(fn = ck_branas, args = c("precip", "tavg", "dates")),
     first_frost      = list(fn = ck_first_frost, args = c("tmin", "dates")),
     last_frost       = list(fn = ck_last_frost, args = c("tmin", "dates")),
     wind_chill       = list(fn = ck_wind_chill, args = c("tavg", "wind_speed")),

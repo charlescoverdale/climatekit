@@ -35,14 +35,14 @@ ck_huglin <- function(tmin, tmax, dates, lat) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
   }
 
-  # Day-length coefficient (k) based on latitude (Tonietto & Carbonneau 2004)
+  # Day-length coefficient (k) based on latitude (Huglin 1978)
   abs_lat <- abs(lat)
   k <- if (abs_lat <= 40) {
-    1.0
+    1.02
   } else if (abs_lat >= 50) {
     1.06
   } else {
-    1.0 + (abs_lat - 40) * 0.006
+    1.02 + (abs_lat - 40) * 0.004
   }
 
   years <- as.integer(format(dates, "%Y"))
@@ -115,8 +115,7 @@ ck_winkler <- function(tavg, dates) {
 #' monthly precipitation for April-August.
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
-#' @param tmin Numeric vector of daily minimum temperatures (degrees C), used as
-#'   proxy for daily mean.
+#' @param tavg Numeric vector of daily mean temperatures (degrees C).
 #' @param dates Date vector of the same length as `precip`.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
@@ -128,15 +127,15 @@ ck_winkler <- function(tavg, dates) {
 #' @examples
 #' dates <- seq(as.Date("2024-04-01"), as.Date("2024-08-31"), by = "day")
 #' set.seed(42)
-#' tmin <- rnorm(length(dates), mean = 12, sd = 3)
+#' tavg <- rnorm(length(dates), mean = 12, sd = 3)
 #' precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
-#' ck_branas(precip, tmin, dates)
-ck_branas <- function(precip, tmin, dates) {
+#' ck_branas(precip, tavg, dates)
+ck_branas <- function(precip, tavg, dates) {
   validate_numeric(precip, "precip")
-  validate_numeric(tmin, "tmin")
+  validate_numeric(tavg, "tavg")
   validate_dates(dates, length(precip))
-  if (length(precip) != length(tmin)) {
-    cli::cli_abort("{.arg precip} and {.arg tmin} must have the same length.")
+  if (length(precip) != length(tavg)) {
+    cli::cli_abort("{.arg precip} and {.arg tavg} must have the same length.")
   }
 
   years <- as.integer(format(dates, "%Y"))
@@ -151,7 +150,7 @@ ck_branas <- function(precip, tmin, dates) {
     for (m in gs_months) {
       idx <- which(month_labels == m)
       if (length(idx) == 0) next
-      monthly_t <- mean(tmin[idx], na.rm = TRUE)
+      monthly_t <- mean(tavg[idx], na.rm = TRUE)
       monthly_p <- sum(precip[idx], na.rm = TRUE)
       total <- total + monthly_t * monthly_p
     }
