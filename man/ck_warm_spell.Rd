@@ -2,7 +2,7 @@
 % Please edit documentation in R/temperature.R
 \name{ck_warm_spell}
 \alias{ck_warm_spell}
-\title{Warm Spell Duration Index}
+\title{Warm Spell Days}
 \usage{
 ck_warm_spell(tmax, dates, threshold = 0.9, period = "annual")
 }
@@ -23,7 +23,9 @@ A data frame with columns \code{period}, \code{value}, \code{index}, and \code{u
 \description{
 Count the number of days in warm spells, where a warm spell is defined as
 at least 6 consecutive days with Tmax above the \code{threshold} quantile of
-the full series.
+the full series. This computes warm spell days using a quantile threshold
+from the input series. It does not implement the ETCCDI WSDI, which
+requires calendar-day percentiles from a 1961-1990 reference period.
 }
 \examples{
 dates <- as.Date("2024-01-01") + 0:364

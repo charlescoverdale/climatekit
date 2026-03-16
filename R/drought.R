@@ -222,7 +222,11 @@ ck_pet <- function(tmin, tmax, lat, dates) {
   )
 }
 
-#' Fit gamma distribution and transform to standard normal
+#' Fit gamma distribution (MLE) and transform to standard normal
+#'
+#' Uses Maximum Likelihood Estimation via Thom's (1958) approximation,
+#' as specified by the WMO User Guide (WMO-No. 1090) and consistent with
+#' the SPEI R package.
 #' @noRd
 .gamma_to_normal <- function(x) {
   result <- rep(NA_real_, length(x))
@@ -237,13 +241,13 @@ ck_pet <- function(tmin, tmax, lat, dates) {
 
   if (length(xv_pos) < 2) return(result)
 
-  # Method of moments for gamma parameters
+  # MLE via Thom's (1958) approximation
   xbar <- mean(xv_pos)
-  s2 <- stats::var(xv_pos)
-  if (s2 == 0) return(result)
+  A <- log(xbar) - mean(log(xv_pos))
+  if (A <= 0) return(result)
 
-  alpha <- xbar^2 / s2
-  beta <- s2 / xbar
+  alpha <- (1 + sqrt(1 + 4 * A / 3)) / (4 * A)
+  beta <- xbar / alpha
 
   # Transform to standard normal
   cdf <- rep(NA_real_, length(xv))
@@ -264,9 +268,8 @@ ck_pet <- function(tmin, tmax, lat, dates) {
 
 #' Fit log-logistic distribution and transform to standard normal
 #'
-#' Uses probability weighted moments (PWMs) when the shape parameter is
-#' positive; falls back to the Plotting Position method (empirical CDF)
-#' otherwise.
+#' Uses unbiased probability weighted moments (Hosking 1990) to estimate
+#' log-logistic parameters, consistent with Vicente-Serrano et al. (2010).
 #' @noRd
 .loglogistic_to_normal <- function(x) {
   result <- rep(NA_real_, length(x))
@@ -279,48 +282,59 @@ ck_pet <- function(tmin, tmax, lat, dates) {
   # Shift to positive for PWM estimation
   xv_shifted <- xv - min(xv) + 1
   xv_sorted <- sort(xv_shifted)
-  w0 <- mean(xv_sorted)
 
+  # Unbiased PWMs (Hosking 1990)
   ranks <- seq_len(n)
-  w1 <- sum(((ranks - 1) / (n - 1)) * xv_sorted) / n
-  w2 <- sum(((ranks - 1) * (ranks - 2) / ((n - 1) * max(n - 2, 1))) *
+  b0 <- mean(xv_sorted)
+  b1 <- sum(((ranks - 1) / (n - 1)) * xv_sorted) / n
+  b2 <- sum(((ranks - 1) * (ranks - 2) / ((n - 1) * (n - 2))) *
               xv_sorted) / n
 
-  beta_ll <- (2 * w1 - w0) / (6 * w1 - w0 - 6 * w2)
+  # L-moments
+  l1 <- b0
+  l2 <- 2 * b1 - b0
+  l3 <- 6 * b2 - 6 * b1 + b0
 
-  use_parametric <- !is.na(beta_ll) && is.finite(beta_ll) && beta_ll > 0 &&
-    beta_ll < 100
+  # Log-logistic parameters from L-moments
+  if (l2 <= 0) {
+    cli::cli_warn("SPEI fitting failed: L-moment l2 <= 0. Returning NAs.")
+    return(result)
+  }
+  t3 <- l3 / l2  # L-skewness
 
-  if (use_parametric) {
-    g1 <- gamma(1 + 1 / beta_ll)
-    g2 <- gamma(1 - 1 / beta_ll)
-    if (is.finite(g1) && is.finite(g2) && g1 * g2 != 0) {
-      alpha_ll <- (w0 - 2 * w1) * beta_ll / (g1 * g2)
-      xi <- w0 - alpha_ll * g1 * g2
-      if (!is.na(alpha_ll) && alpha_ll > 0) {
-        cdf <- rep(NA_real_, n)
-        for (i in seq_along(xv)) {
-          val <- xv_shifted[match(xv[i], xv - min(xv) + 1 - 1 + min(xv))]
-          a <- (xv_shifted[i] - xi) / alpha_ll
-          cdf[i] <- if (a <= 0) 0.001 else 1 / (1 + a^(-beta_ll))
-        }
-        # Re-rank to original order
-        cdf_orig <- rep(NA_real_, n)
-        shift_order <- order(order(xv_shifted))
-        for (i in seq_along(xv)) {
-          a <- (xv[i] - min(xv) + 1 - xi) / alpha_ll
-          cdf_orig[i] <- if (a <= 0) 0.001 else 1 / (1 + a^(-beta_ll))
-        }
-        cdf_orig[cdf_orig <= 0] <- 0.001
-        cdf_orig[cdf_orig >= 1] <- 0.999
-        result[valid] <- stats::qnorm(cdf_orig)
-        return(result)
-      }
-    }
+  if (abs(t3) >= 1) {
+    cli::cli_warn("SPEI fitting failed: L-skewness out of range. Returning NAs.")
+    return(result)
   }
 
-  # Fallback: Plotting Position (empirical CDF)
-  cdf <- (rank(xv) - 0.33) / (n + 0.34)
+  beta_ll <- t3 * pi / (3 * sin(t3 * pi / 3))
+
+  if (is.na(beta_ll) || !is.finite(beta_ll) || beta_ll <= 0) {
+    cli::cli_warn("SPEI fitting failed: invalid shape parameter. Returning NAs.")
+    return(result)
+  }
+
+  g1 <- gamma(1 + 1 / beta_ll)
+  g2 <- gamma(1 - 1 / beta_ll)
+  if (!is.finite(g1) || !is.finite(g2) || g1 * g2 == 0) {
+    cli::cli_warn("SPEI fitting failed: gamma function overflow. Returning NAs.")
+    return(result)
+  }
+
+  alpha_ll <- l2 / (g1 * g2)
+  xi <- l1 - alpha_ll * g1 * g2
+
+  if (is.na(alpha_ll) || alpha_ll <= 0) {
+    cli::cli_warn("SPEI fitting failed: invalid scale parameter. Returning NAs.")
+    return(result)
+  }
+
+  # Compute CDF for each observation (in original order)
+  cdf <- vapply(seq_along(xv), function(i) {
+    a <- (xv_shifted[i] - xi) / alpha_ll
+    if (a <= 0) 0.001 else 1 / (1 + a^(-beta_ll))
+  }, numeric(1))
+
   cdf[cdf <= 0] <- 0.001
   cdf[cdf >= 1] <- 0.999
   result[valid] <- stats::qnorm(cdf)

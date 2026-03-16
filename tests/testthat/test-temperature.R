@@ -46,21 +46,47 @@ test_that("ck_tropical_nights counts days where tmin > 20", {
   expect_equal(result$value, 3)
 })
 
-test_that("ck_growing_season returns days between first/last 5-day spell", {
+test_that("ck_growing_season returns days using 6-day spells and tavg", {
   # Create a year of data with clear warm season
   dates <- as.Date("2024-01-01") + 0:364
-  tmin <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
-  result <- ck_growing_season(tmin, dates)
+  tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
+  result <- ck_growing_season(tavg, dates)
   expect_s3_class(result, "data.frame")
   expect_true(result$value > 0)
   expect_equal(result$index, "growing_season")
 })
 
-test_that("ck_growing_season returns 0 when no 5-day spell", {
+test_that("ck_growing_season returns 0 when no 6-day spell", {
   dates <- as.Date("2024-01-01") + 0:29
-  tmin <- rep(-10, 30)
-  result <- ck_growing_season(tmin, dates)
+  tavg <- rep(-10, 30)
+  result <- ck_growing_season(tavg, dates)
   expect_equal(result$value, 0)
+})
+
+test_that("ck_growing_season uses 6-day spell not 5-day", {
+  # Exactly 5 warm days should NOT trigger GSL
+  dates <- as.Date("2024-01-01") + 0:364
+  tavg <- rep(0, 365)
+  tavg[100:104] <- 10  # only 5 warm days
+  result <- ck_growing_season(tavg, dates)
+  expect_equal(result$value, 0)
+
+  # 6 warm days should trigger
+  tavg[100:105] <- 10
+  result <- ck_growing_season(tavg, dates)
+  expect_true(result$value > 0)
+})
+
+test_that("ck_growing_season ends at first cold spell after July 1", {
+  dates <- as.Date("2024-01-01") + 0:364
+  # Warm from day 60 to day 250, then cold
+  tavg <- rep(0, 365)
+  tavg[60:250] <- 10
+  result <- ck_growing_season(tavg, dates, lat = 50)
+  # Season starts at day 60, ends when cold spell starts after July 1
+  # Cold spell of 6+ days starts at day 251
+  # End of season = day 250
+  expect_equal(result$value, 250 - 60 + 1)
 })
 
 test_that("ck_heating_degree_days sums correctly", {
@@ -125,4 +151,26 @@ test_that("all temperature functions handle NA values", {
 
 test_that("temperature functions reject non-Date dates", {
   expect_error(ck_frost_days(c(1, 2), c("a", "b")), "Date")
+})
+
+# --- Reference value tests ---
+
+test_that("frost days at exactly 0C returns 0 (strict < 0)", {
+  dates <- as.Date("2024-01-01")
+  result <- ck_frost_days(c(0), dates)
+  expect_equal(result$value, 0)
+})
+
+test_that("HDD with base=0 returns 0 when all temps >= 0", {
+  dates <- as.Date("2024-01-01") + 0:4
+  tavg <- c(0, 5, 10, 15, 20)
+  result <- ck_heating_degree_days(tavg, dates, base = 0)
+  expect_equal(result$value, 0)
+})
+
+test_that("CDD with base=0 returns sum of all temps", {
+  dates <- as.Date("2024-01-01") + 0:4
+  tavg <- c(5, 10, 15, 20, 25)
+  result <- ck_cooling_degree_days(tavg, dates, base = 0)
+  expect_equal(result$value, 75)
 })

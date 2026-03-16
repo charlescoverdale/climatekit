@@ -74,6 +74,21 @@ ck_heat_index <- function(tavg, humidity) {
     hi_simple
   )
 
+  # NWS low-humidity adjustment
+  low_rh <- !is.na(humidity) & !is.na(tf) & humidity < 13 & tf > 80 & tf < 112
+  if (any(low_rh)) {
+    adj1 <- ((13 - humidity[low_rh]) / 4) *
+      sqrt(pmax((17 - abs(tf[low_rh] - 95)) / 17, 0))
+    hi[low_rh] <- hi[low_rh] - adj1
+  }
+
+  # NWS high-humidity adjustment
+  high_rh <- !is.na(humidity) & !is.na(tf) & humidity > 85 & tf >= 80 & tf <= 87
+  if (any(high_rh)) {
+    adj2 <- ((humidity[high_rh] - 85) / 10) * ((87 - tf[high_rh]) / 5)
+    hi[high_rh] <- hi[high_rh] + adj2
+  }
+
   # Convert back to Celsius
   hi_c <- (hi - 32) * 5 / 9
 
@@ -121,11 +136,11 @@ ck_humidex <- function(tavg, dewpoint) {
   )
 }
 
-#' Fire Weather Index (Simplified)
+#' Fire Danger Index (Simplified)
 #'
-#' A simplified fire weather index based on temperature, humidity, wind
-#' speed, and recent precipitation. This is a basic approximation of the
-#' Canadian Forest Fire Weather Index system.
+#' A simplified fire danger proxy based on temperature, humidity, wind speed,
+#' and recent precipitation. This is NOT the Canadian Forest Fire Weather
+#' Index (Van Wagner 1987); for the full FWI system, use the cffdrs package.
 #'
 #' @param tavg Numeric vector of temperatures (degrees C).
 #' @param humidity Numeric vector of relative humidity (percent, 0-100).
@@ -134,19 +149,15 @@ ck_humidex <- function(tavg, dewpoint) {
 #'
 #' @return A data frame with columns `value`, `index`, and `unit`.
 #'
-#' @references Van Wagner, C. E. (1987). Development and structure of the
-#'   Canadian forest fire weather index system. Canadian Forestry Service,
-#'   Technical Report 35.
-#'
 #' @export
 #' @examples
-#' ck_fire_weather(
+#' ck_fire_danger(
 #'   tavg = c(30, 25, 35),
 #'   humidity = c(20, 40, 15),
 #'   wind_speed = c(25, 10, 30),
 #'   precip = c(0, 5, 0)
 #' )
-ck_fire_weather <- function(tavg, humidity, wind_speed, precip) {
+ck_fire_danger <- function(tavg, humidity, wind_speed, precip) {
   validate_numeric(tavg, "tavg")
   validate_numeric(humidity, "humidity")
   validate_numeric(wind_speed, "wind_speed")
@@ -168,7 +179,7 @@ ck_fire_weather <- function(tavg, humidity, wind_speed, precip) {
 
   data.frame(
     value = fwi,
-    index = "fire_weather",
+    index = "fire_danger",
     unit = "unitless",
     stringsAsFactors = FALSE
   )

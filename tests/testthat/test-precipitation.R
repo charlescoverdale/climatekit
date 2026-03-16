@@ -102,3 +102,35 @@ test_that("max_consecutive handles empty", {
 test_that("max_consecutive handles NA", {
   expect_equal(climatekit:::max_consecutive(c(TRUE, NA, TRUE)), 1)
 })
+
+# --- Reference value tests ---
+
+test_that("dry days with all-zero precip returns full length", {
+  dates <- as.Date("2024-01-01") + 0:9
+  precip <- rep(0, 10)
+  result <- ck_dry_days(precip, dates)
+  expect_equal(result$value, 10)
+})
+
+test_that("wet days with all precip >= 1 returns full length", {
+  dates <- as.Date("2024-01-01") + 0:9
+  precip <- rep(5, 10)
+  result <- ck_wet_days(precip, dates)
+  expect_equal(result$value, 10)
+})
+
+test_that("max 5-day precip with exactly 5 days", {
+  dates <- as.Date("2024-01-01") + 0:4
+  precip <- c(1, 2, 3, 4, 5)
+  result <- ck_max_5day_precip(precip, dates)
+  expect_equal(result$value, 15)
+})
+
+test_that("precip = exactly 1.0 mm counts as wet, not dry", {
+  dates <- as.Date("2024-01-01") + 0:4
+  precip <- c(1.0, 1.0, 1.0, 1.0, 1.0)
+  result_wet <- ck_wet_days(precip, dates)
+  result_dry <- ck_dry_days(precip, dates)
+  expect_equal(result_wet$value, 5)
+  expect_equal(result_dry$value, 0)
+})

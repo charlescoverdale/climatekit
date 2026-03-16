@@ -35,17 +35,15 @@ ck_huglin <- function(tmin, tmax, dates, lat) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
   }
 
-  # Day-length coefficient (k) based on latitude
+  # Day-length coefficient (k) based on latitude (Tonietto & Carbonneau 2004)
   abs_lat <- abs(lat)
   k <- if (abs_lat <= 40) {
     1.0
-  } else if (abs_lat <= 46) {
-    1.02 + (abs_lat - 40) * 0.01 / 6 * 6  # linear interp 1.02-1.06
-  } else {
+  } else if (abs_lat >= 50) {
     1.06
+  } else {
+    1.0 + (abs_lat - 40) * 0.006
   }
-  # Simplified: k ranges 1.0 to 1.06
-  k <- min(max(1.0 + (abs_lat - 40) * 0.01, 1.0), 1.06)
 
   years <- as.integer(format(dates, "%Y"))
   unique_years <- unique(years)

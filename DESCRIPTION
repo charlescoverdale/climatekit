@@ -9,7 +9,7 @@ Description: Compute 35+ standard climate indices from daily weather observation
     drought indices (Standardized Precipitation Index, Standardized
     Precipitation-Evapotranspiration Index), agroclimatic indices (Huglin,
     Winkler, Branas), and comfort indices (wind chill, heat index, humidex,
-    fire weather index). All functions accept vectors of observations with
+    fire danger). All functions accept vectors of observations with
     dates and return tidy data frames with metadata. Implements the 'ET-SCI'
     Expert Team on Sector-specific Climate Indices definitions where
     applicable. No external API calls; pairs with data packages such as

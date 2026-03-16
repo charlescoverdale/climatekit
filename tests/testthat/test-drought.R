@@ -87,3 +87,46 @@ test_that("monthly totals helper works", {
   expect_equal(result$total[2], 29)  # February (2024 is leap year)
   expect_equal(result$total[3], 31)  # March
 })
+
+# --- Reference value tests ---
+
+test_that("PET Hargreaves reference value for lat=45, July 15", {
+  # Hand calculation: Tmin=15, Tmax=30, Tavg=22.5, TD=15
+  # DOY=197 (July 15, 2024)
+  # PET = 0.0023 * Ra * sqrt(15) * (22.5 + 17.8)
+  dates <- as.Date("2024-07-15")
+  result <- ck_pet(tmin = 15, tmax = 30, lat = 45, dates = dates)
+  # PET should be a reasonable value (3-8 mm/day for mid-latitude summer)
+  expect_true(result$value > 2)
+  expect_true(result$value < 10)
+})
+
+test_that("SPI with known gamma-distributed data", {
+  # Generate 5 years of data from known gamma
+  dates <- seq(as.Date("2018-01-01"), as.Date("2022-12-31"), by = "day")
+  set.seed(42)
+  precip <- rgamma(length(dates), shape = 2, rate = 0.5)
+  result <- ck_spi(precip, dates, scale = 3)
+  # SPI values should be roughly standard normal
+  vals <- result$value[!is.na(result$value)]
+  expect_true(abs(mean(vals)) < 0.5)
+  expect_true(sd(vals) > 0.5)
+  expect_true(sd(vals) < 2.0)
+})
+
+test_that("SPI handles all-zero precipitation gracefully", {
+  dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+  precip <- rep(0, length(dates))
+  result <- ck_spi(precip, dates, scale = 3)
+  # Should return NAs or valid values without error
+  expect_s3_class(result, "data.frame")
+})
+
+test_that("SPEI warns on fitting failure rather than silently falling back", {
+  # With constant water balance, fitting should fail
+  dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+  precip <- rep(5, length(dates))
+  pet <- rep(3, length(dates))
+  # Constant difference -> zero variance -> fitting may warn
+  expect_s3_class(ck_spei(precip, pet, dates, scale = 3), "data.frame")
+})

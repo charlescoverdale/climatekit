@@ -32,7 +32,7 @@ ck_compute <- function(data, index, ...) {
     ice_days         = list(fn = ck_ice_days, args = c("tmax", "dates")),
     summer_days      = list(fn = ck_summer_days, args = c("tmax", "dates")),
     tropical_nights  = list(fn = ck_tropical_nights, args = c("tmin", "dates")),
-    growing_season   = list(fn = ck_growing_season, args = c("tmin", "dates")),
+    growing_season   = list(fn = ck_growing_season, args = c("tavg", "dates")),
     heating_degree_days = list(fn = ck_heating_degree_days, args = c("tavg", "dates")),
     cooling_degree_days = list(fn = ck_cooling_degree_days, args = c("tavg", "dates")),
     growing_degree_days = list(fn = ck_growing_degree_days, args = c("tavg", "dates")),
@@ -57,7 +57,7 @@ ck_compute <- function(data, index, ...) {
     wind_chill       = list(fn = ck_wind_chill, args = c("tavg", "wind_speed")),
     heat_index       = list(fn = ck_heat_index, args = c("tavg", "humidity")),
     humidex          = list(fn = ck_humidex, args = c("tavg", "dewpoint")),
-    fire_weather     = list(fn = ck_fire_weather,
+    fire_danger      = list(fn = ck_fire_danger,
                             args = c("tavg", "humidity", "wind_speed", "precip"))
   )
 

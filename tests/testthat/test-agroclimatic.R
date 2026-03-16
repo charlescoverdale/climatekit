@@ -85,3 +85,38 @@ test_that("ck_last_frost returns NA when no frost", {
   result <- ck_last_frost(tmin, dates)
   expect_true(is.na(result$value))
 })
+
+# --- Reference value tests ---
+
+test_that("Huglin K coefficient at specific latitudes", {
+  # K(40) = 1.0, K(45) = 1.03, K(50) = 1.06
+  dates <- seq(as.Date("2024-04-01"), as.Date("2024-09-30"), by = "day")
+  tmin <- rep(15, length(dates))
+  tmax <- rep(25, length(dates))
+
+  # At lat=40 vs lat=50, Huglin should differ by the K ratio
+  r40 <- ck_huglin(tmin, tmax, dates, lat = 40)
+  r45 <- ck_huglin(tmin, tmax, dates, lat = 45)
+  r50 <- ck_huglin(tmin, tmax, dates, lat = 50)
+
+  # Ratio should reflect K values
+  expect_equal(r45$value / r40$value, 1.03, tolerance = 0.001)
+  expect_equal(r50$value / r40$value, 1.06, tolerance = 0.001)
+})
+
+test_that("Winkler with all temps exactly 10C returns 0", {
+  dates <- seq(as.Date("2024-04-01"), as.Date("2024-10-31"), by = "day")
+  tavg <- rep(10, length(dates))
+  result <- ck_winkler(tavg, dates)
+  expect_equal(result$value, 0)
+})
+
+test_that("Branas with known monthly means and precip", {
+  # April only: mean temp = 15, total precip = 100
+  # HI = 15 * 100 = 1500
+  dates <- seq(as.Date("2024-04-01"), as.Date("2024-04-30"), by = "day")
+  tmin <- rep(15, 30)
+  precip <- rep(100 / 30, 30)  # totals to 100mm
+  result <- ck_branas(precip, tmin, dates)
+  expect_equal(result$value, 15 * 100, tolerance = 1)
+})

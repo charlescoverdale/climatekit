@@ -69,7 +69,7 @@ ck_metadata <- function(index) {
          description = "Count of days where Tmin > 20\u00b0C",
          reference = "ETCCDI"),
     list(index = "growing_season", category = "temperature", unit = "days",
-         description = "Growing season length (first to last 5-day spell > 5\u00b0C)",
+         description = "Growing season length (ETCCDI: 6-day spells of Tmean > 5\u00b0C)",
          reference = "ETCCDI"),
     list(index = "heating_degree_days", category = "temperature", unit = "degree-days",
          description = "Sum of (base - Tavg) for days below base temperature",
@@ -84,8 +84,8 @@ ck_metadata <- function(index) {
          description = "Mean daily temperature range (Tmax - Tmin)",
          reference = "ETCCDI"),
     list(index = "warm_spell", category = "temperature", unit = "days",
-         description = "Warm spell duration index",
-         reference = "ETCCDI"),
+         description = "Warm spell days (simplified, not ETCCDI WSDI)",
+         reference = "Simplified (see documentation)"),
 
     # Precipitation
     list(index = "dry_days", category = "precipitation", unit = "days",
@@ -151,8 +151,8 @@ ck_metadata <- function(index) {
     list(index = "humidex", category = "comfort", unit = "unitless",
          description = "Canadian humidex",
          reference = "Masterson & Richardson 1979"),
-    list(index = "fire_weather", category = "comfort", unit = "unitless",
-         description = "Simplified fire weather index",
-         reference = "Van Wagner 1987")
+    list(index = "fire_danger", category = "comfort", unit = "unitless",
+         description = "Simplified fire danger proxy (not FWI)",
+         reference = "")
   )
 }

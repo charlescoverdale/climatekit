@@ -58,7 +58,7 @@ test_that("ck_available returns correct structure", {
   result <- ck_available()
   expect_s3_class(result, "data.frame")
   expect_true(all(c("index", "category", "unit", "description") %in% names(result)))
-  expect_true(nrow(result) >= 29)
+  expect_true(nrow(result) >= 28)
 })
 
 test_that("ck_metadata returns correct info", {

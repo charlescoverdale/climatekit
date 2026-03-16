@@ -100,13 +100,16 @@ ck_tropical_nights <- function(tmin, dates, period = "annual") {
 
 #' Growing Season Length
 #'
-#' Compute the number of days between the first and last occurrence of at
-#' least 5 consecutive days with mean temperature above 5 degrees C. Calculated
-#' per year.
+#' Compute the growing season length following the ETCCDI definition: the
+#' number of days between the first occurrence of at least 6 consecutive days
+#' with daily mean temperature above 5 degrees C and the first span of 6
+#' consecutive days with Tmean below 5 degrees C after July 1 (Northern
+#' Hemisphere) or January 1 (Southern Hemisphere). Calculated per year.
 #'
-#' @param tmin Numeric vector of daily minimum temperatures (degrees C). Used as a
-#'   proxy for daily mean when `tavg` is not available.
-#' @param dates Date vector of the same length as `tmin`.
+#' @param tavg Numeric vector of daily mean temperatures (degrees C).
+#' @param dates Date vector of the same length as `tavg`.
+#' @param lat Numeric. Latitude in decimal degrees (used to determine
+#'   hemisphere for end-of-season rule). Default 50 (Northern Hemisphere).
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -114,44 +117,51 @@ ck_tropical_nights <- function(tmin, dates, period = "annual") {
 #' @examples
 #' dates <- as.Date("2024-01-01") + 0:364
 #' set.seed(42)
-#' tmin <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
-#' ck_growing_season(tmin, dates)
-ck_growing_season <- function(tmin, dates) {
-  validate_numeric(tmin, "tmin")
-  validate_dates(dates, length(tmin))
+#' tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
+#' ck_growing_season(tavg, dates)
+ck_growing_season <- function(tavg, dates, lat = 50) {
+  validate_numeric(tavg, "tavg")
+  validate_dates(dates, length(tavg))
+  if (!is.numeric(lat) || length(lat) != 1) {
+    cli::cli_abort("{.arg lat} must be a single numeric value.")
+  }
 
   years <- as.integer(format(dates, "%Y"))
   unique_years <- unique(years)
 
+  # Day-of-year after which to look for end of season
+  # NH: after July 1 (doy 182); SH: after Jan 1 (doy 1)
+  mid_doy <- if (lat >= 0) 182L else 1L
+
   values <- vapply(unique_years, function(yr) {
     idx <- which(years == yr)
-    temps <- tmin[idx]
+    temps <- tavg[idx]
+    doy <- as.integer(format(dates[idx], "%j"))
     n <- length(temps)
-    if (n < 5) return(NA_real_)
+    if (n < 6) return(NA_real_)
 
     above5 <- temps > 5
 
-    # Find first 5-day spell above 5C
+    # Find first 6-day spell above 5C
     first_start <- NA_integer_
-    for (i in seq_len(n - 4)) {
-      if (all(above5[i:(i + 4)])) {
+    for (i in seq_len(n - 5)) {
+      if (all(above5[i:(i + 5)])) {
         first_start <- i
         break
       }
     }
     if (is.na(first_start)) return(0)
 
-    # Find last 5-day spell above 5C
-    last_start <- NA_integer_
-    for (i in (n - 4):1) {
-      if (all(above5[i:(i + 4)])) {
-        last_start <- i
+    # Find end of season: first 6-day spell below 5C after mid-year
+    season_end <- n  # default: end of data
+    for (i in seq_len(n - 5)) {
+      if (doy[i] >= mid_doy && all(!above5[i:(i + 5)])) {
+        season_end <- i - 1L
         break
       }
     }
 
-    last_end <- last_start + 4
-    as.double(last_end - first_start + 1)
+    as.double(max(season_end - first_start + 1, 0))
   }, numeric(1))
 
   build_result(as.character(unique_years), values, "growing_season", "days", "annual")
@@ -272,11 +282,13 @@ ck_diurnal_range <- function(tmin, tmax, dates, period = "annual") {
   build_result(result$periods, result$values, "diurnal_range", "\u00b0C", period)
 }
 
-#' Warm Spell Duration Index
+#' Warm Spell Days
 #'
 #' Count the number of days in warm spells, where a warm spell is defined as
 #' at least 6 consecutive days with Tmax above the `threshold` quantile of
-#' the full series.
+#' the full series. This computes warm spell days using a quantile threshold
+#' from the input series. It does not implement the ETCCDI WSDI, which
+#' requires calendar-day percentiles from a 1961-1990 reference period.
 #'
 #' @param tmax Numeric vector of daily maximum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmax`.
