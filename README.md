@@ -334,20 +334,9 @@ All outputs join cleanly on `period` or `date` columns, so you can compute multi
 
 ## Related packages
 
-`climatekit` is part of a suite of R packages for economic, climate, and statistical data:
-
 | Package | What it covers |
 |---|---|
 | [`readnoaa`](https://github.com/charlescoverdale/readnoaa) | NOAA weather and climate data (pairs with climatekit for data acquisition) |
-| [`ons`](https://github.com/charlescoverdale/ons) | UK Office for National Statistics (GDP, inflation, unemployment, wages) |
-| [`boe`](https://github.com/charlescoverdale/boe) | Bank of England data (Bank Rate, SONIA, gilt yields, exchange rates) |
-| [`hmrc`](https://github.com/charlescoverdale/hmrc) | HMRC tax receipts, corporation tax, stamp duty, R&D credits |
-| [`obr`](https://github.com/charlescoverdale/obr) | OBR fiscal forecasts and Public Finances Databank |
-| [`readecb`](https://github.com/charlescoverdale/readecb) | European Central Bank data (policy rates, HICP, exchange rates) |
-| [`readoecd`](https://github.com/charlescoverdale/readoecd) | OECD data (GDP, unemployment, inflation across 38 member countries) |
-| [`fred`](https://github.com/charlescoverdale/fred) | US Federal Reserve (FRED) data (800,000+ economic time series) |
-| [`inflateR`](https://github.com/charlescoverdale/inflateR) | Adjust values for inflation using CPI or GDP deflator data |
-| [`predictset`](https://github.com/charlescoverdale/predictset) | Model-agnostic conformal prediction sets |
 
 ---
 
