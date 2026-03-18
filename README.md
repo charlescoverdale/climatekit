@@ -50,7 +50,9 @@ ck_spi(weather$prcp, weather$date, scale = 3)
 ck_heating_degree_days((weather$tmax + weather$tmin) / 2, weather$date)
 ```
 
-**Other common data sources** — as long as you have a numeric vector and a date vector, `climatekit` will work with it:
+As long as you have a numeric vector and a date vector, `climatekit` will work with it.
+
+### Common data sources
 
 | Region | Source | Coverage | Access |
 |---|---|---|---|
