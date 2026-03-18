@@ -50,7 +50,16 @@ ck_spi(weather$prcp, weather$date, scale = 3)
 ck_heating_degree_days((weather$tmax + weather$tmin) / 2, weather$date)
 ```
 
-Other common data sources include [ERA5 reanalysis](https://cds.climate.copernicus.eu/), national weather services, and airport METAR records. As long as you have a numeric vector and a date vector, `climatekit` will work with it.
+**Other common data sources** — as long as you have a numeric vector and a date vector, `climatekit` will work with it:
+
+| Region | Source | Coverage | Access |
+|---|---|---|---|
+| Global | [NOAA GHCNd](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | 100,000+ stations worldwide | Free, no key — use [`readnoaa`](https://github.com/charlescoverdale/readnoaa) |
+| Global | [ERA5 reanalysis](https://cds.climate.copernicus.eu/) | Gridded, 0.25° resolution, 1940–present | Free, requires CDS account |
+| UK | [Met Office MIDAS](https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1) | ~1,000 UK stations, daily | Free via CEDA, requires registration |
+| Europe | [ECA&D](https://www.ecad.eu/) | 20,000+ stations across Europe | Free download |
+| US | [ACIS (RCC)](https://www.rcc-acis.org/) | All US cooperative & ASOS stations | Free, no key |
+| Australia | [Bureau of Meteorology](http://www.bom.gov.au/climate/data/) | All BoM stations, daily | Free download |
 
 ---
 
