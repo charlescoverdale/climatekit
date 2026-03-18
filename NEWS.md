@@ -11,7 +11,7 @@
   Precipitation-Evapotranspiration Index (SPEI), potential evapotranspiration
   (Hargreaves method).
 * 5 agroclimatic indices: Huglin, Winkler, Branas, first/last frost dates.
-* 4 comfort indices: wind chill, heat index, humidex, fire weather index.
+* 4 comfort indices: wind chill, heat index, humidex, fire danger index.
 * Generic dispatcher `ck_compute()` for programmatic index selection.
 * `ck_available()` and `ck_metadata()` for index discovery.
 * `ck_convert_temp()` for temperature unit conversion.

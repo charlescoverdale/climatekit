@@ -237,7 +237,7 @@ ck_last_frost <- function(tmin, dates) {
                  index = "last_frost", unit = "day of year",
                  stringsAsFactors = FALSE)
     } else {
-      last_idx <- utils::tail(which(mask), 1)
+      last_idx <- max(which(mask))
       data.frame(period = as.Date(paste0(yr, "-01-01")),
                  value = as.double(doy[last_idx]),
                  date = dates[last_idx],

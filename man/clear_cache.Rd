@@ -14,5 +14,9 @@ existed.
 Removes any cached reference data stored by \code{climatekit}.
 }
 \examples{
+\donttest{
+op <- options(climatekit.cache_dir = tempdir())
 clear_cache()
+options(op)
+}
 }

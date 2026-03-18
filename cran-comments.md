@@ -4,7 +4,7 @@
 
 ## Test environments
 
-* local macOS (aarch64-apple-darwin), R 4.4.x
+* local macOS (aarch64-apple-darwin), R 4.5.2
 * win-builder (devel and release)
 
 ## Notes

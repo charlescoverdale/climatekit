@@ -43,9 +43,14 @@ ck_convert_temp <- function(x, from, to) {
 #'
 #' @export
 #' @examples
+#' \donttest{
+#' op <- options(climatekit.cache_dir = tempdir())
 #' clear_cache()
+#' options(op)
+#' }
 clear_cache <- function() {
-  cache_dir <- tools::R_user_dir("climatekit", "cache")
+  cache_dir <- getOption("climatekit.cache_dir",
+                         default = tools::R_user_dir("climatekit", "cache"))
   if (dir.exists(cache_dir)) {
     unlink(cache_dir, recursive = TRUE)
     cli::cli_alert_success("Cache cleared.")

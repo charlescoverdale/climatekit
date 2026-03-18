@@ -14,6 +14,7 @@ Description: Compute 35+ standard climate indices from daily weather observation
     Expert Team on Sector-specific Climate Indices definitions where
     applicable. No external API calls; pairs with data packages such as
     'readnoaa' for acquisition.
+Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

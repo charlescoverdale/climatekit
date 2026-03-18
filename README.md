@@ -120,12 +120,12 @@ devtools::install_github("charlescoverdale/climatekit")
 | Temperature | `ck_ice_days()` | Days where Tmax < 0 degrees C |
 | Temperature | `ck_summer_days()` | Days where Tmax > 25 degrees C |
 | Temperature | `ck_tropical_nights()` | Days where Tmin > 20 degrees C |
-| Temperature | `ck_growing_season()` | Growing season length (first to last 5-day spell > 5 degrees C) |
+| Temperature | `ck_growing_season()` | Growing season length (first to last 6-day spell > 5 degrees C) |
 | Temperature | `ck_heating_degree_days()` | Sum of (base - Tavg) for days below base temperature |
 | Temperature | `ck_cooling_degree_days()` | Sum of (Tavg - base) for days above base temperature |
 | Temperature | `ck_growing_degree_days()` | Accumulated growing degree days above base |
 | Temperature | `ck_diurnal_range()` | Mean daily temperature range (Tmax - Tmin) |
-| Temperature | `ck_warm_spell()` | Warm spell duration index (spells >= 6 days above 90th percentile) |
+| Temperature | `ck_warm_spell()` | Warm spell days (spells >= 6 days above 90th percentile) |
 | Precipitation | `ck_dry_days()` | Maximum consecutive dry days |
 | Precipitation | `ck_wet_days()` | Maximum consecutive wet days |
 | Precipitation | `ck_total_precip()` | Total precipitation by period |
@@ -145,7 +145,7 @@ devtools::install_github("charlescoverdale/climatekit")
 | Comfort | `ck_wind_chill()` | Wind chill temperature (Environment Canada / NWS) |
 | Comfort | `ck_heat_index()` | Heat index (Rothfusz / NWS) |
 | Comfort | `ck_humidex()` | Canadian humidex |
-| Comfort | `ck_fire_weather()` | Simplified fire weather index |
+| Comfort | `ck_fire_danger()` | Simplified fire danger index |
 | Infrastructure | `ck_compute()` | Generic dispatcher - pass index name as string |
 | Infrastructure | `ck_available()` | List all available indices with descriptions |
 | Infrastructure | `ck_metadata()` | Get metadata (units, reference, description) for an index |
@@ -288,7 +288,7 @@ ck_heat_index(tavg = c(30, 33, 36, 39), humidity = c(60, 65, 70, 75))
 ck_wind_chill(tavg = c(-5, -10, -15), wind_speed = c(20, 30, 40))
 
 # Fire weather risk
-ck_fire_weather(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
+ck_fire_danger(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
 ```
 
 ---
