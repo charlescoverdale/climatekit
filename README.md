@@ -106,6 +106,9 @@ ck_huglin(tmin, tmax, dates, lat = 45)          # → data.frame
 ## Installation
 
 ```r
+install.packages("climatekit")
+
+# Or install the development version from GitHub
 # install.packages("devtools")
 devtools::install_github("charlescoverdale/climatekit")
 ```
