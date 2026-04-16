@@ -14,7 +14,7 @@ The definitions come from international standards bodies - the WMO Expert Team o
 
 ## Getting started: where to get the data
 
-`climatekit` computes indices from weather data that you provide. It doesn't download anything itself — you bring the data, it does the maths.
+`climatekit` computes indices from weather data that you provide. It doesn't download anything itself: you bring the data, it does the maths.
 
 **If you already have data** (a CSV, a database export, an Excel file), all you need is a numeric vector of observations and a date vector:
 
@@ -56,7 +56,7 @@ As long as you have a numeric vector and a date vector, `climatekit` will work w
 
 | Region | Source | Coverage | Access |
 |---|---|---|---|
-| Global | [NOAA GHCNd](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | 100,000+ stations worldwide | Free, no key — use [`readnoaa`](https://github.com/charlescoverdale/readnoaa) |
+| Global | [NOAA GHCNd](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | 100,000+ stations worldwide | Free, no key. Use [`readnoaa`](https://github.com/charlescoverdale/readnoaa) |
 | Global | [ERA5 reanalysis](https://cds.climate.copernicus.eu/) | Gridded, 0.25° resolution, 1940–present | Free, requires CDS account |
 | UK | [Met Office MIDAS](https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1) | ~1,000 UK stations, daily | Free via CEDA, requires registration |
 | Europe | [ECA&D](https://www.ecad.eu/) | 20,000+ stations across Europe | Free download |
