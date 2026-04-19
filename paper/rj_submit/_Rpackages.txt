@@ -1,0 +1,6 @@
+climatekit
+cli
+SPEI
+cffdrs
+readnoaa
+terra
