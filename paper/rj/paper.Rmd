@@ -1,0 +1,442 @@
+---
+title: "climatekit: Unified Climate Indices for Temperature, Precipitation, and Drought in R"
+author:
+  - name: Charles Coverdale
+    affiliation: "London, United Kingdom"
+    address: "United Kingdom"
+    email: charles.f.coverdale@gmail.com
+    url: https://github.com/charlescoverdale/climatekit
+abstract: >
+  The \CRANpkg{climatekit} package computes the standard suite of
+  climate indices from daily weather observations in a single R
+  interface. Thirty functions cover temperature (frost days, ice
+  days, summer days, growing and heating degree days, tropical
+  nights, diurnal range, growing-season length, warm-spell duration),
+  precipitation (wet and dry spells, heavy-precipitation days,
+  one-day and five-day maxima, precipitation intensity), drought
+  (Standardised Precipitation Index, Standardised
+  Precipitation-Evapotranspiration Index, potential evapotranspiration
+  via the Hargreaves method), agroclimatology (Huglin, Winkler,
+  Branas, frost dates), and thermal comfort (wind chill, heat index,
+  humidex, fire danger). Definitions follow the Expert Team on
+  Sector-specific Climate Indices recommendations
+  (Zhang et al. 2011) where applicable. Every function returns a
+  tidy data frame with a period, a value, an index name, and a unit,
+  so outputs compose directly. The package is pure computation, has
+  no API calls, and is available on CRAN.
+preamble: |
+  \usepackage{longtable}
+bibliography: RJreferences.bib
+output:
+  rticles::rjournal_article:
+    includes:
+      in_header: header.tex
+---
+
+## Introduction
+
+The \CRANpkg{climatekit} package consolidates thirty climate indices
+behind a single consistent interface. Each function takes daily
+vectors (temperature, precipitation, humidity) with an accompanying
+date vector and returns a data frame with four columns: \code{period}
+(the reporting period, typically annual or monthly), \code{value}
+(the index value), \code{index} (a character name), and \code{unit}.
+Users can feed any output directly into plotting, tabulation, or
+further aggregation without reshaping.
+
+Climate-index analysis is a routine operation across applied climate
+work: national meteorological services publish annual index tables,
+regional climate assessments benchmark stations against one another,
+agricultural and viticultural research tracks growing-season
+indices, insurance underwriters use drought indices in parametric
+products, and public-health authorities monitor heat-index exceedances.
+Until now, the R ecosystem has exposed parts of this analysis
+piecemeal, with separate packages for drought indices
+(\CRANpkg{SPEI}), for standard climate-change indices
+(\pkg{climdex.pcic}, archived), and for various agricultural indices.
+\CRANpkg{climatekit} unifies the set.
+
+The package has no network access, no external data dependency, and
+no runtime requirements beyond \CRANpkg{cli} and base R. Users pair
+it with a data-acquisition package (\CRANpkg{readnoaa} for NOAA's
+Global Historical Climatology Network, \CRANpkg{rnoaa} for broader
+NOAA holdings, or direct downloads from a national met service)
+and pass the resulting daily series straight in.
+
+## Background
+
+Climate-index standardisation dates to @frich2002observed, who
+proposed twenty-seven indices targeted at climate-change detection,
+and continued through the joint CCl/WCRP/JCOMM Expert Team on
+Climate Change Detection and Indices (ETCCDI), now the Expert Team
+on Sector-specific Climate Indices (ET-SCI). @zhang2011indices
+synthesised the ET-SCI core set, which informs most modern national
+climate assessments. Applied analyses of the ETCCDI indices on
+observed station records [@alexander2006global] and on gridded
+reconstructions [@donat2013hadex2] document robust multi-decadal
+trends. @sillmann2013indices evaluate the same indices across CMIP5
+climate-model output, establishing the index suite as the bridge
+between observational and model-based climate-change attribution.
+
+**Temperature indices.** The core definitions are threshold counts
+(frost days where $T_{\min} < 0^\circ$C; tropical nights where
+$T_{\min} \geq 20$; summer days where $T_{\max} \geq 25$; ice days
+where $T_{\max} < 0$) and degree-day accumulations (growing degree
+days above a base, heating degree days below a reference, cooling
+degree days above a reference). Diurnal range, growing-season
+length, and warm-spell duration round out the temperature family.
+
+**Precipitation indices.** Consecutive dry and wet days summarise
+spell length. Total accumulation, heavy-precipitation exceedances,
+and one- and five-day maxima summarise intensity. The simple daily
+intensity index (SDII) is the average daily total on wet days. The
+ETCCDI-standard thresholds for heavy-precipitation counts are the
+95th (R95p) and 99th (R99p) percentiles of the wet-day
+distribution at each station; \code{ck\_heavy\_precip()} accepts
+an explicit \code{threshold} argument so users can supply either a
+fixed value or a station-specific percentile computed from the
+data.
+
+**Drought indices.** @mckee1993relationship introduced the
+Standardised Precipitation Index (SPI), which fits a gamma
+distribution to precipitation accumulated over a chosen window
+(three, six, twelve months) and standardises to a standard normal.
+Values below minus one indicate moderate drought; below minus
+two, extreme drought. @vicente2010multiscalar extended this to the
+Standardised Precipitation-Evapotranspiration Index (SPEI), which
+incorporates potential evapotranspiration via a climatic water
+balance. @stagge2015candidate compare candidate distributions for
+both indices and find that the gamma family (for SPI) and the
+generalised logistic (for SPEI) perform best in terms of
+normality-of-residuals tests; \CRANpkg{climatekit} uses these
+defaults. Potential evapotranspiration is computed by the
+@hargreaves1985reference method from temperature extremes and
+extra-terrestrial radiation.
+
+**Agroclimatic indices.** The Huglin heliothermal index
+[@huglin1978nouveau] accumulates heat summed between a base
+temperature and a latitude-adjusted day length; it is the primary
+viticultural suitability index in temperate Europe.
+@tonietto2004multicriteria propose a multicriteria climatic
+classification that combines the Huglin index with cool-night and
+dryness indices, and supply the classification bands (HI-3 for cool
+varieties, HI-2 for temperate, HI-1 for warm, plus subdivisions)
+used in viticultural planning. The Winkler index
+[@winkler1974general] is a similar cumulative heat metric used
+widely in California. Branas, Bernon, and Levadoux's index is the
+French viticultural analogue. First-frost and last-frost dates set
+the frost-free growing window.
+
+**Thermal comfort.** The US National Weather Service's heat index
+[@rothfusz1990heat] converts temperature and humidity into an
+apparent-temperature equivalent; Canadian humidex
+[@masterton1979humidex] does the same with a different functional
+form. Wind chill [@osczevski2005new] is the cold-weather counterpart.
+Fire-weather indices combine temperature, humidity, wind, and
+precipitation history.
+
+## Package design
+
+### Architecture
+
+\CRANpkg{climatekit} is pure R with no compiled code. Runtime
+imports are \CRANpkg{cli}, \code{stats}, and \code{tools}. R 4.1.0
+or later is required. The test suite contains over a hundred tests
+covering every exported function and every index definition.
+
+### Uniform output format
+
+Every index function returns a data frame with four columns:
+\code{period}, \code{value}, \code{index}, and \code{unit}. The
+\code{period} is a \code{Date} keyed to the start of the reporting
+window (year or month); the \code{value} is numeric; \code{index}
+and \code{unit} are character strings. This invariant means output
+from any function composes directly into a larger panel via
+\code{rbind()}, and plotting code is shared across index families.
+
+### Uniform input signature
+
+Every index function takes one or two daily numeric vectors plus a
+\code{dates} vector of matching length. Where appropriate, a
+\code{period} argument selects annual or monthly aggregation. Users
+do not pass data frames; users pass the three or four vectors they
+have.
+
+### Generic dispatcher and metadata
+
+\code{ck\_compute()} dispatches to any index by name, letting users
+select the index programmatically from a configuration file or
+argument. \code{ck\_available()} lists the indices that can be
+computed given a supplied set of inputs; \code{ck\_metadata()}
+returns each index's definition, unit, reference, and typical use.
+
+### Reproducibility
+
+Numerical results are deterministic given the input. The SPI and
+SPEI implementations use gamma-distribution fitting, which is
+deterministic up to the solver's numerical tolerance. All index
+definitions are documented with an explicit reference to the
+underlying paper in the function's \code{@details} block.
+
+## Temperature indices
+
+Four threshold-exceedance counters cover the core temperature
+indices. Cold extremes are counted by \code{ck\_frost\_days()}
+(minimum below $0^\circ$C) and \code{ck\_ice\_days()} (daytime
+maximum below zero). Hot extremes are counted by
+\code{ck\_summer\_days()} (maximum at or above 25) and
+\code{ck\_tropical\_nights()} (minimum at or above 20).
+
+Three degree-day accumulators report cumulative heat above or below
+a reference temperature. Agricultural work uses
+\code{ck\_growing\_degree\_days()} to sum degree-days above a
+user-specified base. Energy-demand applications use the heating and
+cooling counterparts, \code{ck\_heating\_degree\_days()} and
+\code{ck\_cooling\_degree\_days()}.
+
+\code{ck\_diurnal\_range()} reports the mean daily temperature
+range. \code{ck\_growing\_season()} returns the frost-free growing
+season length. \code{ck\_warm\_spell()} counts days in spells
+exceeding a high-percentile threshold. Figure
+\ref{fig:central-park} in the case study below shows these indices
+applied to seventy-five years of real NOAA data from the New York
+Central Park station.
+
+## Precipitation and drought indices
+
+\code{ck\_total\_precip()}, \code{ck\_dry\_days()}, and
+\code{ck\_wet\_days()} summarise accumulation and spell counts.
+\code{ck\_heavy\_precip()} and \code{ck\_very\_heavy\_precip()}
+count exceedances of user-specified thresholds.
+\code{ck\_max\_1day\_precip()} and \code{ck\_max\_5day\_precip()}
+return rolling maxima. \code{ck\_precip\_intensity()} returns the
+simple daily intensity index.
+
+Figure \ref{fig:precip} shows two precipitation indices on the
+Central Park station's daily record from 1950 to 2024: annual total
+precipitation (blue) and the count of heavy-precipitation days
+with daily total above 10 mm (red, scaled by 50 for visual
+comparability). Both trend upward over the seventy-five-year
+window: the annual total rises by about 45 mm per decade and the
+heavy-precipitation day count by 1.15 days per decade, consistent
+with the expected intensification of the hydrological cycle under
+continental-US warming documented in @alexander2006global and
+@donat2013hadex2.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig2_precip.pdf}
+\caption{\textbf{Annual precipitation indices for New York Central Park (GHCND station USW00094728), 1950 to 2024.} Blue solid: annual total precipitation in millimetres, linear trend $+45$ mm per decade. Red dashed: count of days with daily total above 10 mm, scaled by 50 for visual comparability, linear trend $+1.15$ days per decade. Dotted lines are OLS trend fits. Both indices rise over the period.}
+\label{fig:precip}
+\end{figure}
+
+\code{ck\_spi()} returns the Standardised Precipitation Index at a
+user-specified accumulation scale (most commonly 3, 6, or 12
+months). Short-scale SPI captures short-term wet and dry spells;
+long-scale SPI smooths out noise and reveals sustained anomalies.
+Values below $-1$ flag moderate drought; below $-2$, extreme
+drought. \code{ck\_spei()} computes the Standardised
+Precipitation-Evapotranspiration Index, using \code{ck\_pet()} for
+potential evapotranspiration via the @hargreaves1985reference
+method.
+
+## Agroclimatic indices
+
+\code{ck\_huglin()} returns the Huglin heliothermal index,
+accumulated from April through September (Northern Hemisphere) from
+daily maximum and mean temperatures weighted by a latitude
+correction. \code{ck\_winkler()} returns the Winkler index (a
+simpler cumulative growing-degree-day measure used in California
+viticulture). \code{ck\_branas()} returns the Branas product index.
+\code{ck\_first\_frost()} and \code{ck\_last\_frost()} report frost
+dates each year.
+
+Figure \ref{fig:huglin} shows the Huglin index on the synthetic
+temperate site. Grey horizontal bands mark approximate viticultural
+classification ranges; the site plots within the Cool to Temperate
+range in most years of the sample.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig4_huglin.pdf}
+\caption{\textbf{Huglin heliothermal index on a 10-year synthetic temperate site at latitude 51.5$^\circ$N.} Shaded horizontal bands mark approximate viticultural suitability ranges: below 1500 is too cool, 1500 to 1800 is Cool (HI-3, suitable for early-ripening varieties), 1800 to 2100 is Temperate, 2100 to 2400 is Warm, above 2400 is Hot. The sample falls mostly in the Cool range.}
+\label{fig:huglin}
+\end{figure}
+
+## Comfort indices
+
+Four comfort functions cover hot and cold extremes.
+\code{ck\_heat\_index()} returns the US National Weather Service
+heat index (apparent temperature) from mean temperature and
+relative humidity. \code{ck\_humidex()} returns the Canadian
+humidex from the same inputs. \code{ck\_wind\_chill()} returns wind
+chill from temperature and wind speed. \code{ck\_fire\_danger()}
+returns a linearised approximation of the Canadian Fire Weather
+Index (CFFWIS) combining temperature, relative humidity, wind
+speed, and precipitation. The implementation is intentionally a
+simplified surrogate for rapid daily computation; users requiring
+the full iterative CFFWIS should pair with the specialised
+\CRANpkg{cffdrs} package.
+
+## Drought and pluvial episodes
+
+\code{ck\_spi()} and \code{ck\_spei()} return the Standardized
+Precipitation Index (McKee et al., 1993) and the Standardized
+Precipitation Evapotranspiration Index (Vicente-Serrano et al.,
+2010). Both are unitless anomalies scaled to standard deviations: a
+value of $-1$ sits one standard deviation below the long-run mean
+for that calendar month, commonly interpreted as moderate drought,
+and values below $-2$ as severe drought. The index is computed by
+fitting a gamma distribution to rolling accumulated precipitation
+totals and transforming to standard normal deviates, separately
+for each calendar month to remove seasonality.
+
+Figure \ref{fig:spi} applies \code{ck\_spi()} at a twelve-month
+scale to the 1950-to-2024 daily precipitation record at New York
+Central Park (NOAA GHCND USW00094728, the same station used in
+the case study below). The 1960s Northeast drought is visible as
+an extended run of deeply negative values between 1962 and 1966,
+the most severe drought episode in the station's recorded
+history. The 2001-02 drought is also clearly marked. The upper
+tail is populated by well-known wet years, including 1972,
+1983-84, and 2011.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig5_heat.pdf}
+\caption{\textbf{Twelve-month Standardized Precipitation Index for New York Central Park, 1950 to 2024.} Computed with \code{ck\_spi(scale = 12)} on the full GHCND USW00094728 daily precipitation record. Dashed horizontal lines at $\pm 1$ mark the moderate drought and moderate wet thresholds. The 1960s Northeast drought (1962-1966) and 2001-02 drought are the two deepest dry episodes; 2011 is the wettest year in the sample.}
+\label{fig:spi}
+\end{figure}
+
+## Case study: 75 years of Central Park temperature indices
+
+Figure \ref{fig:central-park} applies \CRANpkg{climatekit} to real
+NOAA Global Historical Climatology Network Daily (GHCND) data from
+the New York Central Park station (USW00094728) from 1950 to 2024,
+a seventy-five-year daily record with zero missing observations in
+$T_{\min}$, $T_{\max}$, and precipitation. Three temperature
+indices are computed directly from the raw daily vectors: frost
+days, summer days, and growing degree days at base 10. A linear
+trend fitted over the sample returns a decline of 2.6 frost days
+per decade, a rise of 28 growing-degree-days per decade, and a
+roughly stable summer-days count. The signs and magnitudes are
+consistent with the observed warming trends for the US Northeast
+documented in @alexander2006global and @donat2013hadex2. The full
+computation is three function calls on three vectors.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig6_central_park.pdf}
+\caption{\textbf{Three temperature indices for New York Central Park (GHCND station USW00094728), 1950 to 2024.} Annual counts from raw daily $T_{\min}$, $T_{\max}$, and $T_{\mathrm{mean}}$. Blue solid: frost days ($T_{\min} < 0^\circ\mathrm{C}$), linear trend $-2.6$ days per decade. Red dashed: summer days ($T_{\max} \geq 25^\circ\mathrm{C}$), trend $+0.3$ days per decade. Green dotdash: growing degree days above base $10^\circ\mathrm{C}$, divided by 20 for visual scale, trend $+28$ GDD per decade. Dotted lines are OLS trend fits.}
+\label{fig:central-park}
+\end{figure}
+
+## Replication
+
+Table \ref{tab:families} lists the thirty indices grouped into five
+families. The representative function names give the flavour of the
+interface.
+
+\begin{table}[!htbp]
+\centering
+\caption{\textbf{Index families in \CRANpkg{climatekit}, with count and representative function names.} All functions share the \code{ck\_} prefix and return a data frame with columns \code{period}, \code{value}, \code{index}, \code{unit}.}
+\label{tab:families}
+\input{tables/families.tex}
+\end{table}
+
+The canonical workflow is four lines:
+
+```r
+library(climatekit)
+frost_days <- ck_frost_days(tmin, dates, period = "annual")
+spi3       <- ck_spi(precip, dates, scale = 3)
+huglin     <- ck_huglin(tmin, tmax, dates, lat = 51.5)
+```
+
+Each call returns a tidy data frame that can be bound directly into
+a panel with other indices or plotted without reshaping.
+
+## Limitations
+
+Five limitations apply.
+
+1. \CRANpkg{climatekit} computes indices from daily observations.
+   Sub-daily (hourly) indices, including heat-wave indices based on
+   night-time minimum temperatures and apparent-temperature
+   exceedances, are not implemented.
+2. Gridded-climate input is not natively supported. Users must
+   reduce a gridded product to a per-cell time series before passing
+   it in. For CMIP6 and similar model output,
+   \CRANpkg{terra}-based preprocessing is the natural partner.
+3. The SPI and SPEI implementations use the gamma distribution as
+   the parametric family. Users studying very arid regions may
+   prefer the Pearson III family favoured by @vicente2010multiscalar;
+   this is not currently exposed.
+4. Quality control is the user's responsibility. Missing-value
+   handling propagates \code{NA} through the aggregation functions;
+   users should screen input data for known stations-of-concern
+   flags before computing indices.
+5. Station homogenisation is not implemented. Detecting
+   inhomogeneities (relocation, instrument change) in a daily
+   record requires specialised techniques that are out of scope.
+
+\FloatBarrier
+
+## Appendix: index definitions
+
+Selected formulas used by \CRANpkg{climatekit}. Daily observations
+are indexed by $t$; aggregations run over a reporting window
+$\mathcal{T}$ (year, month, or season).
+
+**Frost days.** $\mathrm{FD} = \sum_{t \in \mathcal{T}} \mathbf{1}\{T_{\min,t} < 0^\circ\mathrm{C}\}$.
+
+**Growing degree days (base $b$).**
+$\mathrm{GDD}_b = \sum_{t \in \mathcal{T}} \max(T_{\mathrm{mean},t} - b, 0)$.
+
+**Huglin heliothermal index.** For latitude $\phi$ and
+northern-hemisphere summation over 1 April to 30 September,
+$$\mathrm{HI} = K(\phi) \sum_{t = \mathrm{Apr}}^{\mathrm{Sep}}
+  \frac{(T_{\mathrm{mean},t} - 10) + (T_{\max,t} - 10)}{2},$$
+where $K(\phi)$ is Huglin's day-length correction ranging from 1.02
+at $40^\circ$N to 1.06 at $50^\circ$N.
+
+**Standardised Precipitation Index.** For precipitation $P_s$ summed
+over an $s$-month window, fit a two-parameter gamma distribution to
+the historical distribution of $P_s$ with shape $\alpha$ and scale
+$\beta$, compute the non-exceedance probability
+$F(P_s; \alpha, \beta)$, and transform to a standard normal:
+$\mathrm{SPI}_s = \Phi^{-1}(F(P_s; \alpha, \beta))$.
+Values below $-1$ indicate moderate drought; below $-2$, extreme
+drought. The gamma-family default follows @stagge2015candidate.
+
+**Heat index (US NWS, Rothfusz form).** For air temperature
+$T$ in $^\circ\mathrm{F}$ and relative humidity $R$ in per cent,
+$$\mathrm{HI} = c_1 + c_2 T + c_3 R + c_4 TR
+  + c_5 T^2 + c_6 R^2 + c_7 T^2 R + c_8 T R^2 + c_9 T^2 R^2,$$
+with the nine Rothfusz coefficients (Rothfusz 1990). The package
+converts °C inputs internally.
+
+## Conclusion
+
+Climate-index computation is a daily activity in meteorological
+services, climate research, agricultural consultancies, and
+insurance underwriting, and the R ecosystem had not had a single
+unified implementation. \CRANpkg{climatekit} consolidates thirty
+indices across temperature, precipitation, drought, agroclimatology,
+and thermal comfort behind a tidy-data-frame output format. The
+package is pure R, has no data dependencies, and returns output
+that composes directly into downstream analysis. Planned additions
+include hourly heat-wave indices, gridded-input helpers, and
+additional fire-weather variants. Contributions and bug reports are
+welcome at
+\url{https://github.com/charlescoverdale/climatekit}.
+
+## Acknowledgements {-}
+
+The CCl/WCRP/JCOMM Expert Team on Climate Change Detection and
+Indices (ETCCDI) and its successor the Expert Team on
+Sector-specific Climate Indices (ET-SCI) developed and documented
+the index definitions on which this package is built. The National
+Oceanic and Atmospheric Administration publishes the Global
+Historical Climatology Network Daily (GHCND) dataset that is the
+natural input source for these indices.
