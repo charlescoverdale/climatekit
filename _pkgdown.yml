@@ -64,3 +64,7 @@ reference:
       - ck_metadata
       - clear_cache
 
+
+  - title: "Package"
+    contents:
+      - climatekit-package
