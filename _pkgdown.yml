@@ -1,0 +1,66 @@
+url: https://charlescoverdale.github.io/climatekit/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+
+reference:
+  - title: "Temperature"
+    desc: "Daily temperature indices"
+    contents:
+      - ck_frost_days
+      - ck_ice_days
+      - ck_summer_days
+      - ck_tropical_nights
+      - ck_warm_spell
+      - ck_diurnal_range
+      - ck_first_frost
+      - ck_last_frost
+      - ck_convert_temp
+
+  - title: "Precipitation"
+    desc: "Rainfall and drought indices"
+    contents:
+      - ck_total_precip
+      - ck_dry_days
+      - ck_wet_days
+      - ck_heavy_precip
+      - ck_very_heavy_precip
+      - ck_max_1day_precip
+      - ck_max_5day_precip
+      - ck_precip_intensity
+      - ck_spi
+      - ck_spei
+
+  - title: "Agroclimatic"
+    desc: "Growing-season and viticulture indices"
+    contents:
+      - ck_growing_degree_days
+      - ck_growing_season
+      - ck_cooling_degree_days
+      - ck_heating_degree_days
+      - ck_huglin
+      - ck_winkler
+      - ck_branas
+      - ck_pet
+
+  - title: "Comfort and Hazard"
+    desc: "Heat, fire, and wind indices"
+    contents:
+      - ck_heat_index
+      - ck_humidex
+      - ck_wind_chill
+      - ck_fire_danger
+
+  - title: "General"
+    desc: "Compute any index by name; metadata"
+    contents:
+      - ck_compute
+      - ck_available
+      - ck_metadata
+      - clear_cache
+

@@ -1,0 +1,50 @@
+# climatekit
+
+> Compute 35+ standard climate indices from daily weather observations. Install with `install.packages("climatekit")`.
+
+Version: 0.1.0. License: MIT.
+
+## Functions
+
+- [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.html): List All Available Climate Indices
+- [`ck_branas()`](https://charlescoverdale.github.io/climatekit/reference/ck_branas.html): Branas Hydrothermal Index
+- [`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.html): Compute a Climate Index by Name
+- [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.html): Convert Temperature Units
+- [`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.html): Cooling Degree Days
+- [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.html): Diurnal Temperature Range
+- [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.html): Maximum Consecutive Dry Days
+- [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.html): Fire Danger Index (Simplified)
+- [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.html): First Frost Date
+- [`ck_frost_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_frost_days.html): Frost Days
+- [`ck_growing_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_degree_days.html): Growing Degree Days
+- [`ck_growing_season()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_season.html): Growing Season Length
+- [`ck_heat_index()`](https://charlescoverdale.github.io/climatekit/reference/ck_heat_index.html): Heat Index
+- [`ck_heating_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_heating_degree_days.html): Heating Degree Days
+- [`ck_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_heavy_precip.html): Heavy Precipitation Days
+- [`ck_huglin()`](https://charlescoverdale.github.io/climatekit/reference/ck_huglin.html): Huglin Heliothermal Index
+- [`ck_humidex()`](https://charlescoverdale.github.io/climatekit/reference/ck_humidex.html): Humidex
+- [`ck_ice_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_ice_days.html): Ice Days
+- [`ck_last_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_last_frost.html): Last Frost Date
+- [`ck_max_1day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_1day_precip.html): Maximum 1-Day Precipitation
+- [`ck_max_5day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_5day_precip.html): Maximum 5-Day Precipitation
+- [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.html): Get Metadata for a Climate Index
+- [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.html): Potential Evapotranspiration (Hargreaves Method)
+- [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.html): Precipitation Intensity (SDII)
+- [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.html): Standardized Precipitation-Evapotranspiration Index (SPEI)
+- [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.html): Standardized Precipitation Index (SPI)
+- [`ck_summer_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_summer_days.html): Summer Days
+- [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.html): Total Precipitation
+- [`ck_tropical_nights()`](https://charlescoverdale.github.io/climatekit/reference/ck_tropical_nights.html): Tropical Nights
+- [`ck_very_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_very_heavy_precip.html): Very Heavy Precipitation Days
+- [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.html): Warm Spell Days
+- [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.html): Maximum Consecutive Wet Days
+- [`ck_wind_chill()`](https://charlescoverdale.github.io/climatekit/reference/ck_wind_chill.html): Wind Chill Temperature
+- [`ck_winkler()`](https://charlescoverdale.github.io/climatekit/reference/ck_winkler.html): Winkler Index
+- [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.html): Clear Cache
+
+## Documentation
+
+- [Full reference](https://charlescoverdale.github.io/climatekit/reference/)
+- [GitHub](https://github.com/charlescoverdale/climatekit)
+- [CRAN](https://CRAN.R-project.org/package=climatekit)
+
