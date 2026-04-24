@@ -1,0 +1,27 @@
+# climatekit: Unified Climate Indices for Temperature, Precipitation, and Drought
+
+Compute 35+ standard climate indices from daily weather observations.
+Includes temperature indices (frost days, ice days, growing degree
+days), precipitation indices (dry spells, heavy precipitation,
+intensity), drought indices (Standardized Precipitation Index,
+Standardized Precipitation-Evapotranspiration Index), agroclimatic
+indices (Huglin, Winkler, Branas), and comfort indices (wind chill, heat
+index, humidex, fire danger). All functions accept vectors of
+observations with dates and return tidy data frames with metadata.
+Implements the 'ET-SCI' Expert Team on Sector-specific Climate Indices
+definitions where applicable. No external API calls; pairs with data
+packages such as 'readnoaa' for acquisition.
+
+## See also
+
+Useful links:
+
+- <https://charlescoverdale.github.io/climatekit/>
+
+- <https://github.com/charlescoverdale/climatekit>
+
+- Report bugs at <https://github.com/charlescoverdale/climatekit/issues>
+
+## Author
+
+**Maintainer**: Charles Coverdale <charlesfcoverdale@gmail.com>

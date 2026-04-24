@@ -1,0 +1,37 @@
+# Total Precipitation
+
+Total precipitation sum by period.
+
+## Usage
+
+``` r
+ck_total_precip(precip, dates, period = "annual")
+```
+
+## Arguments
+
+- precip:
+
+  Numeric vector of daily precipitation (mm).
+
+- dates:
+
+  Date vector of the same length as `precip`.
+
+- period:
+
+  Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+## Value
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+## Examples
+
+``` r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 3, 0, 8, 2, 0, 1, 4, 0)
+ck_total_precip(precip, dates)
+#>       period value        index unit
+#> 1 2024-01-01    23 total_precip   mm
+```
