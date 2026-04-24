@@ -52,7 +52,8 @@ clear_cache <- function() {
   cache_dir <- getOption("climatekit.cache_dir",
                          default = tools::R_user_dir("climatekit", "cache"))
   if (dir.exists(cache_dir)) {
-    unlink(cache_dir, recursive = TRUE)
+    files <- list.files(cache_dir, full.names = TRUE)
+    if (length(files)) unlink(files, recursive = TRUE)
     cli::cli_alert_success("Cache cleared.")
     invisible(TRUE)
   } else {

@@ -2,6 +2,8 @@
 
 > Compute 35+ standard climate indices from daily weather observations. Install with `install.packages("climatekit")`.
 
+Full API reference (for agents): https://raw.githubusercontent.com/charlescoverdale/climatekit/main/llms-full.txt
+
 Version: 0.1.0. License: MIT.
 
 ## Functions

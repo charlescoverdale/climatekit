@@ -11,6 +11,7 @@ Compute 35+ standard climate indices from daily weather observations. Includes t
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://charlescoverdale.github.io/climatekit/}
   \item \url{https://github.com/charlescoverdale/climatekit}
   \item Report bugs at \url{https://github.com/charlescoverdale/climatekit/issues}
 }

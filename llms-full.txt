@@ -1,0 +1,1136 @@
+# climatekit — full API reference
+
+> Compute 35+ standard climate indices from daily weather observations.
+
+- Version: 0.1.0
+- Install: `install.packages("climatekit")`
+- CRAN: https://CRAN.R-project.org/package=climatekit
+- GitHub: https://github.com/charlescoverdale/climatekit
+- Reference site: https://charlescoverdale.github.io/climatekit/
+
+This file is a self-contained reference for LLM agents: every exported
+function with its signature, arguments, return value, and example.
+
+---
+
+## `ck_available()`
+
+**List All Available Climate Indices**
+
+Returns a data frame listing every index that `climatekit` can compute, along with its category, unit, and a short description.
+
+**Usage**
+
+```r
+ck_available()
+```
+
+**Returns**
+
+A data frame with columns `index`, `category`, `unit`, and `description`.
+
+**Example**
+
+```r
+ck_available()
+```
+
+---
+
+## `ck_branas()`
+
+**Branas Hydrothermal Index**
+
+The Branas index combines temperature and precipitation during the growing season to estimate disease pressure (especially downy mildew) in vineyards. It is the sum of the product of monthly mean temperature and monthly precipitation for April-August.
+
+**Usage**
+
+```r
+ck_branas(precip, tavg, dates)
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `tavg` — Numeric vector of daily mean temperatures (degrees C).
+- `dates` — Date vector of the same length as `precip`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2024-04-01"), as.Date("2024-08-31"), by = "day")
+set.seed(42)
+tavg <- rnorm(length(dates), mean = 12, sd = 3)
+precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
+ck_branas(precip, tavg, dates)
+```
+
+---
+
+## `ck_compute()`
+
+**Compute a Climate Index by Name**
+
+A generic dispatcher that calls the appropriate ck_* function based on a string index name. Useful for programmatic workflows where the index is selected at runtime.
+
+**Usage**
+
+```r
+ck_compute(data, index, ...)
+```
+
+**Arguments**
+
+- `data` — A named list or data frame containing the required input vectors. Column names should match function argument names (e.g. `tmin`, `tmax`, `precip`, `dates`).
+- `index` — Character. Name of the index to compute (e.g. `"frost_days"`). Use `ck_available()` to see valid names.
+- `...` — Additional arguments passed to the underlying function (e.g. `period`, `threshold`, `base`).
+
+**Returns**
+
+A data frame as returned by the underlying ck_* function.
+
+**Example**
+
+```r
+d <- data.frame(
+  dates = as.Date("2024-01-01") + 0:9,
+  tmin = c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
+)
+ck_compute(d, "frost_days")
+```
+
+---
+
+## `ck_convert_temp()`
+
+**Convert Temperature Units**
+
+Convert between Celsius, Fahrenheit, and Kelvin.
+
+**Usage**
+
+```r
+ck_convert_temp(x, from, to)
+```
+
+**Arguments**
+
+- `x` — Numeric vector of temperatures.
+- `from` — Character. Source unit: `"C"`, `"F"`, or `"K"`.
+- `to` — Character. Target unit: `"C"`, `"F"`, or `"K"`.
+
+**Returns**
+
+Numeric vector of converted temperatures.
+
+**Example**
+
+```r
+ck_convert_temp(c(0, 100), from = "C", to = "F")
+ck_convert_temp(32, from = "F", to = "C")
+```
+
+---
+
+## `ck_cooling_degree_days()`
+
+**Cooling Degree Days**
+
+Sum of `(Tavg - base)` for all days where daily average temperature is above the base temperature (default 18 degrees C).
+
+**Usage**
+
+```r
+ck_cooling_degree_days(tavg, dates, base = 18, period = "annual")
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of daily average temperatures (degrees C).
+- `dates` — Date vector of the same length as `tavg`.
+- `base` — Numeric. Base temperature in degrees C (default 18).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-07-01") + 0:9
+tavg <- c(25, 30, 22, 20, 28, 19, 32, 17, 35, 27)
+ck_cooling_degree_days(tavg, dates)
+```
+
+---
+
+## `ck_diurnal_range()`
+
+**Diurnal Temperature Range**
+
+Mean daily temperature range (Tmax - Tmin) per period.
+
+**Usage**
+
+```r
+ck_diurnal_range(tmin, tmax, dates, period = "annual")
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin` and `tmax`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+tmin <- c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
+tmax <- c(5, 10, 6, 12, 4, 8, 9, 3, 7, 6)
+ck_diurnal_range(tmin, tmax, dates)
+```
+
+---
+
+## `ck_dry_days()`
+
+**Maximum Consecutive Dry Days**
+
+Maximum number of consecutive days with precipitation below a threshold.
+
+**Usage**
+
+```r
+ck_dry_days(precip, dates, threshold = 1, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `threshold` — Numeric. Dry day threshold in mm (default 1).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 0, 5, 0, 0, 0, 2, 0, 0, 0)
+ck_dry_days(precip, dates)
+```
+
+---
+
+## `ck_fire_danger()`
+
+**Fire Danger Index (Simplified)**
+
+A simplified fire danger proxy based on temperature, humidity, wind speed, and recent precipitation. This is NOT the Canadian Forest Fire Weather Index (Van Wagner 1987); for the full FWI system, use the cffdrs package.
+
+**Usage**
+
+```r
+ck_fire_danger(tavg, humidity, wind_speed, precip)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of temperatures (degrees C).
+- `humidity` — Numeric vector of relative humidity (percent, 0-100).
+- `wind_speed` — Numeric vector of wind speeds (km/h).
+- `precip` — Numeric vector of daily precipitation (mm).
+
+**Returns**
+
+A data frame with columns `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+ck_fire_danger(
+  tavg = c(30, 25, 35),
+  humidity = c(20, 40, 15),
+  wind_speed = c(25, 10, 30),
+  precip = c(0, 5, 0)
+)
+```
+
+---
+
+## `ck_first_frost()`
+
+**First Frost Date**
+
+Date of the first autumn frost (Tmin < 0 degrees C) after July 1 in each year.
+
+**Usage**
+
+```r
+ck_first_frost(tmin, dates)
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin`.
+
+**Returns**
+
+A data frame with columns `period`, `value` (day of year), `date` (the frost date), `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2024-07-01"), as.Date("2024-12-31"), by = "day")
+set.seed(42)
+tmin <- 15 - seq_along(dates) * 0.15 + rnorm(length(dates), sd = 3)
+ck_first_frost(tmin, dates)
+```
+
+---
+
+## `ck_frost_days()`
+
+**Frost Days**
+
+Count the number of days where minimum temperature is below 0 degrees C.
+
+**Usage**
+
+```r
+ck_frost_days(tmin, dates, period = "annual")
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+tmin <- c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
+ck_frost_days(tmin, dates)
+```
+
+---
+
+## `ck_growing_degree_days()`
+
+**Growing Degree Days**
+
+Sum of `(Tavg - base)` for all days where daily average temperature is above the base temperature (default 10 degrees C).
+
+**Usage**
+
+```r
+ck_growing_degree_days(tavg, dates, base = 10, period = "annual")
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of daily average temperatures (degrees C).
+- `dates` — Date vector of the same length as `tavg`.
+- `base` — Numeric. Base temperature in degrees C (default 10).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-07-01") + 0:9
+tavg <- c(15, 20, 8, 12, 25, 9, 30, 11, 22, 18)
+ck_growing_degree_days(tavg, dates)
+```
+
+---
+
+## `ck_growing_season()`
+
+**Growing Season Length**
+
+Compute the growing season length following the ETCCDI definition: the number of days between the first occurrence of at least 6 consecutive days with daily mean temperature above 5 degrees C and the first span of 6 consecutive days with Tmean below 5 degrees C after July 1 (Northern Hemisphere) or January 1 (Southern Hemisphere). Calculated per year.
+
+**Usage**
+
+```r
+ck_growing_season(tavg, dates, lat = 50)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of daily mean temperatures (degrees C).
+- `dates` — Date vector of the same length as `tavg`.
+- `lat` — Numeric. Latitude in decimal degrees (used to determine hemisphere for end-of-season rule). Default 50 (Northern Hemisphere).
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:364
+set.seed(42)
+tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
+ck_growing_season(tavg, dates)
+```
+
+---
+
+## `ck_heat_index()`
+
+**Heat Index**
+
+Compute the heat index (apparent temperature) using the Rothfusz regression equation used by the US National Weather Service.
+
+**Usage**
+
+```r
+ck_heat_index(tavg, humidity)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of temperatures (degrees C).
+- `humidity` — Numeric vector of relative humidity (percent, 0-100).
+
+**Returns**
+
+A data frame with columns `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+ck_heat_index(tavg = c(30, 35, 40), humidity = c(60, 70, 50))
+```
+
+---
+
+## `ck_heating_degree_days()`
+
+**Heating Degree Days**
+
+Sum of `(base - Tavg)` for all days where daily average temperature is below the base temperature (default 18 degrees C).
+
+**Usage**
+
+```r
+ck_heating_degree_days(tavg, dates, base = 18, period = "annual")
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of daily average temperatures (degrees C).
+- `dates` — Date vector of the same length as `tavg`.
+- `base` — Numeric. Base temperature in degrees C (default 18).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+tavg <- c(5, 10, 15, 20, 8, 12, 18, 3, 25, 7)
+ck_heating_degree_days(tavg, dates)
+```
+
+---
+
+## `ck_heavy_precip()`
+
+**Heavy Precipitation Days**
+
+Count of days with precipitation at or above a threshold (default 10 mm).
+
+**Usage**
+
+```r
+ck_heavy_precip(precip, dates, threshold = 10, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `threshold` — Numeric. Threshold in mm (default 10).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 12, 0, 15, 2, 0, 11, 4, 0)
+ck_heavy_precip(precip, dates)
+```
+
+---
+
+## `ck_huglin()`
+
+**Huglin Heliothermal Index**
+
+The Huglin index is used in viticulture to characterise the thermal potential of a region for grape growing. It is computed over the growing season (April 1 to September 30 in the Northern Hemisphere; October 1 to March 31 in the Southern Hemisphere).
+
+**Usage**
+
+```r
+ck_huglin(tmin, tmax, dates, lat)
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin`.
+- `lat` — Numeric. Latitude in decimal degrees (used to determine hemisphere and day-length coefficient).
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2024-04-01"), as.Date("2024-09-30"), by = "day")
+set.seed(42)
+tmin <- rnorm(length(dates), mean = 12, sd = 3)
+tmax <- tmin + runif(length(dates), 8, 15)
+ck_huglin(tmin, tmax, dates, lat = 45)
+```
+
+---
+
+## `ck_humidex()`
+
+**Humidex**
+
+Compute the Canadian humidex from temperature and dewpoint.
+
+**Usage**
+
+```r
+ck_humidex(tavg, dewpoint)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of temperatures (degrees C).
+- `dewpoint` — Numeric vector of dewpoint temperatures (degrees C).
+
+**Returns**
+
+A data frame with columns `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+ck_humidex(tavg = c(30, 35), dewpoint = c(20, 25))
+```
+
+---
+
+## `ck_ice_days()`
+
+**Ice Days**
+
+Count the number of days where maximum temperature is below 0 degrees C.
+
+**Usage**
+
+```r
+ck_ice_days(tmax, dates, period = "annual")
+```
+
+**Arguments**
+
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmax`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+tmax <- c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
+ck_ice_days(tmax, dates)
+```
+
+---
+
+## `ck_last_frost()`
+
+**Last Frost Date**
+
+Date of the last spring frost (Tmin < 0 degrees C) before July 1 in each year.
+
+**Usage**
+
+```r
+ck_last_frost(tmin, dates)
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin`.
+
+**Returns**
+
+A data frame with columns `period`, `value` (day of year), `date` (the frost date), `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2024-01-01"), as.Date("2024-06-30"), by = "day")
+set.seed(42)
+tmin <- -10 + seq_along(dates) * 0.12 + rnorm(length(dates), sd = 3)
+ck_last_frost(tmin, dates)
+```
+
+---
+
+## `ck_max_1day_precip()`
+
+**Maximum 1-Day Precipitation**
+
+Maximum precipitation recorded in a single day per period.
+
+**Usage**
+
+```r
+ck_max_1day_precip(precip, dates, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
+ck_max_1day_precip(precip, dates)
+```
+
+---
+
+## `ck_max_5day_precip()`
+
+**Maximum 5-Day Precipitation**
+
+Maximum precipitation total over any 5 consecutive days per period.
+
+**Usage**
+
+```r
+ck_max_5day_precip(precip, dates, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
+ck_max_5day_precip(precip, dates)
+```
+
+---
+
+## `ck_metadata()`
+
+**Get Metadata for a Climate Index**
+
+Returns metadata (unit, category, description, reference) for a named climate index.
+
+**Usage**
+
+```r
+ck_metadata(index)
+```
+
+**Arguments**
+
+- `index` — Character string. The index name (e.g. `"frost_days"`). Use `ck_available()` to see valid names.
+
+**Returns**
+
+A list with elements `index`, `category`, `unit`, `description`, and `reference`.
+
+**Example**
+
+```r
+ck_metadata("frost_days")
+```
+
+---
+
+## `ck_pet()`
+
+**Potential Evapotranspiration (Hargreaves Method)**
+
+Estimate daily PET using the Hargreaves-Samani equation, which requires only daily temperature extremes and latitude.
+
+**Usage**
+
+```r
+ck_pet(tmin, tmax, lat, dates)
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `lat` — Numeric. Latitude in decimal degrees.
+- `dates` — Date vector of the same length as `tmin`.
+
+**Returns**
+
+A data frame with columns `date`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-07-01") + 0:9
+tmin <- c(15, 16, 14, 17, 15, 13, 16, 14, 15, 16)
+tmax <- c(30, 32, 28, 33, 31, 27, 34, 29, 30, 32)
+ck_pet(tmin, tmax, lat = 45, dates = dates)
+```
+
+---
+
+## `ck_precip_intensity()`
+
+**Precipitation Intensity (SDII)**
+
+Mean precipitation on wet days (days with precipitation >= 1 mm). Also known as the Simple Daily Intensity Index.
+
+**Usage**
+
+```r
+ck_precip_intensity(precip, dates, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 12, 0, 15, 2, 0, 11, 4, 0)
+ck_precip_intensity(precip, dates)
+```
+
+---
+
+## `ck_spei()`
+
+**Standardized Precipitation-Evapotranspiration Index (SPEI)**
+
+Compute the SPEI by fitting a log-logistic distribution to the monthly climatic water balance (precipitation minus potential evapotranspiration) accumulated over a rolling window.
+
+**Usage**
+
+```r
+ck_spei(precip, pet, dates, scale = 3)
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `pet` — Numeric vector of daily potential evapotranspiration (mm).
+- `dates` — Date vector of the same length as `precip` and `pet`.
+- `scale` — Integer. Accumulation period in months (default 3).
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+set.seed(42)
+precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
+pet <- rep(3, length(dates))
+ck_spei(precip, pet, dates, scale = 3)
+```
+
+---
+
+## `ck_spi()`
+
+**Standardized Precipitation Index (SPI)**
+
+Compute the SPI by fitting a gamma distribution to monthly precipitation totals accumulated over a rolling window, then transforming to standard normal deviates.
+
+**Usage**
+
+```r
+ck_spi(precip, dates, scale = 3)
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `scale` — Integer. Accumulation period in months (default 3).
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+set.seed(42)
+precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
+ck_spi(precip, dates, scale = 3)
+```
+
+---
+
+## `ck_summer_days()`
+
+**Summer Days**
+
+Count the number of days where maximum temperature exceeds 25 degrees C.
+
+**Usage**
+
+```r
+ck_summer_days(tmax, dates, period = "annual")
+```
+
+**Arguments**
+
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmax`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-07-01") + 0:9
+tmax <- c(22, 26, 28, 24, 30, 25, 27, 23, 31, 29)
+ck_summer_days(tmax, dates)
+```
+
+---
+
+## `ck_total_precip()`
+
+**Total Precipitation**
+
+Total precipitation sum by period.
+
+**Usage**
+
+```r
+ck_total_precip(precip, dates, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 3, 0, 8, 2, 0, 1, 4, 0)
+ck_total_precip(precip, dates)
+```
+
+---
+
+## `ck_tropical_nights()`
+
+**Tropical Nights**
+
+Count the number of days where minimum temperature exceeds 20 degrees C.
+
+**Usage**
+
+```r
+ck_tropical_nights(tmin, dates, period = "annual")
+```
+
+**Arguments**
+
+- `tmin` — Numeric vector of daily minimum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmin`.
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-07-01") + 0:9
+tmin <- c(18, 21, 22, 19, 25, 20, 23, 17, 24, 21)
+ck_tropical_nights(tmin, dates)
+```
+
+---
+
+## `ck_very_heavy_precip()`
+
+**Very Heavy Precipitation Days**
+
+Count of days with precipitation at or above a threshold (default 20 mm).
+
+**Usage**
+
+```r
+ck_very_heavy_precip(precip, dates, threshold = 20, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `threshold` — Numeric. Threshold in mm (default 20).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
+ck_very_heavy_precip(precip, dates)
+```
+
+---
+
+## `ck_warm_spell()`
+
+**Warm Spell Days**
+
+Count the number of days in warm spells, where a warm spell is defined as at least 6 consecutive days with Tmax above the `threshold` quantile of the full series. This computes warm spell days using a quantile threshold from the input series. It does not implement the ETCCDI WSDI, which requires calendar-day percentiles from a 1961-1990 reference period.
+
+**Usage**
+
+```r
+ck_warm_spell(tmax, dates, threshold = 0.9, period = "annual")
+```
+
+**Arguments**
+
+- `tmax` — Numeric vector of daily maximum temperatures (degrees C).
+- `dates` — Date vector of the same length as `tmax`.
+- `threshold` — Numeric. Quantile threshold (default 0.9, i.e. 90th percentile).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:364
+set.seed(42)
+tmax <- rnorm(365, mean = 20, sd = 5)
+ck_warm_spell(tmax, dates)
+```
+
+---
+
+## `ck_wet_days()`
+
+**Maximum Consecutive Wet Days**
+
+Maximum number of consecutive days with precipitation at or above a threshold.
+
+**Usage**
+
+```r
+ck_wet_days(precip, dates, threshold = 1, period = "annual")
+```
+
+**Arguments**
+
+- `precip` — Numeric vector of daily precipitation (mm).
+- `dates` — Date vector of the same length as `precip`.
+- `threshold` — Numeric. Wet day threshold in mm (default 1).
+- `period` — Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- as.Date("2024-01-01") + 0:9
+precip <- c(5, 3, 0, 2, 8, 1, 0, 0, 4, 6)
+ck_wet_days(precip, dates)
+```
+
+---
+
+## `ck_wind_chill()`
+
+**Wind Chill Temperature**
+
+Compute wind chill using the North American Wind Chill Index formula (Environment Canada / US NWS). Valid for temperatures at or below 10 degrees C and wind speeds above 4.8 km/h.
+
+**Usage**
+
+```r
+ck_wind_chill(tavg, wind_speed)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of temperatures (degrees C).
+- `wind_speed` — Numeric vector of wind speeds (km/h).
+
+**Returns**
+
+A data frame with columns `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+ck_wind_chill(tavg = c(-5, -10, 0), wind_speed = c(20, 30, 15))
+```
+
+---
+
+## `ck_winkler()`
+
+**Winkler Index**
+
+The Winkler index (also called growing degree days for viticulture) accumulates daily mean temperature above 10 degrees C during the growing season (April-October in NH, October-April in SH).
+
+**Usage**
+
+```r
+ck_winkler(tavg, dates)
+```
+
+**Arguments**
+
+- `tavg` — Numeric vector of daily average temperatures (degrees C).
+- `dates` — Date vector of the same length as `tavg`.
+
+**Returns**
+
+A data frame with columns `period`, `value`, `index`, and `unit`.
+
+**Example**
+
+```r
+dates <- seq(as.Date("2024-04-01"), as.Date("2024-10-31"), by = "day")
+set.seed(42)
+tavg <- rnorm(length(dates), mean = 18, sd = 4)
+ck_winkler(tavg, dates)
+```
+
+---
+
+## `clear_cache()`
+
+**Clear Cache**
+
+Removes any cached reference data stored by `climatekit`.
+
+**Usage**
+
+```r
+clear_cache()
+```
+
+**Returns**
+
+Invisibly returns `TRUE` if cache was cleared, `FALSE` if no cache existed.
+
+**Example**
+
+```r
+op <- options(climatekit.cache_dir = tempdir())
+clear_cache()
+options(op)
+```
+
+---
+
