@@ -226,7 +226,7 @@ drought is also clearly marked. The upper tail is populated by
 well-known wet years, including 1972, 1983-84, and 2011.
 
 ```{r spi, fig.cap = "Twelve-month Standardised Precipitation Index for New York Central Park, 1950 to 2024. Computed with \\texttt{ck\\_spi(scale = 12)} on the full GHCND USW00094728 daily precipitation record. Dashed horizontal lines at plus and minus one mark the moderate drought and moderate wet thresholds. The 1960s Northeast drought (1962 to 1966) and 2001 to 2002 drought are the two deepest dry episodes; 2011 is the wettest year in the sample.", fig.alt = "A column chart of 12-month SPI values at monthly resolution for New York Central Park, 1950 to 2024. Columns below zero are coloured red and represent dry anomalies; columns above zero are coloured blue and represent wet anomalies. A sustained run of red columns between 1962 and 1966 reaches values around minus 2.3, labelled as the 1960s Northeast drought. Another deep red cluster around 2001 to 2002 is labelled. The deepest blue column, around 2011, reaches about plus 2.9 and is labelled as a wet year."}
-knitr::include_graphics("figures/fig5_heat.pdf")
+knitr::include_graphics("figures/fig3_spi.pdf")
 ```
 
 # Agroclimatic and comfort indices

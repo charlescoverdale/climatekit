@@ -1,0 +1,354 @@
+---
+title: "climatekit"
+subtitle: "Unified climate indices in R"
+author: "Charles Coverdale"
+institute: "London, United Kingdom"
+date: "2026-04-01"
+date-format: "MMMM YYYY"
+format:
+  beamer:
+    aspectratio: 169
+    fontsize: 11pt
+    navigation: empty
+    theme: default
+    colortheme: default
+    fonttheme: default
+    pdf-engine: xelatex
+    include-in-header: header.tex
+    slide-level: 2
+    keep-tex: false
+    fig-align: center
+    classoption:
+      - t
+---
+
+
+## The question
+
+\vspace{1.5em}
+
+\begin{center}
+\Large\bfseries\color{econblue}
+How should we compute the standard suite of climate indices\\[0.1em]
+from daily observations in a single reproducible R interface?
+\end{center}
+
+\vspace{1em}
+
+\begin{center}
+\normalsize\itshape
+Thirty indices, five families, one consistent tidy output schema.
+\end{center}
+
+::: notes
+Open with the question, not the package. The problem: climate-index
+analysis is routine but the R ecosystem delivers it piecemeal. We need
+a single interface that matches the way analysts actually work.
+:::
+
+
+## Why it matters
+
+- **National statistical offices** publish annual climate-index tables
+- **Agricultural research** tracks growing-season and heliothermal indices
+- **Insurance underwriters** price parametric drought and heat products
+- **Public-health authorities** monitor heat-index exceedances in real time
+
+::: notes
+Four distinct stakeholder groups, four live use cases. Point at
+insurance and public health: those are the fastest-growing demand
+segments. 60 seconds.
+:::
+
+
+
+## What is already out there
+
+- **`SPEI`**: drought indices only, narrow scope\footnote{\scriptsize Begueria \& Vicente-Serrano (2017), \textit{SPEI: Calculation of the Standardised Precipitation-Evapotranspiration Index}, R package v1.7.}
+- **`climdex.pcic`**: standard ETCCDI indices, archived on CRAN
+- **`Evapotranspiration`, various agri packages**: fragmented, inconsistent output schemas
+- **Station-level tooling**: bespoke scripts, no reusable public interface
+
+\vspace{0.5em}
+
+The gap: **no single package unifies the standard workflow with a tidy output schema**.
+
+::: notes
+Respect existing packages. climdex.pcic covered the same ground for a
+decade but is now archived. climatekit fills the vacuum. 45 seconds.
+:::
+
+
+
+## What climatekit offers
+
+1. **Coverage**: 30+ indices across 5 families (temperature, precipitation, drought, agroclimatology, thermal comfort)
+2. **Interface**: every function returns the same four-column tidy schema; outputs compose via `rbind()`
+3. **Provenance**: pure computation, no API calls, no network dependency, 133 unit tests
+
+\vspace{0.5em}
+
+On CRAN since March 2026. Definitions follow ETCCDI recommendations\footnote{\scriptsize Zhang et al.\ (2011), \textit{Indices for monitoring changes in extremes based on daily temperature and precipitation data}, WIREs Climate Change 2(6).}.
+
+::: notes
+Three bullets, three selling points. Emphasise the tidy schema: that is
+the usability advantage. CRAN presence signals maturity. 45 seconds.
+:::
+
+
+
+## Temperature: frost days, summer days, GDD
+
+```{=latex}
+\begin{center}
+\includegraphics[height=0.65\textheight]{figures/fig1_temperature.pdf}
+\end{center}
+
+\vspace{-0.3em}
+
+{\footnotesize\itshape Annual temperature indices, Central Park.}
+```
+
+::: notes
+First family. Eight temperature indices, all returning the same tidy
+schema. Point at the declining frost-days trend. 25 seconds.
+:::
+
+
+## Precipitation: totals, intensity, extremes
+
+```{=latex}
+\begin{center}
+\includegraphics[height=0.65\textheight]{figures/fig2_precip.pdf}
+\end{center}
+
+\vspace{-0.3em}
+
+{\footnotesize\itshape Annual totals (blue) and heavy-precip days above 10 mm (orange, scaled 50x), Central Park.}
+```
+
+::: notes
+Second family. Annual totals on one scale, extreme-day counts on another.
+Northeast trend: more annual rainfall, more heavy-precip days. 25 seconds.
+:::
+
+
+## Drought: standardised precipitation indices
+
+```{=latex}
+\begin{center}
+\includegraphics[height=0.65\textheight]{figures/fig3_spi.pdf}
+\end{center}
+
+\vspace{-0.3em}
+
+{\footnotesize\itshape SPI-3 and SPI-12, Central Park. Dashed lines at $\pm 1$ mark moderate drought thresholds.}
+```
+
+::: notes
+Third family. SPI is the WMO-recommended drought index. Two scales on
+the same chart highlights the short-term vs persistent drought
+distinction. 25 seconds.
+:::
+
+
+## Agroclimatology: Huglin heliothermal index
+
+```{=latex}
+\begin{center}
+\includegraphics[height=0.65\textheight]{figures/fig4_huglin.pdf}
+\end{center}
+
+\vspace{-0.3em}
+
+{\footnotesize\itshape Huglin index, synthetic 10-year temperate site at $51.5^{\circ}$N. Shaded bands mark viticultural suitability.}
+```
+
+::: notes
+Fourth family. Huglin is the standard viticulture index. Add Winkler
+and Branas for growing-season heat, plus thermal-comfort (heat index,
+humidex, wind chill, fire danger) to round out the set. 25 seconds.
+:::
+
+
+## Central formulas
+
+\vspace{0.3em}
+
+\textbf{Frost days} (count below $0^{\circ}$C):
+\begin{equation}
+\mathrm{FD} = \sum_t \mathbf{1}\!\left\{T_{\min,t} < 0^\circ\mathrm{C}\right\}
+\end{equation}
+
+\textbf{Growing degree days} (cumulative heat above base $b$):
+\begin{equation}
+\mathrm{GDD}_b = \sum_t \max\!\left(T_{\mathrm{mean},t} - b,\ 0\right)
+\end{equation}
+
+\textbf{Standardised Precipitation Index} (McKee et al. 1993):
+\begin{equation}
+\mathrm{SPI}_s = \Phi^{-1}\!\left[F(P_s;\ \alpha, \beta)\right]
+\end{equation}
+
+::: notes
+Three equations, one family each. Do not read them aloud. Point at the
+indicator function in FD and the gamma CDF in SPI. The pattern across
+indices is: simple rule applied consistently across daily observations.
+60 seconds.
+:::
+
+
+
+## Package at a glance
+
+::: columns
+::: {.column width="58%"}
+
+Function families:
+
+- **Temperature**: 8 functions
+- **Precipitation**: 7 functions
+- **Drought** (SPI, SPEI, PET): 3 functions
+- **Agroclimatology** (Huglin, Winkler, Branas): 5 functions
+- **Thermal comfort**: 4 functions
+- **Dispatchers**: `ck_compute()`, `ck_available()`, `ck_metadata()`
+
+Deps: `cli`, `stats`, `tools`. R $\geq$ 4.1.0.
+
+:::
+::: {.column width="40%"}
+
+\begin{block}{Uniform output}
+Every function returns:
+
+\texttt{period} | \texttt{value} | \texttt{index} | \texttt{unit}
+
+Outputs compose via \texttt{rbind()} into panel data.
+\end{block}
+
+:::
+:::
+
+::: notes
+Two columns. Left lists the families. Right highlights the output
+schema in the blue block. The consistency is the pitch. 45 seconds.
+:::
+
+
+
+## Minimal working example
+
+```r
+library(climatekit)
+
+# Three indices from Central Park daily observations
+fd   <- ck_frost_days(tmin,  dates, period = "annual")
+gdd  <- ck_gdd(tmin, tmax,   dates, base = 10, period = "annual")
+spi3 <- ck_spi(precip,       dates, scale = 3)
+
+# Compose into a panel for plotting or modelling
+panel <- rbind(fd, gdd, spi3)
+```
+
+\footnotesize
+All three calls share the same four-column schema, so `rbind()` works
+without reshaping or renaming.
+
+::: notes
+Live-read the code. Three calls, three data frames, one rbind. That is
+the entire user experience. No data-frame wrangling, no column
+conformance. 60 seconds.
+:::
+
+
+
+## Central Park temperature trends, 1950 to 2024
+
+**Data.** NOAA GHCND station USW00094728. 75 years of daily $T_{\min}$, $T_{\max}$, and precipitation. Complete record through 2024.
+
+**Question.** *How have temperature indices evolved in the US Northeast over seven decades?*
+
+**Why this case.** Flagship US long-record station. Northeast warming debate active in *J. Climate*\footnote{\scriptsize Brown \& DeGaetano (2013), \textit{Trends in U.S. surface humidity}, J. Applied Meteorology 52.}. Three indices with distinct signals (warming, stable, trending). Reproducible with three public function calls.
+
+::: notes
+Setup only. No results on this slide. Point forward: hero figure is
+next. Name the station, the period, the question, and why Central Park
+is the right station. 45 seconds.
+:::
+
+
+
+## Central Park: three temperature indices, 1950 to 2024
+
+```{=latex}
+\begin{center}
+\includegraphics[height=0.68\textheight]{figures/hero_figure.pdf}
+\end{center}
+
+\vspace{-0.2em}
+
+{\footnotesize\itshape Frost days: $-2.6$ per decade. Summer days: $+0.3$ per decade. GDD (base $10^{\circ}\mathrm{C}$, $\div 20$): $+28$ per decade. Source: NOAA GHCND station USW00094728.}
+```
+
+::: notes
+The money slide. Ninety seconds. Walk the audience through each series:
+frost days are declining sharply, summer days are roughly stable, GDD
+is rising strongly. The pattern: night-time warming is driving most of
+the signal, not peak-summer heat. Pause before moving on.
+:::
+
+
+
+## What climatekit does not yet do
+
+- **Daily observations only**: no sub-hourly heat-wave indices
+- **No gridded input helpers**: users reduce rasters to per-cell series first
+- **SPI / SPEI use gamma distribution**: Pearson III not exposed for arid regions
+- **No station homogenisation**: quality control is upstream user responsibility
+
+\vspace{0.5em}
+
+**v0.2.0 roadmap**: hourly heat-wave indices, gridded input wrappers, additional fire-weather variants (Canadian FFMC, DC, ISI).
+
+::: notes
+Honest limitations. Name each one. Frame v0.2.0 as a commitment, not a
+vague plan. The hourly heat-wave extension matters most to public
+health users. 45 seconds.
+:::
+
+
+
+## Contact, code, paper
+
+::: columns
+::: {.column width="62%"}
+
+```{=latex}
+{\large\bfseries Charles Coverdale\par}
+\vspace{0.5em}
+\texttt{charles.f.coverdale@gmail.com}\\
+\texttt{github.com/charlescoverdale/climatekit}\\
+\texttt{charlescoverdale.github.io/publications}
+\vspace{0.9em}
+
+\textbf{Acknowledgements.} Data: NOAA National Centers for Environmental Information (public domain). Thanks to the ETCCDI community, CRAN maintainers, and reviewers of \emph{climatekit} v0.1.0.
+```
+
+:::
+::: {.column width="35%"}
+
+\begin{center}
+\includegraphics[width=0.85\linewidth]{figures/qrcode_paper.png}
+
+\vspace{0.3em}
+
+{\footnotesize\itshape Scan for paper PDF}
+\end{center}
+
+:::
+:::
+
+::: notes
+Close cleanly. Name, email, GitHub, publications. Point at the QR
+code. Acknowledge NOAA and ETCCDI. Open for questions.
+:::
