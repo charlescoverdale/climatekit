@@ -366,9 +366,12 @@ All outputs join cleanly on `period` or `date` columns, so you can compute multi
 
 ## Related packages
 
-| Package | What it covers |
+| Package | Description |
 |---|---|
 | [`readnoaa`](https://github.com/charlescoverdale/readnoaa) | NOAA weather and climate data (pairs with climatekit for data acquisition) |
+| [`carbondata`](https://github.com/charlescoverdale/carbondata) | Carbon market data (EU/UK ETS, voluntary registries) |
+| [`cer`](https://github.com/charlescoverdale/cer) | Clean Energy Regulator data (Australia) |
+| [`aemo`](https://github.com/charlescoverdale/aemo) | Australian Energy Market Operator data |
 
 ---
 
