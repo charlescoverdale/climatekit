@@ -50,6 +50,7 @@ doesn’t download anything itself: you bring the data, it does the maths.
 all you need is a numeric vector of observations and a date vector:
 
 ``` r
+
 library(climatekit)
 
 # Read your own data
@@ -65,6 +66,7 @@ downloads free daily weather observations from NOAA’s global archive of
 100,000+ stations. No API key needed:
 
 ``` r
+
 install.packages("readnoaa")  # or devtools::install_github("charlescoverdale/readnoaa")
 library(readnoaa)
 library(climatekit)
@@ -89,14 +91,14 @@ will work with it.
 
 ### Common data sources
 
-| Region    | Source                                                                                                          | Coverage                                | Access                                                                       |
-|-----------|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------|------------------------------------------------------------------------------|
-| Global    | [NOAA GHCNd](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | 100,000+ stations worldwide             | Free, no key. Use [`readnoaa`](https://github.com/charlescoverdale/readnoaa) |
-| Global    | [ERA5 reanalysis](https://cds.climate.copernicus.eu/)                                                           | Gridded, 0.25° resolution, 1940–present | Free, requires CDS account                                                   |
-| UK        | [Met Office MIDAS](https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1)                          | ~1,000 UK stations, daily               | Free via CEDA, requires registration                                         |
-| Europe    | [ECA&D](https://www.ecad.eu/)                                                                                   | 20,000+ stations across Europe          | Free download                                                                |
-| US        | [ACIS (RCC)](https://www.rcc-acis.org/)                                                                         | All US cooperative & ASOS stations      | Free, no key                                                                 |
-| Australia | [Bureau of Meteorology](http://www.bom.gov.au/climate/data/)                                                    | All BoM stations, daily                 | Free download                                                                |
+| Region | Source | Coverage | Access |
+|----|----|----|----|
+| Global | [NOAA GHCNd](https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily) | 100,000+ stations worldwide | Free, no key. Use [`readnoaa`](https://github.com/charlescoverdale/readnoaa) |
+| Global | [ERA5 reanalysis](https://cds.climate.copernicus.eu/) | Gridded, 0.25° resolution, 1940–present | Free, requires CDS account |
+| UK | [Met Office MIDAS](https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1) | ~1,000 UK stations, daily | Free via CEDA, requires registration |
+| Europe | [ECA&D](https://www.ecad.eu/) | 20,000+ stations across Europe | Free download |
+| US | [ACIS (RCC)](https://www.rcc-acis.org/) | All US cooperative & ASOS stations | Free, no key |
+| Australia | [Bureau of Meteorology](http://www.bom.gov.au/climate/data/) | All BoM stations, daily | Free download |
 
 ------------------------------------------------------------------------
 
@@ -105,13 +107,13 @@ will work with it.
 R has the methods, but they are scattered across half a dozen packages
 with incompatible interfaces:
 
-| Package          | Coverage                                 | Limitation                                                            |
-|------------------|------------------------------------------|-----------------------------------------------------------------------|
-| `ClimInd`        | 138 indices (SPI, SPEI, heat/cold waves) | Returns raw vectors with no metadata, no dates, no units              |
-| `climdex.pcic`   | 27 ETCCDI core indices                   | Requires a custom `climdexInput` S4 object; locked to ETCCDI standard |
-| `SPEI`           | SPI + SPEI drought indices               | Single-purpose; only does drought                                     |
-| `heatwaveR`      | Marine + atmospheric heatwaves           | Single-purpose; only does heatwaves                                   |
-| `weathermetrics` | Unit conversions + heat index            | No climate indices                                                    |
+| Package | Coverage | Limitation |
+|----|----|----|
+| `ClimInd` | 138 indices (SPI, SPEI, heat/cold waves) | Returns raw vectors with no metadata, no dates, no units |
+| `climdex.pcic` | 27 ETCCDI core indices | Requires a custom `climdexInput` S4 object; locked to ETCCDI standard |
+| `SPEI` | SPI + SPEI drought indices | Single-purpose; only does drought |
+| `heatwaveR` | Marine + atmospheric heatwaves | Single-purpose; only does heatwaves |
+| `weathermetrics` | Unit conversions + heat index | No climate indices |
 
 If you want frost days, degree days, SPI, and the Huglin index in the
 same analysis, you currently need four packages with four different
@@ -127,6 +129,7 @@ data frame with `period`, `value`, `index`, and `unit` columns), and the
 comfort categories.
 
 ``` r
+
 # Without climatekit: four packages, four input formats, four output structures
 library(climdex.pcic)
 ci <- climdexInput.raw(tmax = ..., tmin = ..., prec = ..., ...)  # S4 object
@@ -151,6 +154,7 @@ ck_huglin(tmin, tmax, dates, lat = 45)          # → data.frame
 ## Installation
 
 ``` r
+
 install.packages("climatekit")
 
 # Or install the development version from GitHub
@@ -162,43 +166,43 @@ devtools::install_github("charlescoverdale/climatekit")
 
 ## Functions
 
-| Category       | Function                                                                                                        | Description                                                      |
-|----------------|-----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| Temperature    | [`ck_frost_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_frost_days.md)                   | Days where Tmin \< 0 degrees C                                   |
-| Temperature    | [`ck_ice_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_ice_days.md)                       | Days where Tmax \< 0 degrees C                                   |
-| Temperature    | [`ck_summer_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_summer_days.md)                 | Days where Tmax \> 25 degrees C                                  |
-| Temperature    | [`ck_tropical_nights()`](https://charlescoverdale.github.io/climatekit/reference/ck_tropical_nights.md)         | Days where Tmin \> 20 degrees C                                  |
-| Temperature    | [`ck_growing_season()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_season.md)           | Growing season length (first to last 6-day spell \> 5 degrees C) |
-| Temperature    | [`ck_heating_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_heating_degree_days.md) | Sum of (base - Tavg) for days below base temperature             |
-| Temperature    | [`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.md) | Sum of (Tavg - base) for days above base temperature             |
-| Temperature    | [`ck_growing_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_degree_days.md) | Accumulated growing degree days above base                       |
-| Temperature    | [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md)             | Mean daily temperature range (Tmax - Tmin)                       |
-| Temperature    | [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.md)                   | Warm spell days (spells \>= 6 days above 90th percentile)        |
-| Precipitation  | [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md)                       | Maximum consecutive dry days                                     |
-| Precipitation  | [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md)                       | Maximum consecutive wet days                                     |
-| Precipitation  | [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md)               | Total precipitation by period                                    |
-| Precipitation  | [`ck_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_heavy_precip.md)               | Days with precipitation \>= 10 mm                                |
-| Precipitation  | [`ck_very_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_very_heavy_precip.md)     | Days with precipitation \>= 20 mm                                |
-| Precipitation  | [`ck_max_1day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_1day_precip.md)         | Maximum 1-day precipitation                                      |
-| Precipitation  | [`ck_max_5day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_5day_precip.md)         | Maximum 5-day precipitation total                                |
-| Precipitation  | [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.md)       | Mean precipitation on wet days (SDII)                            |
-| Drought        | [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.md)                                 | Standardized Precipitation Index                                 |
-| Drought        | [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md)                               | Standardized Precipitation-Evapotranspiration Index              |
-| Drought        | [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md)                                 | Potential evapotranspiration (Hargreaves method)                 |
-| Agroclimatic   | [`ck_huglin()`](https://charlescoverdale.github.io/climatekit/reference/ck_huglin.md)                           | Huglin heliothermal index (viticulture)                          |
-| Agroclimatic   | [`ck_winkler()`](https://charlescoverdale.github.io/climatekit/reference/ck_winkler.md)                         | Winkler index (wine region classification)                       |
-| Agroclimatic   | [`ck_branas()`](https://charlescoverdale.github.io/climatekit/reference/ck_branas.md)                           | Branas hydrothermal index (disease pressure)                     |
-| Agroclimatic   | [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md)                 | Date of first autumn frost                                       |
-| Agroclimatic   | [`ck_last_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_last_frost.md)                   | Date of last spring frost                                        |
-| Comfort        | [`ck_wind_chill()`](https://charlescoverdale.github.io/climatekit/reference/ck_wind_chill.md)                   | Wind chill temperature (Environment Canada / NWS)                |
-| Comfort        | [`ck_heat_index()`](https://charlescoverdale.github.io/climatekit/reference/ck_heat_index.md)                   | Heat index (Rothfusz / NWS)                                      |
-| Comfort        | [`ck_humidex()`](https://charlescoverdale.github.io/climatekit/reference/ck_humidex.md)                         | Canadian humidex                                                 |
-| Comfort        | [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.md)                 | Simplified fire danger index                                     |
-| Infrastructure | [`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.md)                         | Generic dispatcher - pass index name as string                   |
-| Infrastructure | [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md)                     | List all available indices with descriptions                     |
-| Infrastructure | [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md)                       | Get metadata (units, reference, description) for an index        |
-| Infrastructure | [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.md)               | Convert between Celsius, Fahrenheit, and Kelvin                  |
-| Infrastructure | [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md)                       | Clear cached reference data                                      |
+| Category | Function | Description |
+|----|----|----|
+| Temperature | [`ck_frost_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_frost_days.md) | Days where Tmin \< 0 degrees C |
+| Temperature | [`ck_ice_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_ice_days.md) | Days where Tmax \< 0 degrees C |
+| Temperature | [`ck_summer_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_summer_days.md) | Days where Tmax \> 25 degrees C |
+| Temperature | [`ck_tropical_nights()`](https://charlescoverdale.github.io/climatekit/reference/ck_tropical_nights.md) | Days where Tmin \> 20 degrees C |
+| Temperature | [`ck_growing_season()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_season.md) | Growing season length (first to last 6-day spell \> 5 degrees C) |
+| Temperature | [`ck_heating_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_heating_degree_days.md) | Sum of (base - Tavg) for days below base temperature |
+| Temperature | [`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.md) | Sum of (Tavg - base) for days above base temperature |
+| Temperature | [`ck_growing_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_degree_days.md) | Accumulated growing degree days above base |
+| Temperature | [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md) | Mean daily temperature range (Tmax - Tmin) |
+| Temperature | [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.md) | Warm spell days (spells \>= 6 days above 90th percentile) |
+| Precipitation | [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md) | Maximum consecutive dry days |
+| Precipitation | [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md) | Maximum consecutive wet days |
+| Precipitation | [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md) | Total precipitation by period |
+| Precipitation | [`ck_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_heavy_precip.md) | Days with precipitation \>= 10 mm |
+| Precipitation | [`ck_very_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_very_heavy_precip.md) | Days with precipitation \>= 20 mm |
+| Precipitation | [`ck_max_1day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_1day_precip.md) | Maximum 1-day precipitation |
+| Precipitation | [`ck_max_5day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_5day_precip.md) | Maximum 5-day precipitation total |
+| Precipitation | [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.md) | Mean precipitation on wet days (SDII) |
+| Drought | [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.md) | Standardized Precipitation Index |
+| Drought | [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md) | Standardized Precipitation-Evapotranspiration Index |
+| Drought | [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md) | Potential evapotranspiration (Hargreaves method) |
+| Agroclimatic | [`ck_huglin()`](https://charlescoverdale.github.io/climatekit/reference/ck_huglin.md) | Huglin heliothermal index (viticulture) |
+| Agroclimatic | [`ck_winkler()`](https://charlescoverdale.github.io/climatekit/reference/ck_winkler.md) | Winkler index (wine region classification) |
+| Agroclimatic | [`ck_branas()`](https://charlescoverdale.github.io/climatekit/reference/ck_branas.md) | Branas hydrothermal index (disease pressure) |
+| Agroclimatic | [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md) | Date of first autumn frost |
+| Agroclimatic | [`ck_last_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_last_frost.md) | Date of last spring frost |
+| Comfort | [`ck_wind_chill()`](https://charlescoverdale.github.io/climatekit/reference/ck_wind_chill.md) | Wind chill temperature (Environment Canada / NWS) |
+| Comfort | [`ck_heat_index()`](https://charlescoverdale.github.io/climatekit/reference/ck_heat_index.md) | Heat index (Rothfusz / NWS) |
+| Comfort | [`ck_humidex()`](https://charlescoverdale.github.io/climatekit/reference/ck_humidex.md) | Canadian humidex |
+| Comfort | [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.md) | Simplified fire danger index |
+| Infrastructure | [`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.md) | Generic dispatcher - pass index name as string |
+| Infrastructure | [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md) | List all available indices with descriptions |
+| Infrastructure | [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md) | Get metadata (units, reference, description) for an index |
+| Infrastructure | [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.md) | Convert between Celsius, Fahrenheit, and Kelvin |
+| Infrastructure | [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md) | Clear cached reference data |
 
 ------------------------------------------------------------------------
 
@@ -207,6 +211,7 @@ devtools::install_github("charlescoverdale/climatekit")
 ### How many frost days does a location get?
 
 ``` r
+
 library(climatekit)
 
 # Daily minimum temperatures for a year
@@ -233,6 +238,7 @@ ck_frost_days(tmin, dates, period = "monthly")
 ### How much heating energy does a building need?
 
 ``` r
+
 # Heating degree days tell energy companies how much heating demand to expect.
 # Each degree below the base temperature (default 18C) for each day adds to the total.
 
@@ -253,6 +259,7 @@ ck_cooling_degree_days(tavg, dates, base = 22)
 ### Is a region in drought?
 
 ``` r
+
 # The Standardized Precipitation Index (SPI) fits a gamma distribution to
 # monthly precipitation totals over a rolling window, then transforms to
 # standard normal deviates. Values below -1 indicate moderate drought,
@@ -278,6 +285,7 @@ pet <- ck_pet(tmin, tmax, lat = 51.5, dates = dates)
 ### What wine regions does a climate support?
 
 ``` r
+
 # The Huglin heliothermal index classifies grape-growing potential:
 # < 1500: too cool for viticulture
 # 1500-1800: cool climate (Champagne, Mosel)
@@ -304,6 +312,7 @@ ck_winkler(tavg_gs, dates_gs)
 ### When did frost season start and end?
 
 ``` r
+
 # First and last frost dates matter for agriculture, construction, and transport.
 
 dates_year <- as.Date("2024-01-01") + 0:364
@@ -322,6 +331,7 @@ ck_first_frost(tmin_year, dates_year)
 ### How dangerous is a heatwave?
 
 ``` r
+
 # The heat index combines temperature and humidity to estimate
 # how hot it actually feels. Values above 40C are dangerous.
 
@@ -344,6 +354,7 @@ ck_fire_danger(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
 ### Computing indices programmatically
 
 ``` r
+
 # If you are computing many indices over the same dataset, use ck_compute()
 # with the index name as a string. This is useful in loops, Shiny apps,
 # or any workflow where the index is selected at runtime.
@@ -379,6 +390,7 @@ Every function follows the same pattern:
 classes, no preprocessing required.
 
 ``` r
+
 ck_frost_days(
   tmin = c(-2, 3, -1, 5, -3),
   dates = as.Date("2024-01-01") + 0:4
@@ -388,6 +400,7 @@ ck_frost_days(
 **Output:** A tidy data frame with consistent columns.
 
 ``` r
+
 # Period-aggregated indices return:
 #>   period (Date) | value (numeric) | index (character) | unit (character)
 
@@ -428,9 +441,12 @@ frame.
 
 ## Related packages
 
-| Package                                                    | What it covers                                                             |
-|------------------------------------------------------------|----------------------------------------------------------------------------|
+| Package | Description |
+|----|----|
 | [`readnoaa`](https://github.com/charlescoverdale/readnoaa) | NOAA weather and climate data (pairs with climatekit for data acquisition) |
+| [`carbondata`](https://github.com/charlescoverdale/carbondata) | Carbon market data (EU/UK ETS, voluntary registries) |
+| [`cer`](https://github.com/charlescoverdale/cer) | Clean Energy Regulator data (Australia) |
+| [`aemo`](https://github.com/charlescoverdale/aemo) | Australian Energy Market Operator data |
 
 ------------------------------------------------------------------------
 

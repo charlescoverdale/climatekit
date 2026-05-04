@@ -101,45 +101,45 @@
 <col width="25%">
 <col width="25%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Region</th>
 <th>Source</th>
 <th>Coverage</th>
 <th>Access</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Global</td>
 <td><a href="https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily" class="external-link">NOAA GHCNd</a></td>
 <td>100,000+ stations worldwide</td>
 <td>Free, no key. Use <a href="https://github.com/charlescoverdale/readnoaa" class="external-link"><code>readnoaa</code></a>
 </td>
 </tr>
-<tr class="even">
+<tr>
 <td>Global</td>
 <td><a href="https://cds.climate.copernicus.eu/" class="external-link">ERA5 reanalysis</a></td>
 <td>Gridded, 0.25° resolution, 1940–present</td>
 <td>Free, requires CDS account</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>UK</td>
 <td><a href="https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1" class="external-link">Met Office MIDAS</a></td>
 <td>~1,000 UK stations, daily</td>
 <td>Free via CEDA, requires registration</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Europe</td>
 <td><a href="https://www.ecad.eu/" class="external-link">ECA&amp;D</a></td>
 <td>20,000+ stations across Europe</td>
 <td>Free download</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>US</td>
 <td><a href="https://www.rcc-acis.org/" class="external-link">ACIS (RCC)</a></td>
 <td>All US cooperative &amp; ASOS stations</td>
 <td>Free, no key</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Australia</td>
 <td><a href="http://www.bom.gov.au/climate/data/" class="external-link">Bureau of Meteorology</a></td>
 <td>All BoM stations, daily</td>
@@ -160,33 +160,33 @@
 <col width="33%">
 <col width="33%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Package</th>
 <th>Coverage</th>
 <th>Limitation</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>ClimInd</code></td>
 <td>138 indices (SPI, SPEI, heat/cold waves)</td>
 <td>Returns raw vectors with no metadata, no dates, no units</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>climdex.pcic</code></td>
 <td>27 ETCCDI core indices</td>
 <td>Requires a custom <code>climdexInput</code> S4 object; locked to ETCCDI standard</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>SPEI</code></td>
 <td>SPI + SPEI drought indices</td>
 <td>Single-purpose; only does drought</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>heatwaveR</code></td>
 <td>Marine + atmospheric heatwaves</td>
 <td>Single-purpose; only does heatwaves</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>weathermetrics</code></td>
 <td>Unit conversions + heat index</td>
 <td>No climate indices</td>
@@ -235,183 +235,183 @@
 <col width="33%">
 <col width="33%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Category</th>
 <th>Function</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_frost_days.html">ck_frost_days()</a></code></td>
 <td>Days where Tmin &lt; 0 degrees C</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_ice_days.html">ck_ice_days()</a></code></td>
 <td>Days where Tmax &lt; 0 degrees C</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_summer_days.html">ck_summer_days()</a></code></td>
 <td>Days where Tmax &gt; 25 degrees C</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_tropical_nights.html">ck_tropical_nights()</a></code></td>
 <td>Days where Tmin &gt; 20 degrees C</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_growing_season.html">ck_growing_season()</a></code></td>
 <td>Growing season length (first to last 6-day spell &gt; 5 degrees C)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_heating_degree_days.html">ck_heating_degree_days()</a></code></td>
 <td>Sum of (base - Tavg) for days below base temperature</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_cooling_degree_days.html">ck_cooling_degree_days()</a></code></td>
 <td>Sum of (Tavg - base) for days above base temperature</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_growing_degree_days.html">ck_growing_degree_days()</a></code></td>
 <td>Accumulated growing degree days above base</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_diurnal_range.html">ck_diurnal_range()</a></code></td>
 <td>Mean daily temperature range (Tmax - Tmin)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Temperature</td>
 <td><code><a href="reference/ck_warm_spell.html">ck_warm_spell()</a></code></td>
 <td>Warm spell days (spells &gt;= 6 days above 90th percentile)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_dry_days.html">ck_dry_days()</a></code></td>
 <td>Maximum consecutive dry days</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_wet_days.html">ck_wet_days()</a></code></td>
 <td>Maximum consecutive wet days</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_total_precip.html">ck_total_precip()</a></code></td>
 <td>Total precipitation by period</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_heavy_precip.html">ck_heavy_precip()</a></code></td>
 <td>Days with precipitation &gt;= 10 mm</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_very_heavy_precip.html">ck_very_heavy_precip()</a></code></td>
 <td>Days with precipitation &gt;= 20 mm</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_max_1day_precip.html">ck_max_1day_precip()</a></code></td>
 <td>Maximum 1-day precipitation</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_max_5day_precip.html">ck_max_5day_precip()</a></code></td>
 <td>Maximum 5-day precipitation total</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Precipitation</td>
 <td><code><a href="reference/ck_precip_intensity.html">ck_precip_intensity()</a></code></td>
 <td>Mean precipitation on wet days (SDII)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Drought</td>
 <td><code><a href="reference/ck_spi.html">ck_spi()</a></code></td>
 <td>Standardized Precipitation Index</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Drought</td>
 <td><code><a href="reference/ck_spei.html">ck_spei()</a></code></td>
 <td>Standardized Precipitation-Evapotranspiration Index</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Drought</td>
 <td><code><a href="reference/ck_pet.html">ck_pet()</a></code></td>
 <td>Potential evapotranspiration (Hargreaves method)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Agroclimatic</td>
 <td><code><a href="reference/ck_huglin.html">ck_huglin()</a></code></td>
 <td>Huglin heliothermal index (viticulture)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Agroclimatic</td>
 <td><code><a href="reference/ck_winkler.html">ck_winkler()</a></code></td>
 <td>Winkler index (wine region classification)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Agroclimatic</td>
 <td><code><a href="reference/ck_branas.html">ck_branas()</a></code></td>
 <td>Branas hydrothermal index (disease pressure)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Agroclimatic</td>
 <td><code><a href="reference/ck_first_frost.html">ck_first_frost()</a></code></td>
 <td>Date of first autumn frost</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Agroclimatic</td>
 <td><code><a href="reference/ck_last_frost.html">ck_last_frost()</a></code></td>
 <td>Date of last spring frost</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Comfort</td>
 <td><code><a href="reference/ck_wind_chill.html">ck_wind_chill()</a></code></td>
 <td>Wind chill temperature (Environment Canada / NWS)</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Comfort</td>
 <td><code><a href="reference/ck_heat_index.html">ck_heat_index()</a></code></td>
 <td>Heat index (Rothfusz / NWS)</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Comfort</td>
 <td><code><a href="reference/ck_humidex.html">ck_humidex()</a></code></td>
 <td>Canadian humidex</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Comfort</td>
 <td><code><a href="reference/ck_fire_danger.html">ck_fire_danger()</a></code></td>
 <td>Simplified fire danger index</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Infrastructure</td>
 <td><code><a href="reference/ck_compute.html">ck_compute()</a></code></td>
 <td>Generic dispatcher - pass index name as string</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Infrastructure</td>
 <td><code><a href="reference/ck_available.html">ck_available()</a></code></td>
 <td>List all available indices with descriptions</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Infrastructure</td>
 <td><code><a href="reference/ck_metadata.html">ck_metadata()</a></code></td>
 <td>Get metadata (units, reference, description) for an index</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Infrastructure</td>
 <td><code><a href="reference/ck_convert_temp.html">ck_convert_temp()</a></code></td>
 <td>Convert between Celsius, Fahrenheit, and Kelvin</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Infrastructure</td>
 <td><code><a href="reference/clear_cache.html">clear_cache()</a></code></td>
 <td>Clear cached reference data</td>
@@ -631,14 +631,28 @@
 <col width="50%">
 <col width="50%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Package</th>
-<th>What it covers</th>
+<th>Description</th>
 </tr></thead>
-<tbody><tr class="odd">
+<tbody>
+<tr>
 <td><a href="https://github.com/charlescoverdale/readnoaa" class="external-link"><code>readnoaa</code></a></td>
 <td>NOAA weather and climate data (pairs with climatekit for data acquisition)</td>
-</tr></tbody>
+</tr>
+<tr>
+<td><a href="https://github.com/charlescoverdale/carbondata" class="external-link"><code>carbondata</code></a></td>
+<td>Carbon market data (EU/UK ETS, voluntary registries)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/charlescoverdale/cer" class="external-link"><code>cer</code></a></td>
+<td>Clean Energy Regulator data (Australia)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/charlescoverdale/aemo" class="external-link"><code>aemo</code></a></td>
+<td>Australian Energy Market Operator data</td>
+</tr>
+</tbody>
 </table>
 <hr>
 </div>
