@@ -11,3 +11,4 @@
 ^docs$
 ^llms\.txt$
 ^llms-full\.txt$
+^CITATION\.cff$

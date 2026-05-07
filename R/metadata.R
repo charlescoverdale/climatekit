@@ -201,6 +201,159 @@ ck_etccdi_27 <- function() {
   )
 }
 
+#' Browse the climatekit Index Catalogue
+#'
+#' Filter the comprehensive climatekit index catalogue (see
+#' [ck_catalogue()]) by sector, applicable standard (ETCCDI / ET-SCI /
+#' agroclimatic / comfort / drought / energy), or a free-text search
+#' across the function name, full name, and ETCCDI code.
+#'
+#' @param sector Character (length 1) or `NULL`. Filter to indices tagged
+#'   with this sector. Common values: `"agriculture"`, `"health"`,
+#'   `"water"`, `"energy"`. `NULL` (default) returns all rows.
+#' @param standard Character (length 1) or `NULL`. Filter to indices
+#'   under this standard. Common values: `"ETCCDI"`, `"ET-SCI"`,
+#'   `"ETCCDI-approx"`, `"agroclimatic"`, `"comfort"`, `"drought"`,
+#'   `"energy"`. `NULL` (default) returns all rows.
+#' @param search Character (length 1) or `NULL`. Free-text search; rows
+#'   are kept where the term appears (case-insensitive) in the function
+#'   name, the full name, or the ETCCDI code.
+#'
+#' @return The catalogue, filtered to matching rows. Same column structure
+#'   as [ck_catalogue()].
+#'
+#' @export
+#' @examples
+#' ck_browse(standard = "ETCCDI")
+#' ck_browse(sector = "agriculture")
+#' ck_browse(search = "heat")
+ck_browse <- function(sector = NULL, standard = NULL, search = NULL) {
+  cat <- ck_catalogue()
+
+  if (!is.null(sector)) {
+    if (!is.character(sector) || length(sector) != 1L) {
+      cli::cli_abort("{.arg sector} must be a single character string or NULL.")
+    }
+    keep <- !is.na(cat$sector) & cat$sector == sector
+    cat <- cat[keep, , drop = FALSE]
+  }
+
+  if (!is.null(standard)) {
+    if (!is.character(standard) || length(standard) != 1L) {
+      cli::cli_abort("{.arg standard} must be a single character string or NULL.")
+    }
+    cat <- cat[cat$standard == standard, , drop = FALSE]
+  }
+
+  if (!is.null(search)) {
+    if (!is.character(search) || length(search) != 1L) {
+      cli::cli_abort("{.arg search} must be a single character string or NULL.")
+    }
+    pat <- tolower(search)
+    in_fn   <- grepl(pat, tolower(cat$ck_function), fixed = TRUE)
+    in_name <- grepl(pat, tolower(cat$name),        fixed = TRUE)
+    in_code <- grepl(pat, tolower(cat$code),        fixed = TRUE)
+    in_code[is.na(in_code)] <- FALSE
+    cat <- cat[in_fn | in_name | in_code, , drop = FALSE]
+  }
+
+  rownames(cat) <- NULL
+  cat
+}
+
+#' climatekit Index Catalogue
+#'
+#' Returns the complete catalogue of climate indices implemented by
+#' `climatekit`, with one row per `ck_*` function and columns covering
+#' the canonical short code (where applicable), the full name, the
+#' index family, the relevant sector, the unit, the source standard,
+#' and the principal citation key.
+#'
+#' Use [ck_browse()] to filter by sector or standard.
+#'
+#' @return A data frame with columns `ck_function`, `code`, `name`,
+#'   `category`, `sector`, `unit`, `standard`, and `citation_key`.
+#'
+#' @export
+#' @examples
+#' tab <- ck_catalogue()
+#' head(tab)
+#' # Tally indices by standard:
+#' table(tab$standard)
+ck_catalogue <- function() {
+  rows <- list(
+    # Temperature: ETCCDI canonical
+    c("ck_frost_days",     "FD",     "Frost days",                              "temperature",   "agriculture", "days",       "ETCCDI",        "alexander2006global"),
+    c("ck_ice_days",       "ID",     "Ice days",                                "temperature",   NA_character_, "days",       "ETCCDI",        "alexander2006global"),
+    c("ck_summer_days",    "SU",     "Summer days",                             "temperature",   "health",      "days",       "ETCCDI",        "alexander2006global"),
+    c("ck_tropical_nights","TR",     "Tropical nights",                         "temperature",   "health",      "days",       "ETCCDI",        "alexander2006global"),
+    c("ck_txx",            "TXx",    "Max Tmax (warmest day)",                  "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
+    c("ck_tnx",            "TNx",    "Max Tmin (warmest night)",                "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
+    c("ck_txn",            "TXn",    "Min Tmax (coldest day)",                  "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
+    c("ck_tnn",            "TNn",    "Min Tmin (coldest night)",                "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
+    c("ck_tx10p",          "TX10p",  "Cool days",                               "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
+    c("ck_tn10p",          "TN10p",  "Cool nights",                             "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
+    c("ck_tx90p",          "TX90p",  "Warm days",                               "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
+    c("ck_tn90p",          "TN90p",  "Warm nights",                             "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
+    c("ck_wsdi",           "WSDI",   "Warm spell duration index",               "temperature",   "health",      "days",       "ETCCDI",        "zhang2011indices"),
+    c("ck_csdi",           "CSDI",   "Cold spell duration index",               "temperature",   "health",      "days",       "ETCCDI",        "zhang2011indices"),
+    c("ck_diurnal_range",  "DTR",    "Diurnal temperature range",               "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
+    c("ck_growing_season", "GSL",    "Growing season length",                   "temperature",   "agriculture", "days",       "ETCCDI",        "alexander2006global"),
+
+    # Temperature: ETCCDI approximation
+    c("ck_warm_spell",     "WSDI*",  "Warm spell days (series-quantile approx.)","temperature",  NA_character_, "days",       "ETCCDI-approx", "zhang2011indices"),
+
+    # Temperature: energy and agriculture
+    c("ck_heating_degree_days", NA_character_, "Heating degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
+    c("ck_cooling_degree_days", NA_character_, "Cooling degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
+    c("ck_growing_degree_days", NA_character_, "Growing degree days", "temperature", "agriculture", "degree-days", "agroclimatic", NA_character_),
+
+    # Precipitation: ETCCDI canonical
+    c("ck_total_precip",      "PRCPTOT",     "Total wet-day precipitation",        "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
+    c("ck_dry_days",          "CDD",         "Consecutive dry days",               "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
+    c("ck_wet_days",          "CWD",         "Consecutive wet days",               "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
+    c("ck_heavy_precip",      "R10mm/Rnnmm", "Heavy-precipitation days",           "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
+    c("ck_very_heavy_precip", "R20mm",       "Very heavy precipitation days",      "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
+    c("ck_max_1day_precip",   "RX1day",      "Max 1-day precipitation",            "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
+    c("ck_max_5day_precip",   "RX5day",      "Max 5-day precipitation",            "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
+    c("ck_precip_intensity",  "SDII",        "Simple daily intensity",             "precipitation", "water", "mm/day", "ETCCDI", "alexander2006global"),
+    c("ck_r95p",              "R95p",        "Very wet days total",                "precipitation", "water", "mm",     "ETCCDI", "zhang2011indices"),
+    c("ck_r99p",              "R99p",        "Extremely wet days total",           "precipitation", "water", "mm",     "ETCCDI", "zhang2011indices"),
+
+    # Drought
+    c("ck_spi",  NA_character_, "Standardised Precipitation Index",                 "drought", "water", "dimensionless", "drought", "mckee1993relationship"),
+    c("ck_spei", NA_character_, "Standardised Precipitation-Evapotranspiration Index","drought","water","dimensionless", "drought", "vicente2010multiscalar"),
+    c("ck_pet",  NA_character_, "Potential evapotranspiration (Hargreaves method)", "drought", "water", "mm",            "drought", "hargreaves1985reference"),
+
+    # Agroclimatic
+    c("ck_huglin",      NA_character_, "Huglin heliothermal index",    "agroclimatic", "agriculture", "degree-days",      "agroclimatic", "huglin1978nouveau"),
+    c("ck_winkler",     NA_character_, "Winkler index",                "agroclimatic", "agriculture", "degree-days",      "agroclimatic", "winkler1974general"),
+    c("ck_branas",      NA_character_, "Branas hydrothermal index",    "agroclimatic", "agriculture", "mm\u00b7\u00b0C",  "agroclimatic", NA_character_),
+    c("ck_first_frost", NA_character_, "First autumn frost date",      "agroclimatic", "agriculture", "day of year",      "agroclimatic", NA_character_),
+    c("ck_last_frost",  NA_character_, "Last spring frost date",       "agroclimatic", "agriculture", "day of year",      "agroclimatic", NA_character_),
+
+    # Comfort
+    c("ck_heat_index",  NA_character_, "Heat index (NWS apparent temperature)", "comfort", "health", "\u00b0C",   "comfort", "rothfusz1990heat"),
+    c("ck_humidex",     NA_character_, "Canadian humidex",                      "comfort", "health", "unitless",  "comfort", "masterton1979humidex"),
+    c("ck_wind_chill",  NA_character_, "Wind chill",                            "comfort", "health", "\u00b0C",   "comfort", "osczevski2005new"),
+    c("ck_fire_danger", NA_character_, "Fire danger proxy",                     "comfort", NA_character_, "unitless", "comfort", NA_character_)
+  )
+
+  m <- do.call(rbind, rows)
+  data.frame(
+    ck_function  = m[, 1],
+    code         = m[, 2],
+    name         = m[, 3],
+    category     = m[, 4],
+    sector       = m[, 5],
+    unit         = m[, 6],
+    standard     = m[, 7],
+    citation_key = m[, 8],
+    stringsAsFactors = FALSE,
+    row.names = NULL
+  )
+}
+
 #' Index registry (internal)
 #' @noRd
 .index_registry <- function() {

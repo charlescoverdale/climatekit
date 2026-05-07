@@ -182,3 +182,58 @@ test_that("ck_etccdi_27 reports 27/27 implemented after Phase 2C", {
   expect_equal(sum(tab$status == "implemented"), 27L)
   expect_equal(sum(tab$status == "missing"), 0L)
 })
+
+# Index catalogue and browse -------------------------------------------------
+
+test_that("ck_catalogue returns enriched data frame with required columns", {
+  cat <- ck_catalogue()
+  expect_s3_class(cat, "data.frame")
+  expect_true(all(c("ck_function", "code", "name", "category", "sector",
+                    "unit", "standard", "citation_key") %in% names(cat)))
+  expect_gte(nrow(cat), 40L)
+})
+
+test_that("ck_catalogue ck_function entries are real exports", {
+  cat <- ck_catalogue()
+  for (fn in cat$ck_function) {
+    expect_true(exists(fn, mode = "function"),
+                info = paste("Not exported:", fn))
+  }
+})
+
+test_that("ck_catalogue ETCCDI rows match ck_etccdi_27 implemented entries", {
+  cat <- ck_catalogue()
+  etccdi_rows <- subset(cat, standard == "ETCCDI")
+  audit <- subset(ck_etccdi_27(), status == "implemented")
+  # Every implemented ETCCDI ck_function should appear in the catalogue.
+  expect_true(all(audit$ck_function %in% etccdi_rows$ck_function))
+})
+
+test_that("ck_browse filters by standard", {
+  cat <- ck_catalogue()
+  etccdi <- ck_browse(standard = "ETCCDI")
+  expect_true(all(etccdi$standard == "ETCCDI"))
+  expect_equal(nrow(etccdi), sum(cat$standard == "ETCCDI"))
+})
+
+test_that("ck_browse filters by sector and ignores NA-sector rows", {
+  agri <- ck_browse(sector = "agriculture")
+  expect_true(all(!is.na(agri$sector) & agri$sector == "agriculture"))
+})
+
+test_that("ck_browse search is case-insensitive across function/name/code", {
+  hits <- ck_browse(search = "frost")
+  expect_true(any(hits$ck_function == "ck_frost_days"))
+  hits_code <- ck_browse(search = "TXx")
+  expect_true(any(hits_code$ck_function == "ck_txx"))
+})
+
+test_that("ck_browse rejects non-string args", {
+  expect_error(ck_browse(sector = 1), "character")
+  expect_error(ck_browse(standard = TRUE), "character")
+  expect_error(ck_browse(search = c("a", "b")), "character")
+})
+
+test_that("ck_browse with no args returns the full catalogue", {
+  expect_equal(nrow(ck_browse()), nrow(ck_catalogue()))
+})

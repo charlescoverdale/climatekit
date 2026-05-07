@@ -1,0 +1,75 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below, plus the ETCCDI references in inst/CITATION."
+type: software
+version: 0.1.0
+title: "climatekit: Unified Climate Indices for Temperature, Precipitation, and Drought"
+abstract: >
+  Compute the standard suite of climate indices from daily weather
+  observations: temperature (frost / ice / summer days, tropical
+  nights, growing-season length, diurnal range, ETCCDI extreme-value
+  indices, calendar-day percentile indices, warm and cold spell
+  duration), precipitation (PRCPTOT, RX1day, RX5day, SDII, R10mm,
+  R20mm, Rnnmm, CDD, CWD, R95p, R99p), drought (SPI, SPEI, PET),
+  agroclimatic (Huglin, Winkler, Branas, frost dates), and comfort
+  (wind chill, heat index, humidex, fire danger). Pure R, no API
+  calls, tidy data-frame outputs.
+authors:
+  - family-names: Coverdale
+    given-names: Charles
+    email: charlesfcoverdale@gmail.com
+    affiliation: London, United Kingdom
+repository-code: "https://github.com/charlescoverdale/climatekit"
+url: "https://CRAN.R-project.org/package=climatekit"
+license: MIT
+keywords:
+  - climate
+  - climate-indices
+  - ETCCDI
+  - ET-SCI
+  - SPI
+  - SPEI
+  - heatwave
+  - precipitation
+  - temperature
+  - extremes
+references:
+  - type: article
+    title: "Global Observed Changes in Daily Climate Extremes of Temperature and Precipitation"
+    authors:
+      - family-names: Alexander
+        given-names: Lisa V.
+      - family-names: Zhang
+        given-names: Xuebin
+      - family-names: Peterson
+        given-names: Thomas C.
+    journal: "Journal of Geophysical Research: Atmospheres"
+    year: 2006
+    volume: 111
+    issue: D5
+    doi: "10.1029/2005JD006290"
+  - type: article
+    title: "Indices for Monitoring Changes in Extremes Based on Daily Temperature and Precipitation Data"
+    authors:
+      - family-names: Zhang
+        given-names: Xuebin
+      - family-names: Alexander
+        given-names: Lisa
+      - family-names: Hegerl
+        given-names: Gabriele C.
+      - family-names: Jones
+        given-names: Philip
+      - family-names: Klein Tank
+        given-names: Albert
+      - family-names: Peterson
+        given-names: Thomas C.
+      - family-names: Trewin
+        given-names: Blair
+      - family-names: Zwiers
+        given-names: Francis W.
+    journal: "Wiley Interdisciplinary Reviews: Climate Change"
+    year: 2011
+    volume: 2
+    issue: 6
+    start: 851
+    end: 870
+    doi: "10.1002/wcc.147"

@@ -1,0 +1,63 @@
+citHeader(
+  paste0(
+    "To cite climatekit in publications, please cite the package itself ",
+    "and the canonical ETCCDI references that define the indices."
+  )
+)
+
+bibentry(
+  bibtype = "Manual",
+  title   = "{climatekit}: Unified Climate Indices for Temperature, Precipitation, and Drought",
+  author  = person("Charles", "Coverdale"),
+  year    = format(Sys.Date(), "%Y"),
+  note    = paste0("R package version ", meta$Version),
+  url     = "https://CRAN.R-project.org/package=climatekit"
+)
+
+bibentry(
+  bibtype = "Article",
+  title   = "Global Observed Changes in Daily Climate Extremes of Temperature and Precipitation",
+  author  = c(
+    person("Lisa V.", "Alexander"),
+    person("Xuebin", "Zhang"),
+    person("Thomas C.", "Peterson")
+  ),
+  journal = "Journal of Geophysical Research: Atmospheres",
+  year    = "2006",
+  volume  = "111",
+  number  = "D5",
+  doi     = "10.1029/2005JD006290",
+  textVersion = paste(
+    "Alexander, L. V., Zhang, X., Peterson, T. C., et al. (2006).",
+    "Global observed changes in daily climate extremes of temperature and",
+    "precipitation. Journal of Geophysical Research: Atmospheres, 111(D5).",
+    "doi:10.1029/2005JD006290"
+  )
+)
+
+bibentry(
+  bibtype = "Article",
+  title   = "Indices for Monitoring Changes in Extremes Based on Daily Temperature and Precipitation Data",
+  author  = c(
+    person("Xuebin", "Zhang"),
+    person("Lisa", "Alexander"),
+    person("Gabriele C.", "Hegerl"),
+    person("Philip", "Jones"),
+    person("Albert", "Klein Tank"),
+    person("Thomas C.", "Peterson"),
+    person("Blair", "Trewin"),
+    person("Francis W.", "Zwiers")
+  ),
+  journal = "Wiley Interdisciplinary Reviews: Climate Change",
+  year    = "2011",
+  volume  = "2",
+  number  = "6",
+  pages   = "851--870",
+  doi     = "10.1002/wcc.147",
+  textVersion = paste(
+    "Zhang, X., Alexander, L., Hegerl, G. C., et al. (2011).",
+    "Indices for monitoring changes in extremes based on daily temperature",
+    "and precipitation data. WIREs Climate Change, 2(6), 851-870.",
+    "doi:10.1002/wcc.147"
+  )
+)

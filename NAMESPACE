@@ -2,6 +2,8 @@
 
 export(ck_available)
 export(ck_branas)
+export(ck_browse)
+export(ck_catalogue)
 export(ck_compute)
 export(ck_convert_temp)
 export(ck_cooling_degree_days)
