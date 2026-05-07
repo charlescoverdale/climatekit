@@ -294,3 +294,64 @@ test_that("percentile functions reject mismatched lengths", {
   expect_error(ck_tx10p(c(1, 2), as.Date("1961-01-01")), "same length")
   expect_error(ck_tn90p(c(1, 2), as.Date("1961-01-01")), "same length")
 })
+
+# Calendar-day-base spell duration indices (CSDI / WSDI) ---------------------
+
+test_that("ck_wsdi returns 0 when no 6-day exceedance spell", {
+  set.seed(21)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  result <- ck_wsdi(tmax, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$index[1], "wsdi")
+  expect_equal(result$unit[1], "days")
+  expect_true(all(result$value >= 0))
+})
+
+test_that("ck_wsdi captures injected long warm spell", {
+  set.seed(22)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  # Inject 10-day hot spell in 1962 (outside ref period 1961 only).
+  hot <- which(dates >= as.Date("1962-07-15") & dates <= as.Date("1962-07-24"))
+  tmax[hot] <- tmax[hot] + 20
+  result <- ck_wsdi(tmax, dates, ref_start = 1961L, ref_end = 1961L)
+  yr_1962 <- result$value[format(result$period, "%Y") == "1962"]
+  expect_gte(yr_1962, 10)
+})
+
+test_that("ck_csdi returns 0 when no 6-day under-threshold spell", {
+  set.seed(23)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  result <- ck_csdi(tmin, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_equal(result$index[1], "csdi")
+  expect_equal(result$unit[1], "days")
+  expect_true(all(result$value >= 0))
+})
+
+test_that("ck_csdi captures injected long cold spell", {
+  set.seed(24)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  # Inject 10-day cold spell in 1962 (outside ref period 1961 only).
+  cold <- which(dates >= as.Date("1962-02-01") & dates <= as.Date("1962-02-10"))
+  tmin[cold] <- tmin[cold] - 20
+  result <- ck_csdi(tmin, dates, ref_start = 1961L, ref_end = 1961L)
+  yr_1962 <- result$value[format(result$period, "%Y") == "1962"]
+  expect_gte(yr_1962, 10)
+})
+
+test_that("ck_wsdi / ck_csdi reject mismatched lengths and missing reference", {
+  expect_error(ck_wsdi(c(1, 2), as.Date("1961-01-01")), "same length")
+  expect_error(ck_csdi(c(1, 2), as.Date("1961-01-01")), "same length")
+  dates <- seq(as.Date("2000-01-01"), as.Date("2000-12-31"), by = "day")
+  expect_error(
+    ck_wsdi(rnorm(length(dates), 15, 5), dates, ref_start = 1961L, ref_end = 1990L),
+    "reference period"
+  )
+})

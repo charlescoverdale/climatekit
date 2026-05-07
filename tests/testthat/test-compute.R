@@ -177,10 +177,8 @@ test_that("ck_compute dispatches percentile indices", {
   )
 })
 
-test_that("ck_etccdi_27 reports 25/27 implemented after Phase 2B", {
+test_that("ck_etccdi_27 reports 27/27 implemented after Phase 2C", {
   tab <- ck_etccdi_27()
-  expect_gte(sum(tab$status == "implemented"), 25L)
-  # The two remaining canonical-only-strict entries are CSDI plus the
-  # spell-duration upgrade for WSDI; warm_spell remains an approximation.
-  expect_equal(sum(tab$status == "approximation"), 1L)
+  expect_equal(sum(tab$status == "implemented"), 27L)
+  expect_equal(sum(tab$status == "missing"), 0L)
 })

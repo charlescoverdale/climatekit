@@ -134,3 +134,26 @@ count_by_period <- function(condition, dates, period) {
   }
   thresholds
 }
+
+#' Mark days that fall inside spans of at least `min_spell` consecutive TRUE
+#' values in a logical vector. Used by spell-duration indices (CSDI, WSDI).
+#' @noRd
+.find_spells <- function(condition, min_spell = 6L) {
+  n <- length(condition)
+  in_spell <- logical(n)
+  i <- 1L
+  while (i <= n) {
+    if (!is.na(condition[i]) && condition[i]) {
+      start <- i
+      while (i <= n && !is.na(condition[i]) && condition[i]) {
+        i <- i + 1L
+      }
+      if (i - start >= min_spell) {
+        in_spell[start:(i - 1L)] <- TRUE
+      }
+    } else {
+      i <- i + 1L
+    }
+  }
+  in_spell
+}

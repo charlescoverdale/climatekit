@@ -43,6 +43,8 @@ ck_compute <- function(data, index, ...) {
     tn90p            = list(fn = ck_tn90p, args = c("tmin", "dates")),
     r95p             = list(fn = ck_r95p, args = c("precip", "dates")),
     r99p             = list(fn = ck_r99p, args = c("precip", "dates")),
+    wsdi             = list(fn = ck_wsdi, args = c("tmax", "dates")),
+    csdi             = list(fn = ck_csdi, args = c("tmin", "dates")),
     heating_degree_days = list(fn = ck_heating_degree_days, args = c("tavg", "dates")),
     cooling_degree_days = list(fn = ck_cooling_degree_days, args = c("tavg", "dates")),
     growing_degree_days = list(fn = ck_growing_degree_days, args = c("tavg", "dates")),

@@ -563,13 +563,91 @@ ck_diurnal_range <- function(tmin, tmax, dates, period = "annual") {
   build_result(result$periods, result$values, "diurnal_range", "\u00b0C", period)
 }
 
-#' Warm Spell Days
+#' Warm Spell Duration Index (WSDI)
 #'
-#' Count the number of days in warm spells, where a warm spell is defined as
-#' at least 6 consecutive days with Tmax above the `threshold` quantile of
-#' the full series. This computes warm spell days using a quantile threshold
-#' from the input series. It does not implement the ETCCDI WSDI, which
-#' requires calendar-day percentiles from a 1961-1990 reference period.
+#' ETCCDI canonical index WSDI. Annual count of days in spans of at least
+#' six consecutive days where daily Tmax exceeds the 90th percentile of the
+#' calendar-day distribution from a reference period (default 1961 to 1990).
+#' The threshold is computed using a 5-day window centred on each calendar
+#' day, pooled across the reference period.
+#'
+#' Days inside qualifying spells are counted into the year they fall in;
+#' a spell that crosses a year boundary contributes to both years
+#' proportionally. Annual aggregation only.
+#'
+#' @inheritParams ck_tx10p
+#' @param min_spell Integer. Minimum spell length in days (default 6,
+#'   the ETCCDI standard).
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_wsdi(tmax, dates))
+ck_wsdi <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
+                    min_spell = 6L) {
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmax))
+
+  thresholds <- .calendar_day_percentile(tmax, dates, 0.90,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  above <- !is.na(tmax) & tmax > thresholds[doy]
+  in_spell <- .find_spells(above, as.integer(min_spell))
+
+  result <- count_by_period(in_spell, dates, "annual")
+  build_result(result$periods, result$values, "wsdi", "days", "annual")
+}
+
+#' Cold Spell Duration Index (CSDI)
+#'
+#' ETCCDI canonical index CSDI. Annual count of days in spans of at least
+#' six consecutive days where daily Tmin falls below the 10th percentile of
+#' the calendar-day distribution from a reference period (default 1961 to
+#' 1990). Cold-side counterpart to [ck_wsdi()].
+#'
+#' @inheritParams ck_tn10p
+#' @param min_spell Integer. Minimum spell length in days (default 6,
+#'   the ETCCDI standard).
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_csdi(tmin, dates))
+ck_csdi <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
+                    min_spell = 6L) {
+  validate_numeric(tmin, "tmin")
+  validate_dates(dates, length(tmin))
+
+  thresholds <- .calendar_day_percentile(tmin, dates, 0.10,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  below <- !is.na(tmin) & tmin < thresholds[doy]
+  in_spell <- .find_spells(below, as.integer(min_spell))
+
+  result <- count_by_period(in_spell, dates, "annual")
+  build_result(result$periods, result$values, "csdi", "days", "annual")
+}
+
+#' Warm Spell Days (Series-Quantile Approximation)
+#'
+#' Count the number of days in warm spells, where a warm spell is defined
+#' as at least six consecutive days with Tmax above the `threshold`
+#' quantile of the full input series. This is a quick approximation
+#' driven by a single series-wide quantile, and does not require a
+#' reference period.
+#'
+#' For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
+#' six-day spell rule), use [ck_wsdi()].
 #'
 #' @param tmax Numeric vector of daily maximum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmax`.

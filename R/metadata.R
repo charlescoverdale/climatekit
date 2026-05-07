@@ -137,10 +137,10 @@ ck_etccdi_27 <- function() {
     # Temperature: spells (3)
     c("WSDI", "Warm spell duration", "Tmax", "days",
       "Annual count of days in spans of >=6 consecutive days with Tmax > 90th percentile of 1961-1990 calendar-day base.",
-      "ck_warm_spell", "approximation"),
+      "ck_wsdi", "implemented"),
     c("CSDI", "Cold spell duration", "Tmin", "days",
       "Annual count of days in spans of >=6 consecutive days with Tmin < 10th percentile of 1961-1990 calendar-day base.",
-      NA_character_, "missing"),
+      "ck_csdi", "implemented"),
     c("GSL", "Growing season length", "Tmean", "days",
       "Length of growing season as defined by the first 6-day spell with Tmean > 5\u00b0C and the first 6-day spell with Tmean < 5\u00b0C after mid-year.",
       "ck_growing_season", "implemented"),
@@ -258,8 +258,14 @@ ck_etccdi_27 <- function() {
          description = "Mean daily temperature range (Tmax - Tmin)",
          reference = "ETCCDI"),
     list(index = "warm_spell", category = "temperature", unit = "days",
-         description = "Warm spell days (simplified, not ETCCDI WSDI)",
+         description = "Warm spell days (simplified, see ck_wsdi for ETCCDI WSDI)",
          reference = "Simplified (see documentation)"),
+    list(index = "wsdi", category = "temperature", unit = "days",
+         description = "Warm spell duration index (ETCCDI WSDI, 1961-1990 calendar-day Tmax 90p base)",
+         reference = "ETCCDI"),
+    list(index = "csdi", category = "temperature", unit = "days",
+         description = "Cold spell duration index (ETCCDI CSDI, 1961-1990 calendar-day Tmin 10p base)",
+         reference = "ETCCDI"),
 
     # Precipitation
     list(index = "dry_days", category = "precipitation", unit = "days",
