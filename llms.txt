@@ -625,3 +625,9 @@ Compute any index by name; metadata; ETCCDI 27 audit; catalogue
   : climatekit: Unified Climate Indices for Temperature, Precipitation,
   and Drought
 
+# Articles
+
+### All vignettes
+
+- [Migrating from
+  climdex.pcic](https://charlescoverdale.github.io/climatekit/articles/climdex-migration.md):
