@@ -36,10 +36,19 @@ are returned as \code{NA}. Run-time scales linearly with the number of
 cells; for very large grids consider sub-setting first.
 }
 \examples{
-\dontrun{
-  r <- ck_from_netcdf("tasmax_day.nc", var = "tasmax")
-  dates <- seq(as.Date("1961-01-01"), by = "day", length.out = terra::nlyr(r))
-  txx_r <- ck_apply_grid(r, ck_txx, dates = dates, period = "annual")
-  terra::plot(txx_r[[1]])
+\donttest{
+  if (requireNamespace("terra", quietly = TRUE)) {
+    dates <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
+    n <- length(dates)
+    # Tiny 2x2 SpatRaster of synthetic daily Tmax
+    r <- terra::rast(nrows = 2, ncols = 2, nlyrs = n,
+                     xmin = 0, xmax = 2, ymin = 0, ymax = 2)
+    set.seed(1)
+    for (i in seq_len(n)) {
+      terra::values(r[[i]]) <- rnorm(4, 15, 5)
+    }
+    txx_r <- ck_apply_grid(r, ck_txx, dates = dates, period = "annual")
+    terra::nlyr(txx_r)
+  }
 }
 }

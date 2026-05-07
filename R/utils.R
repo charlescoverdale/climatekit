@@ -90,7 +90,7 @@ count_by_period <- function(condition, dates, period) {
 #' Returns a length-366 vector of thresholds, one per day of year, computed
 #' from the supplied reference window pooled across the reference period.
 #' Used by the ETCCDI percentile indices (TX10p, TN10p, TX90p, TN90p, CSDI,
-#' WSDI). Follows the ETCCDI ±2-day window convention (a 5-day window
+#' WSDI). Follows the ETCCDI +/-2-day window convention (a 5-day window
 #' centred on each calendar day, wrapped at year boundaries). Does not
 #' implement the Zhang et al. (2005) in-base bootstrap; thresholds are
 #' applied directly, so values inside the reference period have a small
