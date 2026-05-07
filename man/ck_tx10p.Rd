@@ -4,7 +4,14 @@
 \alias{ck_tx10p}
 \title{Percentage of Cool Days (TX10p)}
 \usage{
-ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
+ck_tx10p(
+  tmax,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  period = "annual",
+  bootstrap = FALSE
+)
 }
 \arguments{
 \item{tmax}{Numeric vector of daily maximum temperatures (degrees C).}
@@ -17,6 +24,10 @@ data covering the reference period.}
 
 \item{period}{Character. Aggregation period: \code{"annual"} (default) or
 \code{"monthly"}.}
+
+\item{bootstrap}{Logical. If \code{TRUE}, apply the Zhang (2005) in-base
+bootstrap correction. Default \code{FALSE} for backward compatibility
+and speed.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
@@ -29,10 +40,12 @@ computed using a 5-day window centred on each calendar day, pooled
 across the reference period.
 }
 \details{
-This implementation does not apply the Zhang et al. (2005) in-base
-bootstrap correction, so years inside the reference period have a
-small self-inclusion bias. For climate-change attribution, restrict
-interpretation to years outside the reference window.
+Set \code{bootstrap = TRUE} to apply the Zhang et al. (2005) in-base
+leave-one-out bootstrap, which removes the self-inclusion bias for
+years inside the reference period. The bootstrap is computationally
+expensive (roughly N^2 percentile fits for an N-year reference)
+but is the canonical climdex.pcic / climpact behaviour and is
+required for climate-change attribution work that spans the base.
 }
 \examples{
 set.seed(1)
@@ -40,4 +53,10 @@ dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
 tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "\%j")) / 365) +
         rnorm(length(dates))
 tail(ck_tx10p(tmax, dates))
+}
+\references{
+Zhang, X., Hegerl, G. C., Zwiers, F. W., & Kenyon, J.
+(2005). Avoiding inhomogeneity in percentile-based indices of
+temperature extremes. \emph{Journal of Climate}, 18(11), 1641-1651.
+\doi{10.1175/JCLI3366.1}.
 }

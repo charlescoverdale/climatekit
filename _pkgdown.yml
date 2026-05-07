@@ -58,6 +58,8 @@ reference:
       - ck_r99p
       - ck_spi
       - ck_spei
+      - ck_pet
+      - ck_pet_pm
 
   - title: "Agroclimatic"
     desc: "Growing-season and viticulture indices"

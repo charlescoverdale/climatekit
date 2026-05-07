@@ -72,6 +72,7 @@ ck_compute <- function(data, index, ...) {
     spi              = list(fn = ck_spi, args = c("precip", "dates")),
     spei             = list(fn = ck_spei, args = c("precip", "pet", "dates")),
     pet              = list(fn = ck_pet, args = c("tmin", "tmax", "lat", "dates")),
+    pet_pm           = list(fn = ck_pet_pm, args = c("tmin", "tmax", "lat", "dates")),
     huglin           = list(fn = ck_huglin, args = c("tmin", "tmax", "dates", "lat")),
     winkler          = list(fn = ck_winkler, args = c("tavg", "dates")),
     branas           = list(fn = ck_branas, args = c("precip", "tavg", "dates")),

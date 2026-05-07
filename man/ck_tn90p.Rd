@@ -4,7 +4,14 @@
 \alias{ck_tn90p}
 \title{Percentage of Warm Nights (TN90p)}
 \usage{
-ck_tn90p(tmin, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
+ck_tn90p(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  period = "annual",
+  bootstrap = FALSE
+)
 }
 \arguments{
 \item{tmin}{Numeric vector of daily minimum temperatures (degrees C).}
@@ -17,6 +24,10 @@ data covering the reference period.}
 
 \item{period}{Character. Aggregation period: \code{"annual"} (default) or
 \code{"monthly"}.}
+
+\item{bootstrap}{Logical. If \code{TRUE}, apply the Zhang (2005) in-base
+bootstrap correction. Default \code{FALSE} for backward compatibility
+and speed.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
@@ -24,8 +35,9 @@ A data frame with columns \code{period}, \code{value}, \code{index}, and \code{u
 \description{
 ETCCDI canonical index TN90p. Percentage of days where daily Tmin
 exceeds the 90th percentile of the calendar-day distribution from a
-reference period (default 1961 to 1990). Computation follows the same
-convention as \code{\link[=ck_tx10p]{ck_tx10p()}}.
+reference period (default 1961 to 1990). Computation follows the
+same convention as \code{\link[=ck_tx10p]{ck_tx10p()}} and supports the same \code{bootstrap}
+argument.
 }
 \examples{
 set.seed(1)

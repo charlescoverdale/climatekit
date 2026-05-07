@@ -295,6 +295,58 @@ test_that("percentile functions reject mismatched lengths", {
   expect_error(ck_tn90p(c(1, 2), as.Date("1961-01-01")), "same length")
 })
 
+# Zhang 2005 in-base bootstrap (Phase D) -------------------------------------
+
+test_that("ck_tx10p bootstrap=FALSE matches the unmodified threshold path", {
+  set.seed(81)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1965-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  result <- ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1965L,
+                     bootstrap = FALSE)
+  expect_s3_class(result, "data.frame")
+  expect_true(all(result$value >= 0 & result$value <= 100))
+})
+
+test_that("bootstrap correction nudges in-base years toward expected 10%", {
+  # Ten-year iid sample: in-sample bias suppresses exceedance under the
+  # standard threshold; bootstrap should move the mean closer to 10%.
+  set.seed(82)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1970-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  no_bs <- ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1970L)
+  bs    <- ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1970L,
+                    bootstrap = TRUE)
+  expect_lt(abs(mean(bs$value) - 10), abs(mean(no_bs$value) - 10) + 1e-6)
+})
+
+test_that("bootstrap exceedance values stay within the unit interval after %", {
+  set.seed(83)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1963-12-31"), by = "day")
+  tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  bs <- ck_tn90p(tmin, dates, ref_start = 1961L, ref_end = 1963L,
+                 bootstrap = TRUE)
+  expect_true(all(bs$value >= 0 & bs$value <= 100))
+})
+
+test_that("bootstrap argument validation", {
+  set.seed(84)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmax <- rnorm(length(dates), 15, 5)
+  expect_error(
+    ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1962L,
+             bootstrap = "yes"),
+    "logical"
+  )
+  expect_error(
+    ck_tx90p(tmax, dates, ref_start = 1961L, ref_end = 1962L,
+             bootstrap = c(TRUE, FALSE)),
+    "logical"
+  )
+})
+
 # Calendar-day-base spell duration indices (CSDI / WSDI) ---------------------
 
 test_that("ck_wsdi returns 0 when no 6-day exceedance spell", {

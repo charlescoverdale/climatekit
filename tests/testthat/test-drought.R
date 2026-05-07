@@ -187,3 +187,47 @@ test_that("invalid distribution argument is rejected", {
   expect_error(ck_spi(precip, dates, distribution = "bogus"), "should be one of")
   expect_error(ck_spei(precip, pet, dates, distribution = "bogus"), "should be one of")
 })
+
+# FAO-56 Penman-Monteith PET (Phase E) ---------------------------------------
+
+test_that("ck_pet_pm returns sensible mid-summer mid-latitude values", {
+  dates <- as.Date("2024-07-01") + 0:9
+  tmin <- c(15, 16, 14, 17, 15, 13, 16, 14, 15, 16)
+  tmax <- c(30, 32, 28, 33, 31, 27, 34, 29, 30, 32)
+  result <- ck_pet_pm(tmin, tmax, lat = 45, dates = dates)
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$index[1], "pet_pm")
+  expect_equal(result$unit[1], "mm")
+  # Range check: typical July ETo at 45N is 3-7 mm/day.
+  expect_true(all(result$value >= 2 & result$value <= 8))
+})
+
+test_that("ck_pet_pm respects elevation (higher = lower P -> nudges PET)", {
+  dates <- as.Date("2024-07-01") + 0:9
+  tmin <- rep(15, 10)
+  tmax <- rep(30, 10)
+  sea  <- ck_pet_pm(tmin, tmax, lat = 45, dates = dates, elev = 0)
+  high <- ck_pet_pm(tmin, tmax, lat = 45, dates = dates, elev = 2000)
+  expect_false(identical(sea$value, high$value))
+})
+
+test_that("ck_pet_pm honours supplied solar radiation rs", {
+  dates <- as.Date("2024-07-01") + 0:4
+  tmin <- rep(15, 5)
+  tmax <- rep(30, 5)
+  est <- ck_pet_pm(tmin, tmax, lat = 45, dates = dates)
+  fix <- ck_pet_pm(tmin, tmax, lat = 45, dates = dates,
+                   rs = rep(20, 5))
+  expect_false(identical(est$value, fix$value))
+})
+
+test_that("ck_pet_pm rejects invalid arguments", {
+  dates <- as.Date("2024-07-01") + 0:4
+  tmin <- rep(15, 5)
+  tmax <- rep(30, 5)
+  expect_error(ck_pet_pm(tmin, tmax, lat = "x", dates = dates), "numeric")
+  expect_error(ck_pet_pm(tmin, c(30, 30), lat = 45, dates = dates),
+               "same length")
+  expect_error(ck_pet_pm(tmin, tmax, lat = 45, dates = dates, albedo = 1.5),
+               "\\[0, 1\\]")
+})

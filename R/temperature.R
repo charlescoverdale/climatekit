@@ -210,10 +210,12 @@ ck_tnn <- function(tmin, dates, period = "annual") {
 #' computed using a 5-day window centred on each calendar day, pooled
 #' across the reference period.
 #'
-#' This implementation does not apply the Zhang et al. (2005) in-base
-#' bootstrap correction, so years inside the reference period have a
-#' small self-inclusion bias. For climate-change attribution, restrict
-#' interpretation to years outside the reference window.
+#' Set `bootstrap = TRUE` to apply the Zhang et al. (2005) in-base
+#' leave-one-out bootstrap, which removes the self-inclusion bias for
+#' years inside the reference period. The bootstrap is computationally
+#' expensive (roughly N^2 percentile fits for an N-year reference)
+#' but is the canonical climdex.pcic / climpact behaviour and is
+#' required for climate-change attribution work that spans the base.
 #'
 #' @param tmax Numeric vector of daily maximum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmax`. Must contain
@@ -222,8 +224,16 @@ ck_tnn <- function(tmin, dates, period = "annual") {
 #'   (inclusive). Defaults to 1961 and 1990.
 #' @param period Character. Aggregation period: `"annual"` (default) or
 #'   `"monthly"`.
+#' @param bootstrap Logical. If `TRUE`, apply the Zhang (2005) in-base
+#'   bootstrap correction. Default `FALSE` for backward compatibility
+#'   and speed.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @references Zhang, X., Hegerl, G. C., Zwiers, F. W., & Kenyon, J.
+#'   (2005). Avoiding inhomogeneity in percentile-based indices of
+#'   temperature extremes. *Journal of Climate*, 18(11), 1641-1651.
+#'   \doi{10.1175/JCLI3366.1}.
 #'
 #' @export
 #' @examples
@@ -233,26 +243,19 @@ ck_tnn <- function(tmin, dates, period = "annual") {
 #'         rnorm(length(dates))
 #' tail(ck_tx10p(tmax, dates))
 ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
-                     period = "annual") {
+                     period = "annual", bootstrap = FALSE) {
   validate_numeric(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
+  if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
+    cli::cli_abort("{.arg bootstrap} must be a single logical value.")
+  }
 
-  thresholds <- .calendar_day_percentile(tmax, dates, 0.10,
-                                         ref_start, ref_end, window = 5L)
-  doy <- as.integer(format(dates, "%j"))
-  exceedance <- tmax < thresholds[doy]
-
-  periods <- get_periods(dates, period)
-  unique_periods <- unique(periods)
-  values <- vapply(unique_periods, function(p) {
-    idx <- which(periods == p)
-    valid <- !is.na(tmax[idx]) & !is.na(thresholds[doy[idx]])
-    if (!any(valid)) return(NA_real_)
-    100 * mean(exceedance[idx][valid], na.rm = TRUE)
-  }, numeric(1))
-
-  build_result(unique_periods, values, "tx10p", "%", period)
+  soft_ex <- .pct_exceedance_per_day(tmax, dates, percentile = 0.10,
+                                     op = "<", ref_start, ref_end,
+                                     bootstrap = bootstrap)
+  agg <- .aggregate_pct_exceedance(soft_ex, dates, period)
+  build_result(agg$periods, agg$values, "tx10p", "%", period)
 }
 
 #' Percentage of Cool Nights (TN10p)
@@ -260,7 +263,8 @@ ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' ETCCDI canonical index TN10p. Percentage of days where daily Tmin
 #' falls below the 10th percentile of the calendar-day distribution
 #' from a reference period (default 1961 to 1990). Computation follows
-#' the same convention as [ck_tx10p()].
+#' the same convention as [ck_tx10p()] and supports the same
+#' `bootstrap` argument.
 #'
 #' @inheritParams ck_tx10p
 #' @param tmin Numeric vector of daily minimum temperatures (degrees C).
@@ -275,34 +279,28 @@ ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_tn10p(tmin, dates))
 ck_tn10p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
-                     period = "annual") {
+                     period = "annual", bootstrap = FALSE) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
+  if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
+    cli::cli_abort("{.arg bootstrap} must be a single logical value.")
+  }
 
-  thresholds <- .calendar_day_percentile(tmin, dates, 0.10,
-                                         ref_start, ref_end, window = 5L)
-  doy <- as.integer(format(dates, "%j"))
-  exceedance <- tmin < thresholds[doy]
-
-  periods <- get_periods(dates, period)
-  unique_periods <- unique(periods)
-  values <- vapply(unique_periods, function(p) {
-    idx <- which(periods == p)
-    valid <- !is.na(tmin[idx]) & !is.na(thresholds[doy[idx]])
-    if (!any(valid)) return(NA_real_)
-    100 * mean(exceedance[idx][valid], na.rm = TRUE)
-  }, numeric(1))
-
-  build_result(unique_periods, values, "tn10p", "%", period)
+  soft_ex <- .pct_exceedance_per_day(tmin, dates, percentile = 0.10,
+                                     op = "<", ref_start, ref_end,
+                                     bootstrap = bootstrap)
+  agg <- .aggregate_pct_exceedance(soft_ex, dates, period)
+  build_result(agg$periods, agg$values, "tn10p", "%", period)
 }
 
 #' Percentage of Warm Days (TX90p)
 #'
 #' ETCCDI canonical index TX90p. Percentage of days where daily Tmax
 #' exceeds the 90th percentile of the calendar-day distribution from a
-#' reference period (default 1961 to 1990). Computation follows the same
-#' convention as [ck_tx10p()].
+#' reference period (default 1961 to 1990). Computation follows the
+#' same convention as [ck_tx10p()] and supports the same `bootstrap`
+#' argument.
 #'
 #' @inheritParams ck_tx10p
 #'
@@ -316,34 +314,28 @@ ck_tn10p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_tx90p(tmax, dates))
 ck_tx90p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
-                     period = "annual") {
+                     period = "annual", bootstrap = FALSE) {
   validate_numeric(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
+  if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
+    cli::cli_abort("{.arg bootstrap} must be a single logical value.")
+  }
 
-  thresholds <- .calendar_day_percentile(tmax, dates, 0.90,
-                                         ref_start, ref_end, window = 5L)
-  doy <- as.integer(format(dates, "%j"))
-  exceedance <- tmax > thresholds[doy]
-
-  periods <- get_periods(dates, period)
-  unique_periods <- unique(periods)
-  values <- vapply(unique_periods, function(p) {
-    idx <- which(periods == p)
-    valid <- !is.na(tmax[idx]) & !is.na(thresholds[doy[idx]])
-    if (!any(valid)) return(NA_real_)
-    100 * mean(exceedance[idx][valid], na.rm = TRUE)
-  }, numeric(1))
-
-  build_result(unique_periods, values, "tx90p", "%", period)
+  soft_ex <- .pct_exceedance_per_day(tmax, dates, percentile = 0.90,
+                                     op = ">", ref_start, ref_end,
+                                     bootstrap = bootstrap)
+  agg <- .aggregate_pct_exceedance(soft_ex, dates, period)
+  build_result(agg$periods, agg$values, "tx90p", "%", period)
 }
 
 #' Percentage of Warm Nights (TN90p)
 #'
 #' ETCCDI canonical index TN90p. Percentage of days where daily Tmin
 #' exceeds the 90th percentile of the calendar-day distribution from a
-#' reference period (default 1961 to 1990). Computation follows the same
-#' convention as [ck_tx10p()].
+#' reference period (default 1961 to 1990). Computation follows the
+#' same convention as [ck_tx10p()] and supports the same `bootstrap`
+#' argument.
 #'
 #' @inheritParams ck_tn10p
 #'
@@ -357,26 +349,19 @@ ck_tx90p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_tn90p(tmin, dates))
 ck_tn90p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
-                     period = "annual") {
+                     period = "annual", bootstrap = FALSE) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
+  if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
+    cli::cli_abort("{.arg bootstrap} must be a single logical value.")
+  }
 
-  thresholds <- .calendar_day_percentile(tmin, dates, 0.90,
-                                         ref_start, ref_end, window = 5L)
-  doy <- as.integer(format(dates, "%j"))
-  exceedance <- tmin > thresholds[doy]
-
-  periods <- get_periods(dates, period)
-  unique_periods <- unique(periods)
-  values <- vapply(unique_periods, function(p) {
-    idx <- which(periods == p)
-    valid <- !is.na(tmin[idx]) & !is.na(thresholds[doy[idx]])
-    if (!any(valid)) return(NA_real_)
-    100 * mean(exceedance[idx][valid], na.rm = TRUE)
-  }, numeric(1))
-
-  build_result(unique_periods, values, "tn90p", "%", period)
+  soft_ex <- .pct_exceedance_per_day(tmin, dates, percentile = 0.90,
+                                     op = ">", ref_start, ref_end,
+                                     bootstrap = bootstrap)
+  agg <- .aggregate_pct_exceedance(soft_ex, dates, period)
+  build_result(agg$periods, agg$values, "tn90p", "%", period)
 }
 
 #' Growing Season Length

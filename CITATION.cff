@@ -29,9 +29,12 @@ keywords:
   - SPI
   - SPEI
   - heatwave
+  - EHF
   - precipitation
   - temperature
   - extremes
+  - Penman-Monteith
+  - bootstrap
 references:
   - type: article
     title: "Global Observed Changes in Daily Climate Extremes of Temperature and Precipitation"

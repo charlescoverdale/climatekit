@@ -340,7 +340,8 @@ ck_catalogue <- function() {
     # Drought
     c("ck_spi",  NA_character_, "Standardised Precipitation Index",                 "drought", "water", "dimensionless", "drought", "mckee1993relationship"),
     c("ck_spei", NA_character_, "Standardised Precipitation-Evapotranspiration Index","drought","water","dimensionless", "drought", "vicente2010multiscalar"),
-    c("ck_pet",  NA_character_, "Potential evapotranspiration (Hargreaves method)", "drought", "water", "mm",            "drought", "hargreaves1985reference"),
+    c("ck_pet",     NA_character_, "Potential evapotranspiration (Hargreaves)",       "drought", "water", "mm", "drought", "hargreaves1985reference"),
+    c("ck_pet_pm",  NA_character_, "Reference evapotranspiration (FAO-56 Penman-Monteith)", "drought", "water", "mm", "drought", "allen1998crop"),
 
     # Agroclimatic
     c("ck_huglin",      NA_character_, "Huglin heliothermal index",    "agroclimatic", "agriculture", "degree-days",      "agroclimatic", "huglin1978nouveau"),

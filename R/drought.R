@@ -210,6 +210,177 @@ ck_pet <- function(tmin, tmax, lat, dates) {
   )
 }
 
+#' Reference Evapotranspiration (FAO-56 Penman-Monteith)
+#'
+#' Compute reference evapotranspiration ETo using the FAO-56
+#' Penman-Monteith equation (Allen et al. 1998), the international
+#' standard for ETo estimation. Required inputs are daily Tmin and
+#' Tmax; optional inputs (humidity, wind speed, incoming solar
+#' radiation, elevation) increase accuracy. Where humidity, wind, or
+#' solar radiation are missing, FAO-56 fallback estimators are used.
+#'
+#' Inputs and units:
+#' \itemize{
+#'   \item `tmin`, `tmax`: daily minimum and maximum temperature (degrees C).
+#'   \item `lat`: latitude in decimal degrees, used for the
+#'         extraterrestrial-radiation calculation.
+#'   \item `elev`: elevation above sea level in metres (default 0).
+#'   \item `wind`: 2-metre wind speed (m/s). Default 2 m/s (the
+#'         FAO-56 fallback value when wind data are unavailable).
+#'   \item `rh_min`, `rh_max`: minimum and maximum daily relative
+#'         humidity (\%). If both are NULL (default), actual vapour
+#'         pressure is estimated as `e0(tmin)` (FAO-56 Eq. 48).
+#'   \item `rs`: daily incoming solar radiation (MJ m^-2 day^-1).
+#'         If NULL, estimated by Hargreaves-Samani: `Rs = krs * Ra
+#'         * sqrt(Tmax - Tmin)` with `krs = 0.16` for inland sites.
+#'   \item `albedo`: surface albedo (default 0.23, the FAO grass
+#'         reference).
+#' }
+#'
+#' @param tmin Numeric vector of daily minimum temperatures (degrees C).
+#' @param tmax Numeric vector of daily maximum temperatures (degrees C),
+#'   same length as `tmin`.
+#' @param lat Numeric. Latitude in decimal degrees.
+#' @param dates Date vector of the same length as `tmin`.
+#' @param elev Numeric. Elevation above sea level in metres
+#'   (default 0).
+#' @param wind Numeric vector or single value. 2-m wind speed (m/s).
+#'   Default `2` (FAO-56 fallback for unmeasured wind).
+#' @param rh_min,rh_max Optional numeric vectors of daily minimum and
+#'   maximum relative humidity in percent. Both must be supplied
+#'   together; otherwise vapour pressure falls back to `e0(tmin)`.
+#' @param rs Optional numeric vector of daily incoming solar
+#'   radiation (MJ m^-2 day^-1). If `NULL`, Hargreaves-Samani
+#'   estimate is used.
+#' @param albedo Numeric. Surface albedo (default 0.23).
+#' @param krs Numeric. Hargreaves-Samani coefficient for the Rs
+#'   fallback (default 0.16 for inland sites; 0.19 for coastal).
+#'
+#' @return A data frame with columns `date`, `value`, `index`
+#'   (`"pet_pm"`), and `unit`.
+#'
+#' @references Allen, R. G., Pereira, L. S., Raes, D., & Smith, M.
+#'   (1998). Crop evapotranspiration: guidelines for computing crop
+#'   water requirements. *FAO Irrigation and Drainage Paper 56*.
+#'
+#' @export
+#' @examples
+#' dates <- as.Date("2024-07-01") + 0:9
+#' tmin <- c(15, 16, 14, 17, 15, 13, 16, 14, 15, 16)
+#' tmax <- c(30, 32, 28, 33, 31, 27, 34, 29, 30, 32)
+#' ck_pet_pm(tmin, tmax, lat = 45, dates = dates)
+ck_pet_pm <- function(tmin, tmax, lat, dates,
+                      elev = 0, wind = 2,
+                      rh_min = NULL, rh_max = NULL, rs = NULL,
+                      albedo = 0.23, krs = 0.16) {
+  validate_numeric(tmin, "tmin")
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmin))
+  if (length(tmin) != length(tmax)) {
+    cli::cli_abort("{.arg tmin} and {.arg tmax} must have the same length.")
+  }
+  if (!is.numeric(lat) || length(lat) != 1L) {
+    cli::cli_abort("{.arg lat} must be a single numeric value.")
+  }
+  if (!is.numeric(elev) || length(elev) != 1L) {
+    cli::cli_abort("{.arg elev} must be a single numeric value.")
+  }
+  if (!is.numeric(albedo) || length(albedo) != 1L ||
+      albedo < 0 || albedo > 1) {
+    cli::cli_abort("{.arg albedo} must be a single number in [0, 1].")
+  }
+  if (!is.numeric(krs) || length(krs) != 1L || krs <= 0) {
+    cli::cli_abort("{.arg krs} must be a single positive numeric value.")
+  }
+
+  n <- length(tmin)
+
+  # Wind: scalar or vector of length n
+  if (length(wind) == 1L) wind <- rep(as.numeric(wind), n)
+  validate_numeric(wind, "wind")
+  if (length(wind) != n) {
+    cli::cli_abort("{.arg wind} must be length 1 or length {n}.")
+  }
+
+  tmean <- (tmin + tmax) / 2
+
+  # Saturation vapour pressure: e0(T) = 0.6108 * exp(17.27 * T / (T + 237.3)) (kPa)
+  e0 <- function(T) 0.6108 * exp(17.27 * T / (T + 237.3))
+  e0_tmax <- e0(tmax)
+  e0_tmin <- e0(tmin)
+  es <- (e0_tmax + e0_tmin) / 2  # FAO-56 Eq. 12
+
+  # Slope of vapour pressure curve at Tmean (kPa / degC, FAO-56 Eq. 13)
+  delta <- 4098 * e0(tmean) / (tmean + 237.3)^2
+
+  # Atmospheric pressure (kPa, FAO-56 Eq. 7)
+  P <- 101.3 * ((293 - 0.0065 * elev) / 293)^5.26
+  # Psychrometric constant (kPa / degC, FAO-56 Eq. 8)
+  gamma <- 0.000665 * P
+
+  # Actual vapour pressure
+  if (!is.null(rh_min) && !is.null(rh_max)) {
+    validate_numeric(rh_min, "rh_min")
+    validate_numeric(rh_max, "rh_max")
+    if (length(rh_min) != n || length(rh_max) != n) {
+      cli::cli_abort("{.arg rh_min} and {.arg rh_max} must be length {n}.")
+    }
+    ea <- (e0_tmin * rh_max + e0_tmax * rh_min) / 200  # FAO-56 Eq. 17
+  } else {
+    # FAO-56 Eq. 48 fallback: assume Tdew = Tmin
+    ea <- e0_tmin
+  }
+
+  # Extraterrestrial radiation (MJ/m^2/day)
+  doy <- as.integer(format(dates, "%j"))
+  ra_mm <- .extraterrestrial_radiation(lat, doy)  # mm/day
+  ra_mj <- ra_mm * 2.45                          # convert to MJ/m^2/day
+
+  # Solar radiation: supplied or Hargreaves-Samani estimate
+  if (is.null(rs)) {
+    td <- pmax(tmax - tmin, 0)
+    rs_calc <- krs * ra_mj * sqrt(td)
+  } else {
+    validate_numeric(rs, "rs")
+    if (length(rs) != n) {
+      cli::cli_abort("{.arg rs} must be length {n}.")
+    }
+    rs_calc <- rs
+  }
+
+  # Clear-sky solar radiation Rso (FAO-56 Eq. 37)
+  rso <- (0.75 + 2e-5 * elev) * ra_mj
+  # Cap rs/rso at 1 to keep the longwave correction term sensible
+  ratio <- pmin(rs_calc / pmax(rso, 1e-6), 1)
+
+  # Net shortwave radiation (MJ/m^2/day, FAO-56 Eq. 38)
+  rns <- (1 - albedo) * rs_calc
+
+  # Net longwave radiation (MJ/m^2/day, FAO-56 Eq. 39)
+  sigma_sb <- 4.903e-9
+  rnl <- sigma_sb *
+    ((tmax + 273.16)^4 + (tmin + 273.16)^4) / 2 *
+    (0.34 - 0.14 * sqrt(pmax(ea, 0))) *
+    (1.35 * ratio - 0.35)
+
+  rn <- rns - rnl
+
+  # FAO-56 Penman-Monteith (Eq. 6); G = 0 for daily timestep
+  numerator <- 0.408 * delta * rn +
+               gamma * (900 / (tmean + 273)) * wind * (es - ea)
+  denominator <- delta + gamma * (1 + 0.34 * wind)
+  pet <- numerator / denominator
+  pet[!is.finite(pet) | pet < 0] <- 0
+
+  data.frame(
+    date  = dates,
+    value = pet,
+    index = "pet_pm",
+    unit  = "mm",
+    stringsAsFactors = FALSE
+  )
+}
+
 #' Compute extraterrestrial radiation (Ra) in mm/day equivalent
 #' @noRd
 .extraterrestrial_radiation <- function(lat, doy) {
