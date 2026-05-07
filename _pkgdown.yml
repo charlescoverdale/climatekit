@@ -27,6 +27,16 @@ reference:
       - ck_wsdi
       - ck_csdi
       - ck_warm_spell
+      - ck_hwn
+      - ck_hwf
+      - ck_hwd
+      - ck_hwm
+      - ck_hwa
+      - ck_cwn
+      - ck_cwf
+      - ck_cwd
+      - ck_cwm
+      - ck_cwa
       - ck_diurnal_range
       - ck_first_frost
       - ck_last_frost
@@ -69,12 +79,14 @@ reference:
       - ck_fire_danger
 
   - title: "General"
-    desc: "Compute any index by name; metadata; ETCCDI 27 audit"
+    desc: "Compute any index by name; metadata; ETCCDI 27 audit; catalogue"
     contents:
       - ck_compute
       - ck_available
       - ck_metadata
       - ck_etccdi_27
+      - ck_catalogue
+      - ck_browse
       - clear_cache
 
 

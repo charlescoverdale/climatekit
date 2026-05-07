@@ -303,6 +303,20 @@ ck_catalogue <- function() {
     # Temperature: ETCCDI approximation
     c("ck_warm_spell",     "WSDI*",  "Warm spell days (series-quantile approx.)","temperature",  NA_character_, "days",       "ETCCDI-approx", "zhang2011indices"),
 
+    # Temperature: ET-SCI heatwave family (TX > 90th percentile, calendar-day base)
+    c("ck_hwn", "HWN", "Heatwave number",     "temperature", "health", "events",   "ET-SCI", "perkins2013measurement"),
+    c("ck_hwf", "HWF", "Heatwave frequency",  "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
+    c("ck_hwd", "HWD", "Heatwave duration",   "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
+    c("ck_hwm", "HWM", "Heatwave magnitude",  "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
+    c("ck_hwa", "HWA", "Heatwave amplitude",  "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
+
+    # Temperature: ET-SCI cold-wave family (TN < 10th percentile, calendar-day base)
+    c("ck_cwn", "CWN", "Cold-wave number",    "temperature", "health", "events",   "ET-SCI", "perkins2013measurement"),
+    c("ck_cwf", "CWF", "Cold-wave frequency", "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
+    c("ck_cwd", "CWD", "Cold-wave duration",  "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
+    c("ck_cwm", "CWM", "Cold-wave magnitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
+    c("ck_cwa", "CWA", "Cold-wave amplitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
+
     # Temperature: energy and agriculture
     c("ck_heating_degree_days", NA_character_, "Heating degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
     c("ck_cooling_degree_days", NA_character_, "Cooling degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
