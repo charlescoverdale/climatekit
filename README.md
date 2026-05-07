@@ -73,7 +73,7 @@ As long as you have a numeric vector and a date vector, `climatekit` will work w
 | UK | [Met Office MIDAS](https://catalogue.ceda.ac.uk/uuid/dbd451271eb04662beade68da43546e1) | ~1,000 UK stations, daily | Free via CEDA, requires registration |
 | Europe | [ECA&D](https://www.ecad.eu/) | 20,000+ stations across Europe | Free download |
 | US | [ACIS (RCC)](https://www.rcc-acis.org/) | All US cooperative & ASOS stations | Free, no key |
-| Australia | [Bureau of Meteorology](http://www.bom.gov.au/climate/data/) | All BoM stations, daily | Free download |
+| Australia | [Bureau of Meteorology](https://www.bom.gov.au/climate/data/) | All BoM stations, daily | Free download |
 
 ---
 

@@ -44,3 +44,9 @@ This is a minor version update from 0.1.0 to 0.2.0.
 * DOIs in the Description field point to the canonical Alexander
   et al. (2006) and Zhang et al. (2011) ETCCDI references plus
   Zhang et al. (2005) for the in-base bootstrap.
+* The CRAN URL check may flag `https://www.bom.gov.au/climate/data/`
+  in README.md as 403 Forbidden. The Australian Bureau of
+  Meteorology server blocks programmatic User-Agents (including
+  R / libcurl) but the page is reachable from any browser. The
+  URL was present in the v0.1.0 release accepted to CRAN. Manually
+  verified 2026-05-07 with a `Mozilla/5.0` UA: 200.
