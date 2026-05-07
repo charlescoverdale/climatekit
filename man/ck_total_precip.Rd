@@ -2,9 +2,9 @@
 % Please edit documentation in R/precipitation.R
 \name{ck_total_precip}
 \alias{ck_total_precip}
-\title{Total Precipitation}
+\title{Total Wet-Day Precipitation (PRCPTOT)}
 \usage{
-ck_total_precip(precip, dates, period = "annual")
+ck_total_precip(precip, dates, period = "annual", wet_day_threshold = 1)
 }
 \arguments{
 \item{precip}{Numeric vector of daily precipitation (mm).}
@@ -13,12 +13,23 @@ ck_total_precip(precip, dates, period = "annual")
 
 \item{period}{Character. Aggregation period: \code{"annual"} (default) or
 \code{"monthly"}.}
+
+\item{wet_day_threshold}{Numeric (mm). Days with precipitation
+strictly below this threshold are excluded from the sum. Default 1.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-Total precipitation sum by period.
+Annual or monthly total precipitation in wet days, where a wet day is
+a day with precipitation at or above \code{wet_day_threshold} mm (default
+1 mm, the ETCCDI standard). This is the canonical ETCCDI 'PRCPTOT'
+definition (Alexander et al. 2006; Zhang et al. 2011).
+}
+\details{
+Sub-threshold trace amounts are excluded. Pass
+\code{wet_day_threshold = 0} to recover the previous behaviour of
+summing all daily values.
 }
 \examples{
 dates <- as.Date("2024-01-01") + 0:9

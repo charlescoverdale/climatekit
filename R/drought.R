@@ -1,17 +1,28 @@
 #' Standardized Precipitation Index (SPI)
 #'
-#' Compute the SPI by fitting a gamma distribution to monthly precipitation
-#' totals accumulated over a rolling window, then transforming to standard
-#' normal deviates.
+#' Compute the SPI by fitting a parametric distribution to rolling monthly
+#' precipitation accumulations and transforming to standard normal
+#' deviates. Two distributions are supported: the two-parameter gamma
+#' (default; WMO-1090 standard) and the three-parameter Pearson III. The
+#' Pearson III tail is heavier and is preferred in arid regions where the
+#' wet-day distribution is highly skewed (Stagge et al. 2015).
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
 #' @param dates Date vector of the same length as `precip`.
 #' @param scale Integer. Accumulation period in months (default 3).
+#' @param distribution Character. Either `"gamma"` (default) or
+#'   `"pearsonIII"`.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
-#' @references McKee, T. B., Doesken, N. J., & Kleist, J. (1993).
-#'   The relationship of drought frequency and duration to time scales.
+#' @references
+#' McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of
+#' drought frequency and duration to time scales.
+#'
+#' Stagge, J. H., Tallaksen, L. M., Gudmundsson, L., Van Loon, A. F., &
+#' Stahl, K. (2015). Candidate distributions for climatological drought
+#' indices (SPI and SPEI). *International Journal of Climatology*, 35(13),
+#' 4027-4040. \doi{10.1002/joc.4267}.
 #'
 #' @export
 #' @examples
@@ -19,18 +30,18 @@
 #' set.seed(42)
 #' precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
 #' ck_spi(precip, dates, scale = 3)
-ck_spi <- function(precip, dates, scale = 3) {
+ck_spi <- function(precip, dates, scale = 3,
+                   distribution = c("gamma", "pearsonIII")) {
   validate_numeric(precip, "precip")
   validate_dates(dates, length(precip))
   if (!is.numeric(scale) || length(scale) != 1 || scale < 1) {
     cli::cli_abort("{.arg scale} must be a positive integer.")
   }
   scale <- as.integer(scale)
+  distribution <- match.arg(distribution)
 
-  # Aggregate to monthly totals
   monthly <- .monthly_totals(precip, dates)
 
-  # Rolling accumulation
   n <- nrow(monthly)
   if (n < scale) {
     cli::cli_abort("Not enough months ({n}) for scale {scale}.")
@@ -41,13 +52,16 @@ ck_spi <- function(precip, dates, scale = 3) {
     accum[i] <- sum(monthly$total[(i - scale + 1):i], na.rm = TRUE)
   }
 
-  # Fit gamma per calendar month (WMO-1090 standard)
   cal_month <- as.integer(format(monthly$month, "%m"))
   spi_values <- rep(NA_real_, n)
+  fit_fun <- switch(distribution,
+    "gamma"      = .gamma_to_normal,
+    "pearsonIII" = .pearson3_to_normal
+  )
   for (m in 1:12) {
     idx <- which(cal_month == m & !is.na(accum))
     if (length(idx) >= 3) {
-      spi_values[idx] <- .gamma_to_normal(accum[idx])
+      spi_values[idx] <- fit_fun(accum[idx])
     }
   }
 
@@ -71,6 +85,10 @@ ck_spi <- function(precip, dates, scale = 3) {
 #' @param pet Numeric vector of daily potential evapotranspiration (mm).
 #' @param dates Date vector of the same length as `precip` and `pet`.
 #' @param scale Integer. Accumulation period in months (default 3).
+#' @param distribution Character. Either `"log-logistic"` (default,
+#'   Vicente-Serrano et al. 2010) or `"gev"` (Generalised Extreme
+#'   Value, fitted by L-moments; preferred for water-balance series
+#'   with heavy upper or lower tails).
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -86,7 +104,8 @@ ck_spi <- function(precip, dates, scale = 3) {
 #' precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
 #' pet <- rep(3, length(dates))
 #' ck_spei(precip, pet, dates, scale = 3)
-ck_spei <- function(precip, pet, dates, scale = 3) {
+ck_spei <- function(precip, pet, dates, scale = 3,
+                    distribution = c("log-logistic", "gev")) {
   validate_numeric(precip, "precip")
   validate_numeric(pet, "pet")
   validate_dates(dates, length(precip))
@@ -97,11 +116,9 @@ ck_spei <- function(precip, pet, dates, scale = 3) {
     cli::cli_abort("{.arg scale} must be a positive integer.")
   }
   scale <- as.integer(scale)
+  distribution <- match.arg(distribution)
 
-  # Climatic water balance
   wb <- precip - pet
-
-  # Aggregate to monthly totals
   monthly <- .monthly_totals(wb, dates)
 
   n <- nrow(monthly)
@@ -114,13 +131,16 @@ ck_spei <- function(precip, pet, dates, scale = 3) {
     accum[i] <- sum(monthly$total[(i - scale + 1):i], na.rm = TRUE)
   }
 
-  # Fit log-logistic per calendar month (Vicente-Serrano et al. 2010)
   cal_month <- as.integer(format(monthly$month, "%m"))
   spei_values <- rep(NA_real_, n)
+  fit_fun <- switch(distribution,
+    "log-logistic" = .loglogistic_to_normal,
+    "gev"          = .gev_to_normal
+  )
   for (m in 1:12) {
     idx <- which(cal_month == m & !is.na(accum))
     if (length(idx) >= 3) {
-      spei_values[idx] <- .loglogistic_to_normal(accum[idx])
+      spei_values[idx] <- fit_fun(accum[idx])
     }
   }
 
@@ -273,6 +293,118 @@ ck_pet <- function(tmin, tmax, lat, dates) {
     }
   }
   # Clamp to avoid Inf
+  cdf[cdf <= 0] <- 0.001
+  cdf[cdf >= 1] <- 0.999
+
+  result[valid] <- stats::qnorm(cdf)
+  result
+}
+
+#' Fit Pearson III distribution (method of moments) and transform to standard normal
+#'
+#' Method-of-moments estimator for the three-parameter Pearson III. Used as
+#' an alternative SPI fit for arid-region or heavy-tailed precipitation
+#' regimes where the gamma fit is poor (Stagge et al. 2015).
+#' @noRd
+.pearson3_to_normal <- function(x) {
+  result <- rep(NA_real_, length(x))
+  valid <- !is.na(x)
+  xv <- x[valid]
+  n <- length(xv)
+
+  if (n < 3L) return(result)
+
+  mu <- mean(xv)
+  sigma <- stats::sd(xv)
+  if (!is.finite(sigma) || sigma <= 0) return(result)
+
+  m3 <- mean((xv - mu)^3)
+  gamma_skew <- m3 / sigma^3
+
+  if (!is.finite(gamma_skew) || abs(gamma_skew) < 1e-6) {
+    # Approximately normal: fall back to standardisation.
+    cdf <- stats::pnorm((xv - mu) / sigma)
+  } else {
+    alpha <- 4 / gamma_skew^2
+    beta  <- sigma * abs(gamma_skew) / 2
+    xi    <- mu - alpha * sign(gamma_skew) * beta
+
+    if (!is.finite(alpha) || alpha <= 0 || !is.finite(beta) || beta <= 0) {
+      return(result)
+    }
+
+    if (gamma_skew > 0) {
+      cdf <- stats::pgamma((xv - xi) / beta, shape = alpha)
+    } else {
+      cdf <- 1 - stats::pgamma((xi - xv) / beta, shape = alpha)
+    }
+  }
+
+  cdf[is.na(cdf)] <- 0.5
+  cdf[cdf <= 0] <- 0.001
+  cdf[cdf >= 1] <- 0.999
+
+  result[valid] <- stats::qnorm(cdf)
+  result
+}
+
+#' Fit Generalised Extreme Value distribution (L-moments) and transform to standard normal
+#'
+#' Hosking (1985, 1990) L-moment estimator. Used as an alternative SPEI
+#' fit when the climatic water balance has long-tailed extremes that the
+#' log-logistic does not capture.
+#' @noRd
+.gev_to_normal <- function(x) {
+  result <- rep(NA_real_, length(x))
+  valid <- !is.na(x)
+  xv <- x[valid]
+  n <- length(xv)
+
+  if (n < 4L) return(result)
+
+  xs <- sort(xv)
+  ranks <- seq_len(n)
+  b0 <- mean(xs)
+  b1 <- sum(((ranks - 1) / (n - 1)) * xs) / n
+  b2 <- sum(((ranks - 1) * (ranks - 2) / ((n - 1) * (n - 2))) * xs) / n
+
+  l1 <- b0
+  l2 <- 2 * b1 - b0
+  l3 <- 6 * b2 - 6 * b1 + b0
+
+  if (!is.finite(l2) || l2 <= 0) {
+    cli::cli_warn("SPEI GEV fit failed: L-moment l2 <= 0. Returning NAs.")
+    return(result)
+  }
+  t3 <- l3 / l2
+  if (!is.finite(t3) || abs(t3) >= 1) {
+    cli::cli_warn("SPEI GEV fit failed: L-skewness out of range. Returning NAs.")
+    return(result)
+  }
+
+  # Hosking 1985 approximation; k follows Hosking sign convention
+  # (opposite of the textbook xi).
+  c_const <- 2 / (3 + t3) - log(2) / log(3)
+  k <- 7.8590 * c_const + 2.9554 * c_const^2
+
+  if (abs(k) < 1e-6) {
+    # Gumbel limit: F(x) = exp(-exp(-(x - u) / alpha))
+    alpha <- l2 / log(2)
+    if (!is.finite(alpha) || alpha <= 0) return(result)
+    u <- l1 - alpha * 0.5772156649  # Euler-Mascheroni
+    cdf <- exp(-exp(-(xv - u) / alpha))
+  } else {
+    g1 <- gamma(1 + k)
+    if (!is.finite(g1)) return(result)
+    alpha <- l2 * k / ((1 - 2^(-k)) * g1)
+    if (!is.finite(alpha) || alpha <= 0) return(result)
+    u <- l1 - alpha * (1 - g1) / k
+    z <- 1 - k * (xv - u) / alpha
+    z[z <= 0] <- NA_real_
+    cdf <- exp(-z^(1 / k))
+  }
+
+  cdf[is.na(cdf)] <- 0.5
   cdf[cdf <= 0] <- 0.001
   cdf[cdf >= 1] <- 0.999
 

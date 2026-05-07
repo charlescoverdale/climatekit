@@ -4,7 +4,7 @@
 \alias{ck_spei}
 \title{Standardized Precipitation-Evapotranspiration Index (SPEI)}
 \usage{
-ck_spei(precip, pet, dates, scale = 3)
+ck_spei(precip, pet, dates, scale = 3, distribution = c("log-logistic", "gev"))
 }
 \arguments{
 \item{precip}{Numeric vector of daily precipitation (mm).}
@@ -14,6 +14,11 @@ ck_spei(precip, pet, dates, scale = 3)
 \item{dates}{Date vector of the same length as \code{precip} and \code{pet}.}
 
 \item{scale}{Integer. Accumulation period in months (default 3).}
+
+\item{distribution}{Character. Either \code{"log-logistic"} (default,
+Vicente-Serrano et al. 2010) or \code{"gev"} (Generalised Extreme
+Value, fitted by L-moments; preferred for water-balance series
+with heavy upper or lower tails).}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.

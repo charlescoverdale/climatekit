@@ -4,7 +4,14 @@
 \alias{ck_cwm}
 \title{Cold-Wave Magnitude (CWM)}
 \usage{
-ck_cwm(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_cwm(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 }
 \arguments{
 \item{tmin}{Numeric vector of daily minimum temperatures (degrees C).}
@@ -17,14 +24,18 @@ data covering the reference period.}
 
 \item{min_spell}{Integer. Minimum spell length in days (default 3,
 the ET-SCI standard).}
+
+\item{mode}{One of \code{"excess"} (default) or \code{"absolute"}. See details.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-ET-SCI cold-wave family index. Mean of (threshold - daily Tmin)
-across all cold-wave days in the year, expressed as a positive
-magnitude. Returns \code{NA} for years with no cold waves.
+ET-SCI cold-wave family index. \code{mode = "excess"} (default) returns
+the mean of (threshold - Tmin) across cold-wave days, expressed as
+a positive magnitude. \code{mode = "absolute"} returns the mean raw
+Tmin across cold-wave days. Returns \code{NA} for years with no cold
+waves.
 }
 \examples{
 set.seed(1)

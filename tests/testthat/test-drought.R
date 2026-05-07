@@ -152,3 +152,38 @@ test_that("SPEI warns on fitting failure rather than silently falling back", {
   )
   expect_s3_class(result, "data.frame")
 })
+
+# Distribution choice (Phase C) ----------------------------------------------
+
+test_that("ck_spi pearsonIII produces standardised output", {
+  dates <- seq(as.Date("1961-01-01"), as.Date("1990-12-31"), by = "day")
+  set.seed(101)
+  precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
+  g <- ck_spi(precip, dates, scale = 3, distribution = "gamma")
+  p3 <- ck_spi(precip, dates, scale = 3, distribution = "pearsonIII")
+  expect_s3_class(p3, "data.frame")
+  # Standardised: mean near 0, sd near 1
+  expect_lt(abs(mean(p3$value, na.rm = TRUE)), 0.3)
+  expect_lt(abs(sd(p3$value, na.rm = TRUE) - 1), 0.3)
+  # gamma and pearsonIII should agree to within reasonable tolerance
+  expect_gt(cor(g$value, p3$value, use = "complete.obs"), 0.9)
+})
+
+test_that("ck_spei gev produces standardised output", {
+  dates <- seq(as.Date("1961-01-01"), as.Date("1990-12-31"), by = "day")
+  set.seed(102)
+  precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
+  pet <- rep(3, length(dates))
+  gev <- ck_spei(precip, pet, dates, scale = 3, distribution = "gev")
+  expect_s3_class(gev, "data.frame")
+  expect_lt(abs(mean(gev$value, na.rm = TRUE)), 0.3)
+  expect_lt(abs(sd(gev$value, na.rm = TRUE) - 1), 0.3)
+})
+
+test_that("invalid distribution argument is rejected", {
+  dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+  precip <- rep(1, length(dates))
+  pet <- rep(0.5, length(dates))
+  expect_error(ck_spi(precip, dates, distribution = "bogus"), "should be one of")
+  expect_error(ck_spei(precip, pet, dates, distribution = "bogus"), "should be one of")
+})

@@ -4,7 +4,14 @@
 \alias{ck_hwm}
 \title{Heatwave Magnitude (HWM)}
 \usage{
-ck_hwm(tmax, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_hwm(
+  tmax,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 }
 \arguments{
 \item{tmax}{Numeric vector of daily maximum temperatures (degrees C).}
@@ -17,14 +24,19 @@ data covering the reference period.}
 
 \item{min_spell}{Integer. Minimum spell length in days (default 3,
 the ET-SCI standard).}
+
+\item{mode}{One of \code{"excess"} (default) or \code{"absolute"}. See details.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-ET-SCI heatwave family index. Mean excess of daily Tmax over the
-calendar-day 90th percentile threshold across all heatwave days in
-the year. Returns \code{NA} for years with no heatwaves.
+ET-SCI heatwave family index. Reports the mean magnitude of daily
+Tmax across all heatwave days in the year. \code{mode = "excess"}
+(default) gives the mean of (Tmax - threshold), matching the
+ET-SCI / climpact convention. \code{mode = "absolute"} gives the mean
+raw Tmax across heatwave days, matching Perkins-Alexander (2013).
+Returns \code{NA} for years with no heatwaves.
 }
 \examples{
 set.seed(1)

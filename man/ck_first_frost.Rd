@@ -4,19 +4,26 @@
 \alias{ck_first_frost}
 \title{First Frost Date}
 \usage{
-ck_first_frost(tmin, dates)
+ck_first_frost(tmin, dates, lat = 50)
 }
 \arguments{
 \item{tmin}{Numeric vector of daily minimum temperatures (degrees C).}
 
 \item{dates}{Date vector of the same length as \code{tmin}.}
+
+\item{lat}{Numeric. Latitude in decimal degrees, used to select the
+hemisphere convention. Default 50 (Northern Hemisphere).}
 }
 \value{
 A data frame with columns \code{period}, \code{value} (day of year),
 \code{date} (the frost date), \code{index}, and \code{unit}.
 }
 \description{
-Date of the first autumn frost (Tmin < 0 degrees C) after July 1 in each year.
+Day of year of the first autumn frost (Tmin < 0 degrees C) in each
+year. Hemisphere is selected by \code{lat}: in the Northern Hemisphere
+(\code{lat >= 0}) the search starts at July 1 (DOY 183); in the Southern
+Hemisphere it starts at March 1 (DOY 60), matching the autumn entry
+for each.
 }
 \examples{
 dates <- seq(as.Date("2024-07-01"), as.Date("2024-12-31"), by = "day")

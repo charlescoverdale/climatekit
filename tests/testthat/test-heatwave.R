@@ -121,3 +121,50 @@ test_that("heatwave / cold-wave functions error on missing reference data", {
   expect_error(ck_cwn(tmin, dates, ref_start = 1961L, ref_end = 1990L),
                "reference period")
 })
+
+# Excess vs absolute mode (Phase B) ------------------------------------------
+
+test_that("ck_hwm / ck_hwa absolute mode returns raw Tmax", {
+  d <- make_tmax_two_years(seed = 61)
+  hot <- which(d$dates >= as.Date("1962-07-15") & d$dates <= as.Date("1962-07-21"))
+  d$tmax[hot] <- d$tmax[hot] + 25  # injected heatwave
+  hwm_ex  <- ck_hwm(d$tmax, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "excess")
+  hwm_abs <- ck_hwm(d$tmax, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "absolute")
+  hwa_ex  <- ck_hwa(d$tmax, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "excess")
+  hwa_abs <- ck_hwa(d$tmax, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "absolute")
+  yr <- format(hwm_ex$period, "%Y") == "1962"
+  # Absolute Tmax must be larger than the excess (absolute = excess + threshold).
+  expect_gt(hwm_abs$value[yr], hwm_ex$value[yr])
+  expect_gt(hwa_abs$value[yr], hwa_ex$value[yr])
+})
+
+test_that("ck_cwm / ck_cwa absolute mode returns raw Tmin", {
+  d <- make_tmin_two_years(seed = 62)
+  cold <- which(d$dates >= as.Date("1962-02-01") & d$dates <= as.Date("1962-02-07"))
+  d$tmin[cold] <- d$tmin[cold] - 25
+  cwm_ex  <- ck_cwm(d$tmin, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "excess")
+  cwm_abs <- ck_cwm(d$tmin, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "absolute")
+  cwa_ex  <- ck_cwa(d$tmin, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "excess")
+  cwa_abs <- ck_cwa(d$tmin, d$dates, ref_start = 1961L, ref_end = 1961L,
+                    mode = "absolute")
+  yr <- format(cwm_ex$period, "%Y") == "1962"
+  # excess is positive; absolute Tmin during deep cold should be negative or much lower
+  expect_lt(cwm_abs$value[yr], cwm_ex$value[yr])
+  expect_lt(cwa_abs$value[yr], cwa_ex$value[yr])
+})
+
+test_that("invalid mode is rejected", {
+  d <- make_tmax_two_years(seed = 63)
+  expect_error(
+    ck_hwm(d$tmax, d$dates, ref_start = 1961L, ref_end = 1961L,
+           mode = "bogus"),
+    "should be one of"
+  )
+})

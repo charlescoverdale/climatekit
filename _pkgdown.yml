@@ -37,6 +37,7 @@ reference:
       - ck_cwd
       - ck_cwm
       - ck_cwa
+      - ck_ehf
       - ck_diurnal_range
       - ck_first_frost
       - ck_last_frost

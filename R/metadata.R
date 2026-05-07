@@ -317,6 +317,9 @@ ck_catalogue <- function() {
     c("ck_cwm", "CWM", "Cold-wave magnitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
     c("ck_cwa", "CWA", "Cold-wave amplitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
 
+    # Temperature: Excess Heat Factor (Nairn & Fawcett 2013, Bureau of Meteorology operational metric)
+    c("ck_ehf", "EHF", "Excess Heat Factor",  "temperature", "health", "\u00b0C^2", "ET-SCI", "nairn2013defining"),
+
     # Temperature: energy and agriculture
     c("ck_heating_degree_days", NA_character_, "Heating degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
     c("ck_cooling_degree_days", NA_character_, "Cooling degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),

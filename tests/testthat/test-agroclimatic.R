@@ -120,3 +120,42 @@ test_that("Branas with known monthly means and precip", {
   result <- ck_branas(precip, tavg, dates)
   expect_equal(result$value, 15 * 100, tolerance = 1)
 })
+
+# Hemisphere fixes -----------------------------------------------------------
+
+test_that("ck_first_frost detects SH autumn frost (lat < 0)", {
+  dates <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
+  tmin <- rep(10, length(dates))
+  # Inject SH autumn frost (DOY 140-142, May)
+  tmin[140:142] <- -1
+  expect_true(is.na(ck_first_frost(tmin, dates, lat = 50)$value))
+  expect_equal(ck_first_frost(tmin, dates, lat = -33)$value, 140)
+})
+
+test_that("ck_last_frost detects SH spring frost (lat < 0)", {
+  dates <- seq(as.Date("2024-01-01"), as.Date("2024-12-31"), by = "day")
+  tmin <- rep(10, length(dates))
+  # Inject SH spring frost (DOY 240-242, late August)
+  tmin[240:242] <- -1
+  expect_true(is.na(ck_last_frost(tmin, dates, lat = 50)$value))
+  expect_equal(ck_last_frost(tmin, dates, lat = -33)$value, 242)
+})
+
+test_that("ck_first_frost / ck_last_frost reject non-numeric lat", {
+  dates <- as.Date("2024-01-01") + 0:9
+  tmin <- rep(0, 10)
+  expect_error(ck_first_frost(tmin, dates, lat = "a"), "numeric")
+  expect_error(ck_last_frost(tmin, dates, lat = c(1, 2)), "numeric")
+})
+
+test_that("ck_branas SH growing season spans Oct-Feb across calendar years", {
+  dates <- seq(as.Date("2024-01-01"), as.Date("2025-12-31"), by = "day")
+  set.seed(7)
+  tavg <- rnorm(length(dates), mean = 12, sd = 3)
+  precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
+  nh <- ck_branas(precip, tavg, dates, lat = 50)
+  sh <- ck_branas(precip, tavg, dates, lat = -33)
+  expect_equal(nrow(nh), 2L)
+  expect_equal(nrow(sh), 2L)
+  expect_false(identical(nh$value, sh$value))
+})

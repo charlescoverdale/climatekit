@@ -109,14 +109,20 @@ ck_winkler <- function(tavg, dates) {
 
 #' Branas Hydrothermal Index
 #'
-#' The Branas index combines temperature and precipitation during the growing
-#' season to estimate disease pressure (especially downy mildew) in
-#' vineyards. It is the sum of the product of monthly mean temperature and
-#' monthly precipitation for April-August.
+#' The Branas index combines temperature and precipitation during the
+#' growing season to estimate disease pressure (especially downy mildew)
+#' in vineyards. It is the sum of (monthly mean temperature) times
+#' (monthly precipitation total) over the five months of the growing
+#' season: April-August in the Northern Hemisphere; October-February
+#' in the Southern Hemisphere. The Southern Hemisphere season spans
+#' two calendar years and is reported under the year in which it
+#' starts.
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
 #' @param tavg Numeric vector of daily mean temperatures (degrees C).
 #' @param dates Date vector of the same length as `precip`.
+#' @param lat Numeric. Latitude in decimal degrees, used to select the
+#'   hemisphere convention. Default 50 (Northern Hemisphere).
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -130,24 +136,37 @@ ck_winkler <- function(tavg, dates) {
 #' tavg <- rnorm(length(dates), mean = 12, sd = 3)
 #' precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
 #' ck_branas(precip, tavg, dates)
-ck_branas <- function(precip, tavg, dates) {
+ck_branas <- function(precip, tavg, dates, lat = 50) {
   validate_numeric(precip, "precip")
   validate_numeric(tavg, "tavg")
   validate_dates(dates, length(precip))
   if (length(precip) != length(tavg)) {
     cli::cli_abort("{.arg precip} and {.arg tavg} must have the same length.")
   }
+  if (!is.numeric(lat) || length(lat) != 1L) {
+    cli::cli_abort("{.arg lat} must be a single numeric value.")
+  }
 
   years <- as.integer(format(dates, "%Y"))
-  months <- as.integer(format(dates, "%m"))
   month_labels <- format(dates, "%Y-%m")
   unique_years <- unique(years)
 
+  # Per-year list of "year-month" labels covering the five-month
+  # growing season for each hemisphere.
+  season_months <- function(yr) {
+    if (lat >= 0) {
+      # NH: April through August of the same calendar year.
+      paste0(yr, "-", sprintf("%02d", 4:8))
+    } else {
+      # SH: October-December of yr, January-February of yr + 1.
+      c(paste0(yr,    "-", sprintf("%02d", 10:12)),
+        paste0(yr + 1L, "-", sprintf("%02d",  1:2)))
+    }
+  }
+
   values <- vapply(unique_years, function(yr) {
-    # April-August
-    gs_months <- paste0(yr, "-", sprintf("%02d", 4:8))
     total <- 0
-    for (m in gs_months) {
+    for (m in season_months(yr)) {
       idx <- which(month_labels == m)
       if (length(idx) == 0) next
       monthly_t <- mean(tavg[idx], na.rm = TRUE)
@@ -163,10 +182,16 @@ ck_branas <- function(precip, tavg, dates) {
 
 #' First Frost Date
 #'
-#' Date of the first autumn frost (Tmin < 0 degrees C) after July 1 in each year.
+#' Day of year of the first autumn frost (Tmin < 0 degrees C) in each
+#' year. Hemisphere is selected by `lat`: in the Northern Hemisphere
+#' (`lat >= 0`) the search starts at July 1 (DOY 183); in the Southern
+#' Hemisphere it starts at March 1 (DOY 60), matching the autumn entry
+#' for each.
 #'
 #' @param tmin Numeric vector of daily minimum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmin`.
+#' @param lat Numeric. Latitude in decimal degrees, used to select the
+#'   hemisphere convention. Default 50 (Northern Hemisphere).
 #'
 #' @return A data frame with columns `period`, `value` (day of year),
 #'   `date` (the frost date), `index`, and `unit`.
@@ -177,17 +202,23 @@ ck_branas <- function(precip, tavg, dates) {
 #' set.seed(42)
 #' tmin <- 15 - seq_along(dates) * 0.15 + rnorm(length(dates), sd = 3)
 #' ck_first_frost(tmin, dates)
-ck_first_frost <- function(tmin, dates) {
+ck_first_frost <- function(tmin, dates, lat = 50) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
+  if (!is.numeric(lat) || length(lat) != 1L) {
+    cli::cli_abort("{.arg lat} must be a single numeric value.")
+  }
 
   years <- as.integer(format(dates, "%Y"))
   doy <- as.integer(format(dates, "%j"))
   unique_years <- unique(years)
 
+  # NH autumn: search after July 1 (DOY 183).
+  # SH autumn: search after March 1 (DOY 60).
+  cutoff <- if (lat >= 0) 183L else 60L
+
   rows <- lapply(unique_years, function(yr) {
-    # After July 1 (doy 183)
-    mask <- years == yr & doy >= 183 & tmin < 0
+    mask <- years == yr & doy >= cutoff & !is.na(tmin) & tmin < 0
     if (!any(mask)) {
       data.frame(period = as.Date(paste0(yr, "-01-01")),
                  value = NA_real_, date = as.Date(NA),
@@ -207,10 +238,15 @@ ck_first_frost <- function(tmin, dates) {
 
 #' Last Frost Date
 #'
-#' Date of the last spring frost (Tmin < 0 degrees C) before July 1 in each year.
+#' Day of year of the last spring frost (Tmin < 0 degrees C) in each
+#' year. Hemisphere is selected by `lat`: in the Northern Hemisphere
+#' the search runs up to July 1 (DOY 183); in the Southern Hemisphere
+#' up to October 1 (DOY 274), matching the spring boundary for each.
 #'
 #' @param tmin Numeric vector of daily minimum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmin`.
+#' @param lat Numeric. Latitude in decimal degrees, used to select the
+#'   hemisphere convention. Default 50 (Northern Hemisphere).
 #'
 #' @return A data frame with columns `period`, `value` (day of year),
 #'   `date` (the frost date), `index`, and `unit`.
@@ -221,16 +257,23 @@ ck_first_frost <- function(tmin, dates) {
 #' set.seed(42)
 #' tmin <- -10 + seq_along(dates) * 0.12 + rnorm(length(dates), sd = 3)
 #' ck_last_frost(tmin, dates)
-ck_last_frost <- function(tmin, dates) {
+ck_last_frost <- function(tmin, dates, lat = 50) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
+  if (!is.numeric(lat) || length(lat) != 1L) {
+    cli::cli_abort("{.arg lat} must be a single numeric value.")
+  }
 
   years <- as.integer(format(dates, "%Y"))
   doy <- as.integer(format(dates, "%j"))
   unique_years <- unique(years)
 
+  # NH spring: search up to July 1 (DOY 183).
+  # SH spring: search up to October 1 (DOY 274).
+  cutoff <- if (lat >= 0) 183L else 274L
+
   rows <- lapply(unique_years, function(yr) {
-    mask <- years == yr & doy < 183 & tmin < 0
+    mask <- years == yr & doy < cutoff & !is.na(tmin) & tmin < 0
     if (!any(mask)) {
       data.frame(period = as.Date(paste0(yr, "-01-01")),
                  value = NA_real_, date = as.Date(NA),

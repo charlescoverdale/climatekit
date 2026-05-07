@@ -179,3 +179,41 @@ test_that("ck_r95p errors on dry reference period", {
     "wet days"
   )
 })
+
+# Bug fixes ------------------------------------------------------------------
+
+test_that("ck_total_precip applies ETCCDI wet-day filter (PRCPTOT)", {
+  dates <- as.Date("2024-01-01") + 0:5
+  # Three trace days (<1mm) and three wet days; ETCCDI excludes the trace days.
+  precip <- c(0.5, 0.3, 0.7, 5, 10, 15)
+  expect_equal(ck_total_precip(precip, dates)$value, 30)
+})
+
+test_that("ck_total_precip wet_day_threshold = 0 recovers raw sum", {
+  dates <- as.Date("2024-01-01") + 0:5
+  precip <- c(0.5, 0.3, 0.7, 5, 10, 15)
+  expect_equal(
+    ck_total_precip(precip, dates, wet_day_threshold = 0)$value,
+    sum(precip)
+  )
+})
+
+test_that("ck_total_precip rejects negative threshold", {
+  dates <- as.Date("2024-01-01") + 0:2
+  expect_error(
+    ck_total_precip(c(1, 2, 3), dates, wet_day_threshold = -1),
+    "non-negative"
+  )
+})
+
+test_that("ck_precip_intensity returns NA for all-NA period", {
+  dates <- as.Date("2024-01-01") + 0:4
+  expect_true(is.na(ck_precip_intensity(rep(NA_real_, 5), dates)$value))
+})
+
+test_that("ck_precip_intensity ignores NAs in mixed period", {
+  dates <- as.Date("2024-01-01") + 0:4
+  precip <- c(NA, 5, NA, 15, NA)
+  result <- ck_precip_intensity(precip, dates)
+  expect_equal(result$value, 10)
+})

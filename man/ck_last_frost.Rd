@@ -4,19 +4,25 @@
 \alias{ck_last_frost}
 \title{Last Frost Date}
 \usage{
-ck_last_frost(tmin, dates)
+ck_last_frost(tmin, dates, lat = 50)
 }
 \arguments{
 \item{tmin}{Numeric vector of daily minimum temperatures (degrees C).}
 
 \item{dates}{Date vector of the same length as \code{tmin}.}
+
+\item{lat}{Numeric. Latitude in decimal degrees, used to select the
+hemisphere convention. Default 50 (Northern Hemisphere).}
 }
 \value{
 A data frame with columns \code{period}, \code{value} (day of year),
 \code{date} (the frost date), \code{index}, and \code{unit}.
 }
 \description{
-Date of the last spring frost (Tmin < 0 degrees C) before July 1 in each year.
+Day of year of the last spring frost (Tmin < 0 degrees C) in each
+year. Hemisphere is selected by \code{lat}: in the Northern Hemisphere
+the search runs up to July 1 (DOY 183); in the Southern Hemisphere
+up to October 1 (DOY 274), matching the spring boundary for each.
 }
 \examples{
 dates <- seq(as.Date("2024-01-01"), as.Date("2024-06-30"), by = "day")

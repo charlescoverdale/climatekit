@@ -4,7 +4,7 @@
 \alias{ck_branas}
 \title{Branas Hydrothermal Index}
 \usage{
-ck_branas(precip, tavg, dates)
+ck_branas(precip, tavg, dates, lat = 50)
 }
 \arguments{
 \item{precip}{Numeric vector of daily precipitation (mm).}
@@ -12,15 +12,22 @@ ck_branas(precip, tavg, dates)
 \item{tavg}{Numeric vector of daily mean temperatures (degrees C).}
 
 \item{dates}{Date vector of the same length as \code{precip}.}
+
+\item{lat}{Numeric. Latitude in decimal degrees, used to select the
+hemisphere convention. Default 50 (Northern Hemisphere).}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-The Branas index combines temperature and precipitation during the growing
-season to estimate disease pressure (especially downy mildew) in
-vineyards. It is the sum of the product of monthly mean temperature and
-monthly precipitation for April-August.
+The Branas index combines temperature and precipitation during the
+growing season to estimate disease pressure (especially downy mildew)
+in vineyards. It is the sum of (monthly mean temperature) times
+(monthly precipitation total) over the five months of the growing
+season: April-August in the Northern Hemisphere; October-February
+in the Southern Hemisphere. The Southern Hemisphere season spans
+two calendar years and is reported under the year in which it
+starts.
 }
 \examples{
 dates <- seq(as.Date("2024-04-01"), as.Date("2024-08-31"), by = "day")

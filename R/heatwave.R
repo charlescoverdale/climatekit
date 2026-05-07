@@ -20,6 +20,17 @@
 # precipitation.R as `ck_wet_days`.
 
 #' Per-year heatwave / cold-wave family statistics
+#'
+#' Returns one row per analysis year with columns:
+#'   year, n (count), f (total days in events), d (longest event),
+#'   m_excess, a_excess, m_value, a_extreme.
+#'
+#' `m_excess` and `a_excess` are mean and peak of (value - threshold)
+#' for `op = ">"` heatwave or (threshold - value) for `op = "<"` cold
+#' wave (always non-negative). `m_value` is the mean of raw values on
+#' event days. `a_extreme` is the max raw value on event days for `op
+#' = ">"` and the min raw value for `op = "<"`. NA for years with no
+#' qualifying events.
 #' @noRd
 .spell_family_stats <- function(values, dates, ref_start, ref_end,
                                 percentile, op, min_spell) {
@@ -47,9 +58,11 @@
     sel <- years == yr
     in_y <- in_spell[sel]
     ex_y <- excess[sel]
+    val_y <- values[sel]
 
     if (!any(in_y, na.rm = TRUE)) {
-      return(c(yr, 0L, 0L, 0L, NA_real_, NA_real_))
+      return(c(yr, 0L, 0L, 0L,
+               NA_real_, NA_real_, NA_real_, NA_real_))
     }
 
     r <- rle(in_y)
@@ -58,28 +71,44 @@
     f_total  <- sum(seg_lens)
     d_max    <- max(seg_lens)
 
-    ex_in <- ex_y[in_y & !is.na(in_y) & !is.na(ex_y)]
+    keep <- in_y & !is.na(in_y) & !is.na(ex_y) & !is.na(val_y)
+    ex_in  <- ex_y[keep]
+    val_in <- val_y[keep]
+
     if (length(ex_in) > 0L) {
-      m_mean <- mean(ex_in)
-      a_max  <- max(ex_in)
+      m_excess  <- mean(ex_in)
+      a_excess  <- max(ex_in)
+      m_value   <- mean(val_in)
+      a_extreme <- if (identical(op, ">")) max(val_in) else min(val_in)
     } else {
-      m_mean <- NA_real_
-      a_max  <- NA_real_
+      m_excess  <- NA_real_
+      a_excess  <- NA_real_
+      m_value   <- NA_real_
+      a_extreme <- NA_real_
     }
 
-    c(yr, n_events, f_total, d_max, m_mean, a_max)
+    c(yr, n_events, f_total, d_max,
+      m_excess, a_excess, m_value, a_extreme)
   })
 
   m <- do.call(rbind, rows)
   data.frame(
-    year   = as.integer(m[, 1]),
-    n      = as.integer(m[, 2]),
-    f      = as.integer(m[, 3]),
-    d      = as.integer(m[, 4]),
-    m_mean = m[, 5],
-    a_max  = m[, 6],
+    year      = as.integer(m[, 1]),
+    n         = as.integer(m[, 2]),
+    f         = as.integer(m[, 3]),
+    d         = as.integer(m[, 4]),
+    m_excess  = m[, 5],
+    a_excess  = m[, 6],
+    m_value   = m[, 7],
+    a_extreme = m[, 8],
     stringsAsFactors = FALSE
   )
+}
+
+#' Validate the spell-family `mode` argument
+#' @noRd
+.validate_spell_mode <- function(mode) {
+  match.arg(mode, c("excess", "absolute"))
 }
 
 # Heatwave family (TX > 90th percentile, calendar-day base) -----------------
@@ -175,11 +204,15 @@ ck_hwd <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 
 #' Heatwave Magnitude (HWM)
 #'
-#' ET-SCI heatwave family index. Mean excess of daily Tmax over the
-#' calendar-day 90th percentile threshold across all heatwave days in
-#' the year. Returns `NA` for years with no heatwaves.
+#' ET-SCI heatwave family index. Reports the mean magnitude of daily
+#' Tmax across all heatwave days in the year. `mode = "excess"`
+#' (default) gives the mean of (Tmax - threshold), matching the
+#' ET-SCI / climpact convention. `mode = "absolute"` gives the mean
+#' raw Tmax across heatwave days, matching Perkins-Alexander (2013).
+#' Returns `NA` for years with no heatwaves.
 #'
 #' @inheritParams ck_hwn
+#' @param mode One of `"excess"` (default) or `"absolute"`. See details.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -191,23 +224,29 @@ ck_hwd <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_hwm(tmax, dates))
 ck_hwm <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
-                   min_spell = 3L) {
+                   min_spell = 3L, mode = c("excess", "absolute")) {
   validate_numeric(tmax, "tmax")
   validate_dates(dates, length(tmax))
+  mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
                                percentile = 0.90, op = ">",
                                min_spell = min_spell)
-  build_result(as.character(stats$year), stats$m_mean,
+  vals <- if (mode == "excess") stats$m_excess else stats$m_value
+  build_result(as.character(stats$year), vals,
                "hwm", "\u00b0C", "annual")
 }
 
 #' Heatwave Amplitude (HWA)
 #'
-#' ET-SCI heatwave family index. Peak excess of daily Tmax over the
-#' calendar-day 90th percentile threshold across all heatwave days in
-#' the year. Returns `NA` for years with no heatwaves.
+#' ET-SCI heatwave family index. Reports the peak magnitude of daily
+#' Tmax across all heatwave days in the year. `mode = "excess"`
+#' (default) gives the maximum of (Tmax - threshold). `mode =
+#' "absolute"` gives the maximum raw Tmax across heatwave days
+#' (matching Perkins-Alexander 2013). Returns `NA` for years with
+#' no heatwaves.
 #'
 #' @inheritParams ck_hwn
+#' @param mode One of `"excess"` (default) or `"absolute"`. See details.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -219,13 +258,15 @@ ck_hwm <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_hwa(tmax, dates))
 ck_hwa <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
-                   min_spell = 3L) {
+                   min_spell = 3L, mode = c("excess", "absolute")) {
   validate_numeric(tmax, "tmax")
   validate_dates(dates, length(tmax))
+  mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
                                percentile = 0.90, op = ">",
                                min_spell = min_spell)
-  build_result(as.character(stats$year), stats$a_max,
+  vals <- if (mode == "excess") stats$a_excess else stats$a_extreme
+  build_result(as.character(stats$year), vals,
                "hwa", "\u00b0C", "annual")
 }
 
@@ -324,11 +365,14 @@ ck_cwd <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 
 #' Cold-Wave Magnitude (CWM)
 #'
-#' ET-SCI cold-wave family index. Mean of (threshold - daily Tmin)
-#' across all cold-wave days in the year, expressed as a positive
-#' magnitude. Returns `NA` for years with no cold waves.
+#' ET-SCI cold-wave family index. `mode = "excess"` (default) returns
+#' the mean of (threshold - Tmin) across cold-wave days, expressed as
+#' a positive magnitude. `mode = "absolute"` returns the mean raw
+#' Tmin across cold-wave days. Returns `NA` for years with no cold
+#' waves.
 #'
 #' @inheritParams ck_cwn
+#' @param mode One of `"excess"` (default) or `"absolute"`. See details.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -340,23 +384,28 @@ ck_cwd <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_cwm(tmin, dates))
 ck_cwm <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
-                   min_spell = 3L) {
+                   min_spell = 3L, mode = c("excess", "absolute")) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
+  mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
                                percentile = 0.10, op = "<",
                                min_spell = min_spell)
-  build_result(as.character(stats$year), stats$m_mean,
+  vals <- if (mode == "excess") stats$m_excess else stats$m_value
+  build_result(as.character(stats$year), vals,
                "cwm", "\u00b0C", "annual")
 }
 
 #' Cold-Wave Amplitude (CWA)
 #'
-#' ET-SCI cold-wave family index. Peak of (threshold - daily Tmin)
-#' across all cold-wave days in the year, expressed as a positive
-#' magnitude. Returns `NA` for years with no cold waves.
+#' ET-SCI cold-wave family index. `mode = "excess"` (default) returns
+#' the peak (threshold - Tmin) across cold-wave days, expressed as a
+#' positive magnitude. `mode = "absolute"` returns the minimum raw
+#' Tmin across cold-wave days (the coldest event-day value). Returns
+#' `NA` for years with no cold waves.
 #'
 #' @inheritParams ck_cwn
+#' @param mode One of `"excess"` (default) or `"absolute"`. See details.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -368,12 +417,14 @@ ck_cwm <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #'         rnorm(length(dates))
 #' tail(ck_cwa(tmin, dates))
 ck_cwa <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
-                   min_spell = 3L) {
+                   min_spell = 3L, mode = c("excess", "absolute")) {
   validate_numeric(tmin, "tmin")
   validate_dates(dates, length(tmin))
+  mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
                                percentile = 0.10, op = "<",
                                min_spell = min_spell)
-  build_result(as.character(stats$year), stats$a_max,
+  vals <- if (mode == "excess") stats$a_excess else stats$a_extreme
+  build_result(as.character(stats$year), vals,
                "cwa", "\u00b0C", "annual")
 }

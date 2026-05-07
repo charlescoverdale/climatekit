@@ -67,14 +67,23 @@ ck_wet_days <- function(precip, dates, threshold = 1, period = "annual") {
   build_result(unique_periods, values, "wet_days", "days", period)
 }
 
-#' Total Precipitation
+#' Total Wet-Day Precipitation (PRCPTOT)
 #'
-#' Total precipitation sum by period.
+#' Annual or monthly total precipitation in wet days, where a wet day is
+#' a day with precipitation at or above `wet_day_threshold` mm (default
+#' 1 mm, the ETCCDI standard). This is the canonical ETCCDI 'PRCPTOT'
+#' definition (Alexander et al. 2006; Zhang et al. 2011).
+#'
+#' Sub-threshold trace amounts are excluded. Pass
+#' `wet_day_threshold = 0` to recover the previous behaviour of
+#' summing all daily values.
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
 #' @param dates Date vector of the same length as `precip`.
 #' @param period Character. Aggregation period: `"annual"` (default) or
 #'   `"monthly"`.
+#' @param wet_day_threshold Numeric (mm). Days with precipitation
+#'   strictly below this threshold are excluded from the sum. Default 1.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -83,12 +92,21 @@ ck_wet_days <- function(precip, dates, threshold = 1, period = "annual") {
 #' dates <- as.Date("2024-01-01") + 0:9
 #' precip <- c(0, 5, 3, 0, 8, 2, 0, 1, 4, 0)
 #' ck_total_precip(precip, dates)
-ck_total_precip <- function(precip, dates, period = "annual") {
+ck_total_precip <- function(precip, dates, period = "annual",
+                            wet_day_threshold = 1) {
   validate_numeric(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
+  if (!is.numeric(wet_day_threshold) || length(wet_day_threshold) != 1L ||
+      wet_day_threshold < 0) {
+    cli::cli_abort("{.arg wet_day_threshold} must be a single non-negative numeric value.")
+  }
 
-  result <- aggregate_by_period(precip, dates, period, sum)
+  # Apply ETCCDI wet-day filter: sum only days with precip >= threshold.
+  is_wet <- !is.na(precip) & precip >= wet_day_threshold
+  contribution <- ifelse(is_wet, precip, 0)
+
+  result <- aggregate_by_period(contribution, dates, period, sum)
   build_result(result$periods, result$values, "total_precip", "mm", period)
 }
 
@@ -233,10 +251,12 @@ ck_precip_intensity <- function(precip, dates, period = "annual") {
   unique_periods <- unique(periods)
 
   values <- vapply(unique_periods, function(p) {
-    idx <- which(periods == p)
-    wet <- precip[idx][precip[idx] >= 1]
-    if (length(wet) == 0) return(0)
-    mean(wet, na.rm = TRUE)
+    pp <- precip[periods == p]
+    pp <- pp[!is.na(pp)]
+    if (length(pp) == 0L) return(NA_real_)
+    wet <- pp[pp >= 1]
+    if (length(wet) == 0L) return(0)
+    mean(wet)
   }, numeric(1))
 
   build_result(unique_periods, values, "precip_intensity", "mm/day", period)

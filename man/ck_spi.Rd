@@ -4,7 +4,7 @@
 \alias{ck_spi}
 \title{Standardized Precipitation Index (SPI)}
 \usage{
-ck_spi(precip, dates, scale = 3)
+ck_spi(precip, dates, scale = 3, distribution = c("gamma", "pearsonIII"))
 }
 \arguments{
 \item{precip}{Numeric vector of daily precipitation (mm).}
@@ -12,14 +12,20 @@ ck_spi(precip, dates, scale = 3)
 \item{dates}{Date vector of the same length as \code{precip}.}
 
 \item{scale}{Integer. Accumulation period in months (default 3).}
+
+\item{distribution}{Character. Either \code{"gamma"} (default) or
+\code{"pearsonIII"}.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-Compute the SPI by fitting a gamma distribution to monthly precipitation
-totals accumulated over a rolling window, then transforming to standard
-normal deviates.
+Compute the SPI by fitting a parametric distribution to rolling monthly
+precipitation accumulations and transforming to standard normal
+deviates. Two distributions are supported: the two-parameter gamma
+(default; WMO-1090 standard) and the three-parameter Pearson III. The
+Pearson III tail is heavier and is preferred in arid regions where the
+wet-day distribution is highly skewed (Stagge et al. 2015).
 }
 \examples{
 dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
@@ -28,6 +34,11 @@ precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
 ck_spi(precip, dates, scale = 3)
 }
 \references{
-McKee, T. B., Doesken, N. J., & Kleist, J. (1993).
-The relationship of drought frequency and duration to time scales.
+McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of
+drought frequency and duration to time scales.
+
+Stagge, J. H., Tallaksen, L. M., Gudmundsson, L., Van Loon, A. F., &
+Stahl, K. (2015). Candidate distributions for climatological drought
+indices (SPI and SPEI). \emph{International Journal of Climatology}, 35(13),
+4027-4040. \doi{10.1002/joc.4267}.
 }

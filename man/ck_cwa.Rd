@@ -4,7 +4,14 @@
 \alias{ck_cwa}
 \title{Cold-Wave Amplitude (CWA)}
 \usage{
-ck_cwa(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_cwa(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 }
 \arguments{
 \item{tmin}{Numeric vector of daily minimum temperatures (degrees C).}
@@ -17,14 +24,18 @@ data covering the reference period.}
 
 \item{min_spell}{Integer. Minimum spell length in days (default 3,
 the ET-SCI standard).}
+
+\item{mode}{One of \code{"excess"} (default) or \code{"absolute"}. See details.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.
 }
 \description{
-ET-SCI cold-wave family index. Peak of (threshold - daily Tmin)
-across all cold-wave days in the year, expressed as a positive
-magnitude. Returns \code{NA} for years with no cold waves.
+ET-SCI cold-wave family index. \code{mode = "excess"} (default) returns
+the peak (threshold - Tmin) across cold-wave days, expressed as a
+positive magnitude. \code{mode = "absolute"} returns the minimum raw
+Tmin across cold-wave days (the coldest event-day value). Returns
+\code{NA} for years with no cold waves.
 }
 \examples{
 set.seed(1)

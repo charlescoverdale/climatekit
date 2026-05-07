@@ -55,6 +55,7 @@ ck_compute <- function(data, index, ...) {
     cwd              = list(fn = ck_cwd, args = c("tmin", "dates")),
     cwm              = list(fn = ck_cwm, args = c("tmin", "dates")),
     cwa              = list(fn = ck_cwa, args = c("tmin", "dates")),
+    ehf              = list(fn = ck_ehf, args = c("tmax", "tmin", "dates")),
     heating_degree_days = list(fn = ck_heating_degree_days, args = c("tavg", "dates")),
     cooling_degree_days = list(fn = ck_cooling_degree_days, args = c("tavg", "dates")),
     growing_degree_days = list(fn = ck_growing_degree_days, args = c("tavg", "dates")),
