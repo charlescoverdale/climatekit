@@ -24,7 +24,9 @@ Imports:
     stats,
     tools
 Suggests:
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    terra,
+    ncdf4
 Config/testthat/edition: 3
 URL: https://charlescoverdale.github.io/climatekit/, https://github.com/charlescoverdale/climatekit
 BugReports: https://github.com/charlescoverdale/climatekit/issues

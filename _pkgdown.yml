@@ -78,6 +78,12 @@ reference:
       - ck_wind_chill
       - ck_fire_danger
 
+  - title: "Gridded / netCDF"
+    desc: "Apply any climatekit index over a SpatRaster or read netCDF input"
+    contents:
+      - ck_apply_grid
+      - ck_from_netcdf
+
   - title: "General"
     desc: "Compute any index by name; metadata; ETCCDI 27 audit; catalogue"
     contents:
