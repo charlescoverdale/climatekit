@@ -7,7 +7,7 @@
 \maketitle
 
 \abstract{%
-The climatekit package computes the standard suite of climate indices from daily weather observations behind a single R interface. Thirty functions cover temperature (frost days, ice days, summer days, growing and heating degree days, tropical nights, diurnal range, growing-season length, warm-spell duration), precipitation (wet and dry spells, heavy-precipitation days, one-day and five-day maxima, precipitation intensity), drought (Standardised Precipitation Index, Standardised Precipitation-Evapotranspiration Index, potential evapotranspiration via the Hargreaves method), agroclimatology (Huglin, Winkler, Branas, frost dates), and thermal comfort (wind chill, heat index, humidex, fire danger). Definitions follow the Expert Team on Sector-specific Climate Indices recommendations where applicable. Every function returns a tidy data frame with a period, a value, an index name, and a unit, so outputs compose directly. The package is pure computation, has no API calls, and is available on CRAN.
+The climatekit package computes the standard suite of climate indices from daily weather observations behind a single R interface. Thirty functions cover temperature (frost days, ice days, summer days, growing and heating degree days, tropical nights, diurnal range, growing-season length, warm-spell duration), precipitation (wet and dry spells, heavy-precipitation days, one-day and five-day maxima, precipitation intensity), drought (Standardised Precipitation Index, Standardised Precipitation-Evapotranspiration Index, potential evapotranspiration via the Hargreaves method), agroclimatology (Huglin, Winkler, Branas, frost dates), and thermal comfort (wind chill, heat index, humidex, fire danger). Definitions follow the ETCCDI core set and the Expert Team on Sector-specific Climate Indices (ET-SCI) recommendations where applicable. Every function returns a tidy data frame with a period, a value, an index name, and a unit, so outputs compose directly. The package is pure computation, has no API calls, and is available on CRAN.
 }
 
 \section{Introduction}\label{introduction}
@@ -42,19 +42,43 @@ straight in.
 
 \section{Background}\label{background}
 
-Climate-index standardisation dates to \citet{frich2002observed}, who
-proposed twenty-seven indices targeted at climate-change
-detection, and continued through the joint CCl/WCRP/JCOMM Expert
-Team on Climate Change Detection and Indices (ETCCDI), now the
-Expert Team on Sector-specific Climate Indices (ET-SCI).
-\citet{zhang2011indices} synthesised the ET-SCI core set, which informs
-most modern national climate assessments. Applied analyses of the
-ETCCDI indices on observed station records \citep{alexander2006global}
-and on gridded reconstructions \citep{donat2013hadex2} document robust
-multi-decadal trends. \citet{sillmann2013indices} evaluate the same
-indices across CMIP5 climate-model output, establishing the index
-suite as the bridge between observational and model-based
-climate-change attribution.
+The standard suite of climate-extremes indices follows three
+milestones. \citet{frich2002observed} proposed an initial set of ten
+indices for detecting climate-change signals in daily station
+data, building on early work by the joint CCl/CLIVAR/JCOMM Expert
+Team on Climate Change Detection and Indices (ETCCDI). The set was
+expanded and formalised by \citet{alexander2006global} into the canonical
+twenty-seven ETCCDI indices, computed across a global station
+network and reported in IPCC AR4. \citet{zhang2011indices} documented and
+standardised the same twenty-seven and remain the principal
+technical reference. A successor working group, the Expert Team on
+Sector-specific Climate Indices (ET-SCI), recommended an
+additional core set of thirty-four indices and developed more than
+eighty in total for applications across health, agriculture,
+water, and energy. The ETCCDI twenty-seven and ET-SCI core
+thirty-four jointly form the operational standard used by national
+meteorological services. Applied analyses of these indices on
+observed station records \citep{alexander2006global} and on gridded
+reconstructions \citep{donat2013hadex} document robust multi-decadal
+trends. \citet{sillmann2013indices} evaluate the same indices across
+CMIP5 climate-model output, establishing the index suite as the
+bridge between observational and model-based climate-change
+attribution.
+
+The implementation history of these indices follows the same arc.
+The original \emph{rclimdex} (an R-based station tool, with a
+Fortran variant \emph{FClimdex} for batch processing) was
+superseded by the R package \pkg{climdex.pcic}, which became the
+algorithmic basis for the WMO-endorsed \emph{climpact} software (a
+graphical-interface build for station data and a Linux build for
+gridded netCDF inputs). The Python package \emph{xclim} now
+provides the broadest single-language coverage, particularly for
+climate-model output. \CRANpkg{climatekit} is a pure-R, vectorised
+companion to this stack: no Fortran or Python dependency, no
+compiled code, the same canonical indices computed on numeric
+vectors, and a tidy data-frame output. It is intended for
+station-scale and regional analyses where R is the working
+language.
 
 \textbf{Temperature indices.} The core definitions are threshold counts
 (frost days where \(T_{\min} < 0^\circ\)C; tropical nights where
@@ -163,7 +187,7 @@ window: the annual total rises by about 45 mm per decade and the
 heavy-precipitation day count by 1.15 days per decade, consistent
 with the expected intensification of the hydrological cycle under
 continental-US warming documented in \citet{alexander2006global} and
-\citet{donat2013hadex2}.
+\citet{donat2013hadex}.
 
 \begin{figure}[H]
 
@@ -196,7 +220,7 @@ well-known wet years, including 1972, 1983-84, and 2011.
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=1\linewidth,alt={A column chart of 12-month SPI values at monthly resolution for New York Central Park, 1950 to 2024. Columns below zero are coloured red and represent dry anomalies; columns above zero are coloured blue and represent wet anomalies. A sustained run of red columns between 1962 and 1966 reaches values around minus 2.3, labelled as the 1960s Northeast drought. Another deep red cluster around 2001 to 2002 is labelled. The deepest blue column, around 2011, reaches about plus 2.9 and is labelled as a wet year.},]{figures/fig5_heat} 
+{\centering \includegraphics[width=1\linewidth,alt={A column chart of 12-month SPI values at monthly resolution for New York Central Park, 1950 to 2024. Columns below zero are coloured red and represent dry anomalies; columns above zero are coloured blue and represent wet anomalies. A sustained run of red columns between 1962 and 1966 reaches values around minus 2.3, labelled as the 1960s Northeast drought. Another deep red cluster around 2001 to 2002 is labelled. The deepest blue column, around 2011, reaches about plus 2.9 and is labelled as a wet year.},]{figures/fig3_spi} 
 
 }
 
@@ -248,7 +272,7 @@ vectors: frost days, summer days, and growing degree days at base
 decade, and a roughly stable summer-days count. The signs and
 magnitudes are consistent with the observed warming trends for the
 US Northeast documented in \citet{alexander2006global} and
-\citet{donat2013hadex2}. The full computation is three function calls on
+\citet{donat2013hadex}. The full computation is three function calls on
 three vectors.
 
 \begin{figure}[H]
@@ -342,13 +366,15 @@ that composes directly into downstream analysis.
 \section*{Acknowledgements}\label{acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
 
-The CCl/WCRP/JCOMM Expert Team on Climate Change Detection and
-Indices (ETCCDI) and its successor the Expert Team on
-Sector-specific Climate Indices (ET-SCI) developed and documented
-the index definitions on which this package is built. The National
-Oceanic and Atmospheric Administration publishes the Global
-Historical Climatology Network Daily (GHCND) dataset used in the
-case study. The author thanks the R Core Team and CRAN
+The CCl/CLIVAR/JCOMM Expert Team on Climate Change Detection and
+Indices (ETCCDI) and the Expert Team on Sector-specific Climate
+Indices (ET-SCI) developed and documented the index definitions on
+which this package is built. The author thanks readers of an
+earlier draft for feedback on the historical lineage of the
+ETCCDI / ET-SCI indices and on the climpact software family. The
+National Oceanic and Atmospheric Administration publishes the
+Global Historical Climatology Network Daily (GHCND) dataset used
+in the case study. The author thanks the R Core Team and CRAN
 maintainers for the infrastructure that supports open-source
 statistical software.
 

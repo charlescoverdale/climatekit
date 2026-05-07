@@ -1,6 +1,6 @@
 ---
 title: "Climatekit: Unified Climate Indices for Temperature, Precipitation, and Drought in R"
-date: "2026-04-19"
+date: "2026-05-07"
 abstract: >
   The climatekit package computes the standard suite of climate
   indices from daily weather observations behind a single R
@@ -14,11 +14,11 @@ abstract: >
   evapotranspiration via the Hargreaves method), agroclimatology
   (Huglin, Winkler, Branas, frost dates), and thermal comfort (wind
   chill, heat index, humidex, fire danger). Definitions follow the
-  Expert Team on Sector-specific Climate Indices recommendations
-  where applicable. Every function returns a tidy data frame with a
-  period, a value, an index name, and a unit, so outputs compose
-  directly. The package is pure computation, has no API calls, and
-  is available on CRAN.
+  ETCCDI core set and the Expert Team on Sector-specific Climate
+  Indices (ET-SCI) recommendations where applicable. Every function
+  returns a tidy data frame with a period, a value, an index name,
+  and a unit, so outputs compose directly. The package is pure
+  computation, has no API calls, and is available on CRAN.
 draft: false
 author:
   - name: Charles Coverdale
@@ -78,19 +78,43 @@ straight in.
 
 # Background
 
-Climate-index standardisation dates to @frich2002observed, who
-proposed twenty-seven indices targeted at climate-change
-detection, and continued through the joint CCl/WCRP/JCOMM Expert
-Team on Climate Change Detection and Indices (ETCCDI), now the
-Expert Team on Sector-specific Climate Indices (ET-SCI).
-@zhang2011indices synthesised the ET-SCI core set, which informs
-most modern national climate assessments. Applied analyses of the
-ETCCDI indices on observed station records [@alexander2006global]
-and on gridded reconstructions [@donat2013hadex2] document robust
-multi-decadal trends. @sillmann2013indices evaluate the same
-indices across CMIP5 climate-model output, establishing the index
-suite as the bridge between observational and model-based
-climate-change attribution.
+The standard suite of climate-extremes indices follows three
+milestones. @frich2002observed proposed an initial set of ten
+indices for detecting climate-change signals in daily station
+data, building on early work by the joint CCl/CLIVAR/JCOMM Expert
+Team on Climate Change Detection and Indices (ETCCDI). The set was
+expanded and formalised by @alexander2006global into the canonical
+twenty-seven ETCCDI indices, computed across a global station
+network and reported in IPCC AR4. @zhang2011indices documented and
+standardised the same twenty-seven and remain the principal
+technical reference. A successor working group, the Expert Team on
+Sector-specific Climate Indices (ET-SCI), recommended an
+additional core set of thirty-four indices and developed more than
+eighty in total for applications across health, agriculture,
+water, and energy. The ETCCDI twenty-seven and ET-SCI core
+thirty-four jointly form the operational standard used by national
+meteorological services. Applied analyses of these indices on
+observed station records [@alexander2006global] and on gridded
+reconstructions [@donat2013hadex] document robust multi-decadal
+trends. @sillmann2013indices evaluate the same indices across
+CMIP5 climate-model output, establishing the index suite as the
+bridge between observational and model-based climate-change
+attribution.
+
+The implementation history of these indices follows the same arc.
+The original \emph{rclimdex} (an R-based station tool, with a
+Fortran variant \emph{FClimdex} for batch processing) was
+superseded by the R package \pkg{climdex.pcic}, which became the
+algorithmic basis for the WMO-endorsed \emph{climpact} software (a
+graphical-interface build for station data and a Linux build for
+gridded netCDF inputs). The Python package \emph{xclim} now
+provides the broadest single-language coverage, particularly for
+climate-model output. \CRANpkg{climatekit} is a pure-R, vectorised
+companion to this stack: no Fortran or Python dependency, no
+compiled code, the same canonical indices computed on numeric
+vectors, and a tidy data-frame output. It is intended for
+station-scale and regional analyses where R is the working
+language.
 
 **Temperature indices.** The core definitions are threshold counts
 (frost days where $T_{\min} < 0^\circ$C; tropical nights where
@@ -199,7 +223,7 @@ window: the annual total rises by about 45 mm per decade and the
 heavy-precipitation day count by 1.15 days per decade, consistent
 with the expected intensification of the hydrological cycle under
 continental-US warming documented in @alexander2006global and
-@donat2013hadex2.
+@donat2013hadex.
 
 ```{r precip, fig.cap = "Annual precipitation indices for New York Central Park (GHCND station USW00094728), 1950 to 2024. Blue solid: annual total precipitation in millimetres, linear trend $+45$ mm per decade. Red dashed: count of days with daily total above 10 mm, scaled by 50 for visual comparability, linear trend $+1.15$ days per decade. Dotted lines are OLS trend fits. Both indices rise over the period.", fig.alt = "A line chart showing two time series from 1950 to 2024 for New York Central Park. The blue solid line is annual total precipitation in millimetres, rising from around 1000 millimetres at the start of the period to around 1300 by the end. The red dashed line is the count of days per year with total precipitation above 10 millimetres, also rising over time. Dotted regression lines overlay each series, both sloping upward."}
 knitr::include_graphics("figures/fig2_precip.pdf")
@@ -269,7 +293,7 @@ vectors: frost days, summer days, and growing degree days at base
 decade, and a roughly stable summer-days count. The signs and
 magnitudes are consistent with the observed warming trends for the
 US Northeast documented in @alexander2006global and
-@donat2013hadex2. The full computation is three function calls on
+@donat2013hadex. The full computation is three function calls on
 three vectors.
 
 ```{r central-park, fig.cap = "Three temperature indices for New York Central Park (GHCND station USW00094728), 1950 to 2024. Annual counts from raw daily $T_{\\min}$, $T_{\\max}$, and $T_{\\mathrm{mean}}$. Blue solid: frost days ($T_{\\min} < 0^\\circ$C), linear trend $-2.6$ days per decade. Red dashed: summer days ($T_{\\max} \\geq 25^\\circ$C), trend $+0.3$ days per decade. Green dotdash: growing degree days above base $10^\\circ$C, divided by 20 for visual scale, trend $+28$ GDD per decade. Dotted lines are OLS trend fits.", fig.alt = "A line chart showing three annual temperature-index series for New York Central Park, 1950 to 2024. A blue solid line for frost days falls from about 130 per year in the 1950s to about 100 by the 2020s. A red dashed line for summer days is roughly flat around 45 per year. A green dotdash line for growing degree days (divided by 20) rises from about 80 in the 1950s to about 110 by the 2020s. Thin dotted lines show the linear trend fitted to each series."}
@@ -348,12 +372,14 @@ that composes directly into downstream analysis.
 
 # Acknowledgements {-}
 
-The CCl/WCRP/JCOMM Expert Team on Climate Change Detection and
-Indices (ETCCDI) and its successor the Expert Team on
-Sector-specific Climate Indices (ET-SCI) developed and documented
-the index definitions on which this package is built. The National
-Oceanic and Atmospheric Administration publishes the Global
-Historical Climatology Network Daily (GHCND) dataset used in the
-case study. The author thanks the R Core Team and CRAN
+The CCl/CLIVAR/JCOMM Expert Team on Climate Change Detection and
+Indices (ETCCDI) and the Expert Team on Sector-specific Climate
+Indices (ET-SCI) developed and documented the index definitions on
+which this package is built. The author thanks readers of an
+earlier draft for feedback on the historical lineage of the
+ETCCDI / ET-SCI indices and on the climpact software family. The
+National Oceanic and Atmospheric Administration publishes the
+Global Historical Climatology Network Daily (GHCND) dataset used
+in the case study. The author thanks the R Core Team and CRAN
 maintainers for the infrastructure that supports open-source
 statistical software.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2026.4.18)  19 APR 2026 19:08
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2026.4.18)  7 MAY 2026 06:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -630,31 +630,38 @@ LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
 \calc@Ccount=\count340
 \calc@Cskip=\skip84
+) (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count341
+\float@exts=\toks48
+\float@box=\box75
+\@float@everytoks=\toks49
+\@floatcapt=\box76
 ) (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count341
-\l__pdf_internal_box=\box75
+\l__color_backend_stack_int=\count342
+\l__pdf_internal_box=\box77
 ) (./RJwrapper.aux)
 \openout1 = `RJwrapper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 55.
-LaTeX Font Info:    ... okay on input line 55.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 56.
+LaTeX Font Info:    ... okay on input line 56.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -697,22 +704,22 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Info: Redefining \microtypecontext on input line 55.
-Package microtype Info: Applying patch `item' on input line 55.
-Package microtype Info: Applying patch `toc' on input line 55.
-Package microtype Info: Applying patch `eqnum' on input line 55.
+LaTeX Info: Redefining \microtypecontext on input line 56.
+Package microtype Info: Applying patch `item' on input line 56.
+Package microtype Info: Applying patch `toc' on input line 56.
+Package microtype Info: Applying patch `eqnum' on input line 56.
 
-Package microtype Warning: Unable to apply patch `footnote' on input line 55.
+Package microtype Warning: Unable to apply patch `footnote' on input line 56.
 
-Package microtype Info: Applying patch `verbatim' on input line 55.
-LaTeX Info: Redefining \microtypesetup on input line 55.
+Package microtype Info: Applying patch `verbatim' on input line 56.
+LaTeX Info: Redefining \microtypesetup on input line 56.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 55.
+LaTeX Info: Redefining \showhyphens on input line 56.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -721,13 +728,14 @@ File: mt-ppl.cfg 2005/11/16 v1.6 microtype config. file: Palatino (RS)
 ) (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verbatim
 )
-Package backref Info: ** backref set up for natbib ** on input line 55.
-Package hyperref Info: Link coloring ON on input line 55.
+Package backref Info: ** backref set up for natbib ** on input line 56.
+Package hyperref Info: Link coloring ON on input line 56.
 (./RJwrapper.out) (./RJwrapper.out)
 \@outlinefile=\write5
 \openout5 = `RJwrapper.out'.
 
 Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
 Package caption Info: longtable package is loaded.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/caption/ltcaption.sty
 Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
@@ -744,23 +752,28 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 60.
+
+
+[1{/Users/charlescoverdale/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}
+
+{/Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
-LaTeX Font Info:    Trying to load font information for OML+zplm on input line 60.
+LaTeX Font Info:    Trying to load font information for OML+zplm on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
-LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 60.
+LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
-LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 60.
+LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
-LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 60.
+LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 )
@@ -769,72 +782,68 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 60.
+(Font)              scaled to size 9.37807pt on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 60.
+(Font)              scaled to size 7.29405pt on input line 84.
 LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 60.
+(Font)              scaled to size 5.21004pt on input line 84.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 9.37807pt on input line 60.
+(Font)              scaled to size 9.37807pt on input line 84.
 (/Users/charlescoverdale/Library/TinyTeX/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 7.29405pt on input line 60.
+(Font)              scaled to size 7.29405pt on input line 84.
 LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 5.21004pt on input line 60.
+(Font)              scaled to size 5.21004pt on input line 84.
 
 
-[1{/Users/charlescoverdale/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/enc/dvips/base/8r.enc}
-
-{/Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}]
+[2]
 
 pdfTeX warning: pdflatex (file ./figures/fig2_precip.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<figures/fig2_precip.pdf, id=122, 397.485pt x 230.8625pt>
+<figures/fig2_precip.pdf, id=142, 397.485pt x 230.8625pt>
 File: figures/fig2_precip.pdf Graphic file (type pdf)
 <use figures/fig2_precip.pdf>
-Package pdftex.def Info: figures/fig2_precip.pdf  used on input line 170.
+Package pdftex.def Info: figures/fig2_precip.pdf  used on input line 194.
 (pdftex.def)             Requested size: 398.33858pt x 231.36566pt.
 
-Overfull \hbox (3.65926pt too wide) in paragraph at lines 179--188
+Overfull \hbox (3.65926pt too wide) in paragraph at lines 203--212
 \T1/zi4/m/n/9 ck_spi() \T1/ppl/m/n/9 (-20) and \T1/zi4/m/n/9 ck_spei() \T1/ppl/m/n/9 (-20) re-turn the Stan-dard-ised Pre-cip-i-ta-tion In-dex and the Stan-dard-ised Precipitation-
  []
 
 
 
-[2]
-
-pdfTeX warning: pdflatex (file ./figures/fig5_heat.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<figures/fig5_heat.pdf, id=141, 397.485pt x 230.8625pt>
-File: figures/fig5_heat.pdf Graphic file (type pdf)
-<use figures/fig5_heat.pdf>
-Package pdftex.def Info: figures/fig5_heat.pdf  used on input line 199.
-(pdftex.def)             Requested size: 398.33858pt x 231.36566pt.
-
-
-pdfTeX warning: pdflatex (file ./figures/fig4_huglin.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<figures/fig4_huglin.pdf, id=143, 397.485pt x 230.8625pt>
-File: figures/fig4_huglin.pdf Graphic file (type pdf)
-<use figures/fig4_huglin.pdf>
-Package pdftex.def Info: figures/fig4_huglin.pdf  used on input line 220.
+pdfTeX warning: pdflatex (file ./figures/fig3_spi.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<figures/fig3_spi.pdf, id=144, 397.485pt x 230.8625pt>
+File: figures/fig3_spi.pdf Graphic file (type pdf)
+<use figures/fig3_spi.pdf>
+Package pdftex.def Info: figures/fig3_spi.pdf  used on input line 223.
 (pdftex.def)             Requested size: 398.33858pt x 231.36566pt.
 
 
 [3 <./figures/fig2_precip.pdf>]
 
-[4 <./figures/fig5_heat.pdf> <./figures/fig4_huglin.pdf
+pdfTeX warning: pdflatex (file ./figures/fig4_huglin.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<figures/fig4_huglin.pdf, id=155, 397.485pt x 230.8625pt>
+File: figures/fig4_huglin.pdf Graphic file (type pdf)
+<use figures/fig4_huglin.pdf>
+Package pdftex.def Info: figures/fig4_huglin.pdf  used on input line 244.
+(pdftex.def)             Requested size: 398.33858pt x 231.36566pt.
+
+
+[4 <./figures/fig3_spi.pdf> <./figures/fig4_huglin.pdf
 
 pdfTeX warning: pdflatex (file ./figures/fig4_huglin.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 
 pdfTeX warning: pdflatex (file ./figures/fig6_central_park.pdf): PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<figures/fig6_central_park.pdf, id=168, 397.485pt x 230.8625pt>
+<figures/fig6_central_park.pdf, id=172, 397.485pt x 230.8625pt>
 File: figures/fig6_central_park.pdf Graphic file (type pdf)
 <use figures/fig6_central_park.pdf>
-Package pdftex.def Info: figures/fig6_central_park.pdf  used on input line 256.
+Package pdftex.def Info: figures/fig6_central_park.pdf  used on input line 280.
 (pdftex.def)             Requested size: 398.33858pt x 231.36566pt.
 
 
@@ -854,21 +863,21 @@ L3 programming layer <2025-01-18>
 Package rerunfilecheck Info: File `RJwrapper.out' has not changed.
 (rerunfilecheck)             Checksum: 24FEDD4831C56EB2A6F35FE07F1987C0;2544.
 Package rerunfilecheck Info: File `RJwrapper.brf' has not changed.
-(rerunfilecheck)             Checksum: 3657ED920BBA02F92F612B2DF4881595;1025.
+(rerunfilecheck)             Checksum: 7E82AFE9C5FBFAD7E98CC5B0A7BD5C52;1077.
  ) 
 Here is how much of TeX's memory you used:
- 27103 strings out of 475172
- 498272 string characters out of 5764229
- 904173 words of memory out of 5000000
- 49315 multiletter control sequences out of 15000+600000
- 599647 words of font info for 256 fonts, out of 8000000 for 9000
+ 27172 strings out of 475172
+ 499347 string characters out of 5764229
+ 904570 words of memory out of 5000000
+ 49371 multiletter control sequences out of 15000+600000
+ 599968 words of font info for 262 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 117i,11n,131p,1043b,795s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,11n,131p,1076b,790s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/public/mathpazo/fplmri.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></Users/charlescoverdale/Library/TinyTeX/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on RJwrapper.pdf (7 pages, 480325 bytes).
+Output written on RJwrapper.pdf (7 pages, 482150 bytes).
 PDF statistics:
- 271 PDF objects out of 1000 (max. 8388607)
- 237 compressed objects within 3 object streams
+ 275 PDF objects out of 1000 (max. 8388607)
+ 241 compressed objects within 3 object streams
  46 named destinations out of 1000 (max. 500000)
  48785 words of extra memory for PDF output out of 51595 (max. 10000000)
 
