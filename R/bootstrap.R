@@ -54,20 +54,50 @@
   }
 
   # --- In-base years: leave-one-out bootstrap ---
+  #
+  # The naive implementation rebuilds the calendar-day percentile pool
+  # from the full `values` vector for every (y, w) pair, costing
+  # O(N^2 * 366 * N_window) operations for an N-year reference. The
+  # optimised implementation precomputes per-year-per-DOY contribution
+  # vectors once, then for each (y, w) simply concatenates the slices
+  # for "all years except y, plus year w again" and runs `quantile` on
+  # the result. That cuts the inner cost to O(366) per (y, w) and the
+  # total to O(N^2 * 366), roughly a 30x speedup for a 30-year base.
   ref_years <- seq(ref_start, ref_end)
+  n_ref <- length(ref_years)
+  half  <- (window - 1L) %/% 2L
 
-  for (yr in ref_years) {
+  # Per-year-per-DOY contribution: year_doy_pool[[i]][[d]] = numeric
+  # vector of values from ref-year `ref_years[i]` whose day-of-year
+  # falls in the (window)-day window centred on calendar day d.
+  year_doy_pool <- vector("list", n_ref)
+  for (i in seq_along(ref_years)) {
+    yr <- ref_years[i]
+    yr_idx_full <- which(years == yr)
+    yr_doy_full <- doy[yr_idx_full]
+    yr_vals_full <- values[yr_idx_full]
+    pool_i <- vector("list", 366L)
+    for (d in seq_len(366L)) {
+      target_doys <- ((d - half - 1L):(d + half - 1L)) %% 366L + 1L
+      slice <- yr_vals_full[yr_doy_full %in% target_doys]
+      slice <- slice[!is.na(slice)]
+      pool_i[[d]] <- slice
+    }
+    year_doy_pool[[i]] <- pool_i
+  }
+
+  for (i_y in seq_along(ref_years)) {
+    yr <- ref_years[i_y]
     yr_idx <- which(years == yr)
     if (length(yr_idx) == 0L) next
 
     yr_doy <- doy[yr_idx]
     yr_vals <- values[yr_idx]
 
-    other_years <- ref_years[ref_years != yr]
-    n_other <- length(other_years)
+    other_idx <- setdiff(seq_along(ref_years), i_y)
 
     # Single-year reference: bootstrap is undefined; fall back to standard.
-    if (n_other == 0L) {
+    if (length(other_idx) == 0L) {
       yr_thr <- std_thresh[yr_doy]
       valid <- !is.na(yr_vals) & !is.na(yr_thr)
       if (identical(op, ">")) {
@@ -78,28 +108,29 @@
       next
     }
 
+    # Pool with year `i_y` removed, per DOY (one-time per y).
+    minus_y_pool <- vector("list", 366L)
+    for (d in seq_len(366L)) {
+      minus_y_pool[[d]] <- unlist(
+        lapply(other_idx, function(j) year_doy_pool[[j]][[d]]),
+        use.names = FALSE
+      )
+    }
+
     bs_sum   <- rep(0, length(yr_idx))
     bs_count <- rep(0L, length(yr_idx))
 
-    for (w in other_years) {
-      w_idx <- which(years == w)
-      w_doy <- doy[w_idx]
+    for (i_w in other_idx) {
+      # Synthetic ref pool: everything except year y, with year w's
+      # values appended (representing the substitution for year y).
+      mod_thresh <- vapply(seq_len(366L), function(d) {
+        pool <- c(minus_y_pool[[d]], year_doy_pool[[i_w]][[d]])
+        if (length(pool) == 0L) return(NA_real_)
+        stats::quantile(pool, percentile, na.rm = TRUE,
+                        names = FALSE, type = 8L)
+      }, numeric(1))
 
-      # Substitute year `yr`'s daily values with year `w`'s values,
-      # matched by day-of-year. Days in `yr` with no matching DOY in
-      # `w` (only ever the leap day) become NA in the modified
-      # series and are skipped.
-      mod_values <- values
-      doy_match <- match(yr_doy, w_doy)
-      ok <- !is.na(doy_match)
-      mod_values[yr_idx[ok]]  <- values[w_idx[doy_match[ok]]]
-      mod_values[yr_idx[!ok]] <- NA_real_
-
-      mod_thresh <- .calendar_day_percentile(mod_values, dates, percentile,
-                                             ref_start, ref_end,
-                                             window = window)
       yr_thr <- mod_thresh[yr_doy]
-
       valid <- !is.na(yr_vals) & !is.na(yr_thr)
       if (identical(op, ">")) {
         ex <- ifelse(valid, as.numeric(yr_vals > yr_thr), NA_real_)

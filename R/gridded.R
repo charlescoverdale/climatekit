@@ -32,6 +32,14 @@ ck_from_netcdf <- function(path, var = NULL) {
       "i" = "Install it with {.code install.packages(\"terra\")}."
     ))
   }
+  if (!requireNamespace("ncdf4", quietly = TRUE)) {
+    cli::cli_warn(c(
+      "Package {.pkg ncdf4} is recommended for reading 'netCDF' files.",
+      "i" = "{.pkg terra}'s GDAL bindings can read .nc on many systems, but",
+      "i" = "if {.fn terra::rast} fails on your file, install it with",
+      "i" = "{.code install.packages(\"ncdf4\")}."
+    ))
+  }
   if (!is.character(path) || length(path) != 1L) {
     cli::cli_abort("{.arg path} must be a single character string.")
   }
