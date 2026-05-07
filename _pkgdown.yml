@@ -16,6 +16,16 @@ reference:
       - ck_ice_days
       - ck_summer_days
       - ck_tropical_nights
+      - ck_txx
+      - ck_tnx
+      - ck_txn
+      - ck_tnn
+      - ck_tx10p
+      - ck_tn10p
+      - ck_tx90p
+      - ck_tn90p
+      - ck_wsdi
+      - ck_csdi
       - ck_warm_spell
       - ck_diurnal_range
       - ck_first_frost
@@ -33,6 +43,8 @@ reference:
       - ck_max_1day_precip
       - ck_max_5day_precip
       - ck_precip_intensity
+      - ck_r95p
+      - ck_r99p
       - ck_spi
       - ck_spei
 
@@ -57,11 +69,12 @@ reference:
       - ck_fire_danger
 
   - title: "General"
-    desc: "Compute any index by name; metadata"
+    desc: "Compute any index by name; metadata; ETCCDI 27 audit"
     contents:
       - ck_compute
       - ck_available
       - ck_metadata
+      - ck_etccdi_27
       - clear_cache
 
 
