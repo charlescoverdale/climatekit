@@ -2,13 +2,16 @@
 
 The Branas index combines temperature and precipitation during the
 growing season to estimate disease pressure (especially downy mildew) in
-vineyards. It is the sum of the product of monthly mean temperature and
-monthly precipitation for April-August.
+vineyards. It is the sum of (monthly mean temperature) times (monthly
+precipitation total) over the five months of the growing season:
+April-August in the Northern Hemisphere; October-February in the
+Southern Hemisphere. The Southern Hemisphere season spans two calendar
+years and is reported under the year in which it starts.
 
 ## Usage
 
 ``` r
-ck_branas(precip, tavg, dates)
+ck_branas(precip, tavg, dates, lat = 50)
 ```
 
 ## Arguments
@@ -24,6 +27,11 @@ ck_branas(precip, tavg, dates)
 - dates:
 
   Date vector of the same length as `precip`.
+
+- lat:
+
+  Numeric. Latitude in decimal degrees, used to select the hemisphere
+  convention. Default 50 (Northern Hemisphere).
 
 ## Value
 

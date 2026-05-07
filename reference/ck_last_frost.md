@@ -1,12 +1,14 @@
 # Last Frost Date
 
-Date of the last spring frost (Tmin \< 0 degrees C) before July 1 in
-each year.
+Day of year of the last spring frost (Tmin \< 0 degrees C) in each year.
+Hemisphere is selected by `lat`: in the Northern Hemisphere the search
+runs up to July 1 (DOY 183); in the Southern Hemisphere up to October 1
+(DOY 274), matching the spring boundary for each.
 
 ## Usage
 
 ``` r
-ck_last_frost(tmin, dates)
+ck_last_frost(tmin, dates, lat = 50)
 ```
 
 ## Arguments
@@ -18,6 +20,11 @@ ck_last_frost(tmin, dates)
 - dates:
 
   Date vector of the same length as `tmin`.
+
+- lat:
+
+  Numeric. Latitude in decimal degrees, used to select the hemisphere
+  convention. Default 50 (Northern Hemisphere).
 
 ## Value
 

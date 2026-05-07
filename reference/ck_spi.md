@@ -1,13 +1,16 @@
 # Standardized Precipitation Index (SPI)
 
-Compute the SPI by fitting a gamma distribution to monthly precipitation
-totals accumulated over a rolling window, then transforming to standard
-normal deviates.
+Compute the SPI by fitting a parametric distribution to rolling monthly
+precipitation accumulations and transforming to standard normal
+deviates. Two distributions are supported: the two-parameter gamma
+(default; WMO-1090 standard) and the three-parameter Pearson III. The
+Pearson III tail is heavier and is preferred in arid regions where the
+wet-day distribution is highly skewed (Stagge et al. 2015).
 
 ## Usage
 
 ``` r
-ck_spi(precip, dates, scale = 3)
+ck_spi(precip, dates, scale = 3, distribution = c("gamma", "pearsonIII"))
 ```
 
 ## Arguments
@@ -24,6 +27,10 @@ ck_spi(precip, dates, scale = 3)
 
   Integer. Accumulation period in months (default 3).
 
+- distribution:
+
+  Character. Either `"gamma"` (default) or `"pearsonIII"`.
+
 ## Value
 
 A data frame with columns `period`, `value`, `index`, and `unit`.
@@ -32,6 +39,11 @@ A data frame with columns `period`, `value`, `index`, and `unit`.
 
 McKee, T. B., Doesken, N. J., & Kleist, J. (1993). The relationship of
 drought frequency and duration to time scales.
+
+Stagge, J. H., Tallaksen, L. M., Gudmundsson, L., Van Loon, A. F., &
+Stahl, K. (2015). Candidate distributions for climatological drought
+indices (SPI and SPEI). *International Journal of Climatology*, 35(13),
+4027-4040. [doi:10.1002/joc.4267](https://doi.org/10.1002/joc.4267) .
 
 ## Examples
 

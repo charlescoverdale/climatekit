@@ -122,14 +122,16 @@ ck_browse(search = "heat")
 #> 3                 ck_hwd  HWD                     Heatwave duration temperature
 #> 4                 ck_hwm  HWM                    Heatwave magnitude temperature
 #> 5                 ck_hwa  HWA                    Heatwave amplitude temperature
-#> 6 ck_heating_degree_days <NA>                   Heating degree days temperature
-#> 7          ck_heat_index <NA> Heat index (NWS apparent temperature)     comfort
+#> 6                 ck_ehf  EHF                    Excess Heat Factor temperature
+#> 7 ck_heating_degree_days <NA>                   Heating degree days temperature
+#> 8          ck_heat_index <NA> Heat index (NWS apparent temperature)     comfort
 #>   sector        unit standard           citation_key
 #> 1 health      events   ET-SCI perkins2013measurement
 #> 2 health        days   ET-SCI perkins2013measurement
 #> 3 health        days   ET-SCI perkins2013measurement
 #> 4 health          °C   ET-SCI perkins2013measurement
 #> 5 health          °C   ET-SCI perkins2013measurement
-#> 6 energy degree-days   energy                   <NA>
-#> 7 health          °C  comfort       rothfusz1990heat
+#> 6 health        °C^2   ET-SCI      nairn2013defining
+#> 7 energy degree-days   energy                   <NA>
+#> 8 health          °C  comfort       rothfusz1990heat
 ```

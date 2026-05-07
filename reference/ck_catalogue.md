@@ -46,7 +46,7 @@ head(tab)
 table(tab$standard)
 #> 
 #>        ET-SCI        ETCCDI ETCCDI-approx  agroclimatic       comfort 
-#>            10            26             1             6             4 
+#>            11            26             1             6             4 
 #>       drought        energy 
 #>             3             2 
 ```

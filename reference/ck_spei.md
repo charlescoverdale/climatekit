@@ -7,7 +7,7 @@ evapotranspiration) accumulated over a rolling window.
 ## Usage
 
 ``` r
-ck_spei(precip, pet, dates, scale = 3)
+ck_spei(precip, pet, dates, scale = 3, distribution = c("log-logistic", "gev"))
 ```
 
 ## Arguments
@@ -27,6 +27,12 @@ ck_spei(precip, pet, dates, scale = 3)
 - scale:
 
   Integer. Accumulation period in months (default 3).
+
+- distribution:
+
+  Character. Either `"log-logistic"` (default, Vicente-Serrano et
+  al. 2010) or `"gev"` (Generalised Extreme Value, fitted by L-moments;
+  preferred for water-balance series with heavy upper or lower tails).
 
 ## Value
 

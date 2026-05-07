@@ -1,13 +1,22 @@
 # Heatwave Amplitude (HWA)
 
-ET-SCI heatwave family index. Peak excess of daily Tmax over the
-calendar-day 90th percentile threshold across all heatwave days in the
-year. Returns `NA` for years with no heatwaves.
+ET-SCI heatwave family index. Reports the peak magnitude of daily Tmax
+across all heatwave days in the year. `mode = "excess"` (default) gives
+the maximum of (Tmax - threshold). `mode = "absolute"` gives the maximum
+raw Tmax across heatwave days (matching Perkins-Alexander 2013). Returns
+`NA` for years with no heatwaves.
 
 ## Usage
 
 ``` r
-ck_hwa(tmax, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_hwa(
+  tmax,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 ```
 
 ## Arguments
@@ -30,6 +39,10 @@ ck_hwa(tmax, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
 
   Integer. Minimum spell length in days (default 3, the ET-SCI
   standard).
+
+- mode:
+
+  One of `"excess"` (default) or `"absolute"`. See details.
 
 ## Value
 

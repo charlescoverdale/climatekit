@@ -1,13 +1,22 @@
 # Cold-Wave Amplitude (CWA)
 
-ET-SCI cold-wave family index. Peak of (threshold - daily Tmin) across
-all cold-wave days in the year, expressed as a positive magnitude.
-Returns `NA` for years with no cold waves.
+ET-SCI cold-wave family index. `mode = "excess"` (default) returns the
+peak (threshold - Tmin) across cold-wave days, expressed as a positive
+magnitude. `mode = "absolute"` returns the minimum raw Tmin across
+cold-wave days (the coldest event-day value). Returns `NA` for years
+with no cold waves.
 
 ## Usage
 
 ``` r
-ck_cwa(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_cwa(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 ```
 
 ## Arguments
@@ -30,6 +39,10 @@ ck_cwa(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
 
   Integer. Minimum spell length in days (default 3, the ET-SCI
   standard).
+
+- mode:
+
+  One of `"excess"` (default) or `"absolute"`. See details.
 
 ## Value
 

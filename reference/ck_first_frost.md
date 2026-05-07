@@ -1,12 +1,15 @@
 # First Frost Date
 
-Date of the first autumn frost (Tmin \< 0 degrees C) after July 1 in
-each year.
+Day of year of the first autumn frost (Tmin \< 0 degrees C) in each
+year. Hemisphere is selected by `lat`: in the Northern Hemisphere
+(`lat >= 0`) the search starts at July 1 (DOY 183); in the Southern
+Hemisphere it starts at March 1 (DOY 60), matching the autumn entry for
+each.
 
 ## Usage
 
 ``` r
-ck_first_frost(tmin, dates)
+ck_first_frost(tmin, dates, lat = 50)
 ```
 
 ## Arguments
@@ -18,6 +21,11 @@ ck_first_frost(tmin, dates)
 - dates:
 
   Date vector of the same length as `tmin`.
+
+- lat:
+
+  Numeric. Latitude in decimal degrees, used to select the hemisphere
+  convention. Default 50 (Northern Hemisphere).
 
 ## Value
 

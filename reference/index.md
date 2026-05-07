@@ -54,6 +54,8 @@ Daily temperature indices
   : Cold-Wave Magnitude (CWM)
 - [`ck_cwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwa.md)
   : Cold-Wave Amplitude (CWA)
+- [`ck_ehf()`](https://charlescoverdale.github.io/climatekit/reference/ck_ehf.md)
+  : Excess Heat Factor (EHF, Nairn & Fawcett 2013)
 - [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md)
   : Diurnal Temperature Range
 - [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md)
@@ -68,7 +70,7 @@ Daily temperature indices
 Rainfall and drought indices
 
 - [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md)
-  : Total Precipitation
+  : Total Wet-Day Precipitation (PRCPTOT)
 - [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md)
   : Maximum Consecutive Dry Days
 - [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md)

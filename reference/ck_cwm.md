@@ -1,13 +1,21 @@
 # Cold-Wave Magnitude (CWM)
 
-ET-SCI cold-wave family index. Mean of (threshold - daily Tmin) across
-all cold-wave days in the year, expressed as a positive magnitude.
-Returns `NA` for years with no cold waves.
+ET-SCI cold-wave family index. `mode = "excess"` (default) returns the
+mean of (threshold - Tmin) across cold-wave days, expressed as a
+positive magnitude. `mode = "absolute"` returns the mean raw Tmin across
+cold-wave days. Returns `NA` for years with no cold waves.
 
 ## Usage
 
 ``` r
-ck_cwm(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
+ck_cwm(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  min_spell = 3L,
+  mode = c("excess", "absolute")
+)
 ```
 
 ## Arguments
@@ -30,6 +38,10 @@ ck_cwm(tmin, dates, ref_start = 1961L, ref_end = 1990L, min_spell = 3L)
 
   Integer. Minimum spell length in days (default 3, the ET-SCI
   standard).
+
+- mode:
+
+  One of `"excess"` (default) or `"absolute"`. See details.
 
 ## Value
 
