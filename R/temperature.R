@@ -202,6 +202,183 @@ ck_tnn <- function(tmin, dates, period = "annual") {
   build_result(result$periods, result$values, "tnn", "\u00b0C", period)
 }
 
+#' Percentage of Cool Days (TX10p)
+#'
+#' ETCCDI canonical index TX10p. Percentage of days where daily Tmax
+#' falls below the 10th percentile of the calendar-day distribution
+#' from a reference period (default 1961 to 1990). The threshold is
+#' computed using a 5-day window centred on each calendar day, pooled
+#' across the reference period.
+#'
+#' This implementation does not apply the Zhang et al. (2005) in-base
+#' bootstrap correction, so years inside the reference period have a
+#' small self-inclusion bias. For climate-change attribution, restrict
+#' interpretation to years outside the reference window.
+#'
+#' @param tmax Numeric vector of daily maximum temperatures (degrees C).
+#' @param dates Date vector of the same length as `tmax`. Must contain
+#'   data covering the reference period.
+#' @param ref_start,ref_end Integer. Reference period boundary years
+#'   (inclusive). Defaults to 1961 and 1990.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_tx10p(tmax, dates))
+ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
+                     period = "annual") {
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmax))
+  period <- validate_period(period)
+
+  thresholds <- .calendar_day_percentile(tmax, dates, 0.10,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  exceedance <- tmax < thresholds[doy]
+
+  periods <- get_periods(dates, period)
+  unique_periods <- unique(periods)
+  values <- vapply(unique_periods, function(p) {
+    idx <- which(periods == p)
+    valid <- !is.na(tmax[idx]) & !is.na(thresholds[doy[idx]])
+    if (!any(valid)) return(NA_real_)
+    100 * mean(exceedance[idx][valid], na.rm = TRUE)
+  }, numeric(1))
+
+  build_result(unique_periods, values, "tx10p", "%", period)
+}
+
+#' Percentage of Cool Nights (TN10p)
+#'
+#' ETCCDI canonical index TN10p. Percentage of days where daily Tmin
+#' falls below the 10th percentile of the calendar-day distribution
+#' from a reference period (default 1961 to 1990). Computation follows
+#' the same convention as [ck_tx10p()].
+#'
+#' @inheritParams ck_tx10p
+#' @param tmin Numeric vector of daily minimum temperatures (degrees C).
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_tn10p(tmin, dates))
+ck_tn10p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
+                     period = "annual") {
+  validate_numeric(tmin, "tmin")
+  validate_dates(dates, length(tmin))
+  period <- validate_period(period)
+
+  thresholds <- .calendar_day_percentile(tmin, dates, 0.10,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  exceedance <- tmin < thresholds[doy]
+
+  periods <- get_periods(dates, period)
+  unique_periods <- unique(periods)
+  values <- vapply(unique_periods, function(p) {
+    idx <- which(periods == p)
+    valid <- !is.na(tmin[idx]) & !is.na(thresholds[doy[idx]])
+    if (!any(valid)) return(NA_real_)
+    100 * mean(exceedance[idx][valid], na.rm = TRUE)
+  }, numeric(1))
+
+  build_result(unique_periods, values, "tn10p", "%", period)
+}
+
+#' Percentage of Warm Days (TX90p)
+#'
+#' ETCCDI canonical index TX90p. Percentage of days where daily Tmax
+#' exceeds the 90th percentile of the calendar-day distribution from a
+#' reference period (default 1961 to 1990). Computation follows the same
+#' convention as [ck_tx10p()].
+#'
+#' @inheritParams ck_tx10p
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_tx90p(tmax, dates))
+ck_tx90p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
+                     period = "annual") {
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmax))
+  period <- validate_period(period)
+
+  thresholds <- .calendar_day_percentile(tmax, dates, 0.90,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  exceedance <- tmax > thresholds[doy]
+
+  periods <- get_periods(dates, period)
+  unique_periods <- unique(periods)
+  values <- vapply(unique_periods, function(p) {
+    idx <- which(periods == p)
+    valid <- !is.na(tmax[idx]) & !is.na(thresholds[doy[idx]])
+    if (!any(valid)) return(NA_real_)
+    100 * mean(exceedance[idx][valid], na.rm = TRUE)
+  }, numeric(1))
+
+  build_result(unique_periods, values, "tx90p", "%", period)
+}
+
+#' Percentage of Warm Nights (TN90p)
+#'
+#' ETCCDI canonical index TN90p. Percentage of days where daily Tmin
+#' exceeds the 90th percentile of the calendar-day distribution from a
+#' reference period (default 1961 to 1990). Computation follows the same
+#' convention as [ck_tx10p()].
+#'
+#' @inheritParams ck_tn10p
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+#'         rnorm(length(dates))
+#' tail(ck_tn90p(tmin, dates))
+ck_tn90p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
+                     period = "annual") {
+  validate_numeric(tmin, "tmin")
+  validate_dates(dates, length(tmin))
+  period <- validate_period(period)
+
+  thresholds <- .calendar_day_percentile(tmin, dates, 0.90,
+                                         ref_start, ref_end, window = 5L)
+  doy <- as.integer(format(dates, "%j"))
+  exceedance <- tmin > thresholds[doy]
+
+  periods <- get_periods(dates, period)
+  unique_periods <- unique(periods)
+  values <- vapply(unique_periods, function(p) {
+    idx <- which(periods == p)
+    valid <- !is.na(tmin[idx]) & !is.na(thresholds[doy[idx]])
+    if (!any(valid)) return(NA_real_)
+    100 * mean(exceedance[idx][valid], na.rm = TRUE)
+  }, numeric(1))
+
+  build_result(unique_periods, values, "tn90p", "%", period)
+}
+
 #' Growing Season Length
 #'
 #' Compute the growing season length following the ETCCDI definition: the

@@ -241,3 +241,56 @@ test_that("ETCCDI: txx >= tnx >= tnn and txx >= txn", {
   expect_gte(ck_tnx(tmin, dates)$value, ck_tnn(tmin, dates)$value)
   expect_gte(ck_txx(tmax, dates)$value, ck_txn(tmax, dates)$value)
 })
+
+# ETCCDI percentile-based indices (TX10p / TN10p / TX90p / TN90p) ------------
+
+test_that("ck_tx10p returns approx 10% on uniform synthetic ref data", {
+  set.seed(1)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  result <- ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$index[1], "tx10p")
+  expect_equal(result$unit[1], "%")
+  # Within the base period itself the long-run average should be near 10%.
+  expect_true(all(result$value >= 0 & result$value <= 100))
+  expect_true(abs(mean(result$value) - 10) < 5)
+})
+
+test_that("ck_tx90p returns approx 10% on uniform synthetic ref data", {
+  set.seed(2)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmax <- 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  result <- ck_tx90p(tmax, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_true(abs(mean(result$value) - 10) < 5)
+  expect_equal(result$index[1], "tx90p")
+})
+
+test_that("ck_tn10p and ck_tn90p run on Tmin and dispatch on percentile", {
+  set.seed(3)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  tmin <- 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+          rnorm(length(dates))
+  r10 <- ck_tn10p(tmin, dates, ref_start = 1961L, ref_end = 1962L)
+  r90 <- ck_tn90p(tmin, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_equal(r10$index[1], "tn10p")
+  expect_equal(r90$index[1], "tn90p")
+  expect_true(abs(mean(r10$value) - 10) < 5)
+  expect_true(abs(mean(r90$value) - 10) < 5)
+})
+
+test_that("percentile functions error if no data in reference period", {
+  dates <- seq(as.Date("2000-01-01"), as.Date("2000-12-31"), by = "day")
+  tmax <- rnorm(length(dates), 15, 5)
+  expect_error(
+    ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L),
+    "reference period"
+  )
+})
+
+test_that("percentile functions reject mismatched lengths", {
+  expect_error(ck_tx10p(c(1, 2), as.Date("1961-01-01")), "same length")
+  expect_error(ck_tn90p(c(1, 2), as.Date("1961-01-01")), "same length")
+})

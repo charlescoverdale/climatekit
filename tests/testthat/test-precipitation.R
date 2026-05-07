@@ -134,3 +134,48 @@ test_that("precip = exactly 1.0 mm counts as wet, not dry", {
   expect_equal(result_wet$value, 5)
   expect_equal(result_dry$value, 0)
 })
+
+# ETCCDI percentile-based precip indices (R95p / R99p) -----------------------
+
+test_that("ck_r95p sums precip on extreme wet days, returns mm", {
+  set.seed(11)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  precip <- pmax(rgamma(length(dates), shape = 0.4, scale = 8) - 1, 0)
+  result <- ck_r95p(precip, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$index[1], "r95p")
+  expect_equal(result$unit[1], "mm")
+  expect_true(all(result$value >= 0))
+  # R95p must be <= total annual precip on wet days
+  total <- ck_total_precip(precip, dates)
+  expect_true(all(result$value <= total$value + 1e-6))
+})
+
+test_that("ck_r99p sums even smaller fraction than ck_r95p", {
+  set.seed(12)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  precip <- pmax(rgamma(length(dates), shape = 0.4, scale = 8) - 1, 0)
+  r95 <- ck_r95p(precip, dates, ref_start = 1961L, ref_end = 1962L)
+  r99 <- ck_r99p(precip, dates, ref_start = 1961L, ref_end = 1962L)
+  expect_equal(r99$index[1], "r99p")
+  # R99p <= R95p (smaller fraction of days exceed the higher threshold)
+  expect_true(all(r99$value <= r95$value + 1e-6))
+})
+
+test_that("ck_r95p errors on no reference data", {
+  dates <- seq(as.Date("2000-01-01"), as.Date("2000-12-31"), by = "day")
+  precip <- rep(0.1, length(dates))
+  expect_error(
+    ck_r95p(precip, dates, ref_start = 1961L, ref_end = 1990L),
+    "reference period"
+  )
+})
+
+test_that("ck_r95p errors on dry reference period", {
+  dates <- seq(as.Date("1961-01-01"), as.Date("1961-12-31"), by = "day")
+  precip <- rep(0, length(dates))
+  expect_error(
+    ck_r95p(precip, dates, ref_start = 1961L, ref_end = 1961L),
+    "wet days"
+  )
+})

@@ -84,3 +84,53 @@ count_by_period <- function(condition, dates, period) {
   }, numeric(1))
   list(periods = unique_periods, values = values)
 }
+
+#' Calendar-day percentile thresholds for a daily series
+#'
+#' Returns a length-366 vector of thresholds, one per day of year, computed
+#' from the supplied reference window pooled across the reference period.
+#' Used by the ETCCDI percentile indices (TX10p, TN10p, TX90p, TN90p, CSDI,
+#' WSDI). Follows the ETCCDI ±2-day window convention (a 5-day window
+#' centred on each calendar day, wrapped at year boundaries). Does not
+#' implement the Zhang et al. (2005) in-base bootstrap; thresholds are
+#' applied directly, so values inside the reference period have a small
+#' self-inclusion bias.
+#'
+#' @noRd
+.calendar_day_percentile <- function(values, dates, percentile,
+                                     ref_start = 1961L, ref_end = 1990L,
+                                     window = 5L) {
+  if (!is.numeric(percentile) || length(percentile) != 1L ||
+      percentile <= 0 || percentile >= 1) {
+    cli::cli_abort("{.arg percentile} must be a single number in (0, 1).")
+  }
+  if (window < 1L || window %% 2L != 1L) {
+    cli::cli_abort("{.arg window} must be a positive odd integer.")
+  }
+
+  years <- as.integer(format(dates, "%Y"))
+  doy <- as.integer(format(dates, "%j"))
+
+  in_ref <- years >= ref_start & years <= ref_end
+  if (!any(in_ref)) {
+    cli::cli_abort(
+      "No data in reference period {ref_start}-{ref_end}; supply data covering the period or pass {.arg ref_start} / {.arg ref_end}."
+    )
+  }
+
+  ref_values <- values[in_ref]
+  ref_doy <- doy[in_ref]
+
+  half <- (window - 1L) %/% 2L
+  thresholds <- rep(NA_real_, 366L)
+
+  for (d in seq_len(366L)) {
+    target_doys <- ((d - half - 1L):(d + half - 1L)) %% 366L + 1L
+    pool <- ref_values[ref_doy %in% target_doys]
+    if (length(pool) > 0L && !all(is.na(pool))) {
+      thresholds[d] <- stats::quantile(pool, percentile, na.rm = TRUE,
+                                       names = FALSE, type = 8L)
+    }
+  }
+  thresholds
+}

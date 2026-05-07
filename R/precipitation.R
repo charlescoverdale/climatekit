@@ -242,6 +242,91 @@ ck_precip_intensity <- function(precip, dates, period = "annual") {
   build_result(unique_periods, values, "precip_intensity", "mm/day", period)
 }
 
+#' Very Wet Days Total (R95p)
+#'
+#' ETCCDI canonical index R95p. Annual total precipitation on days where
+#' daily precipitation exceeds the 95th percentile of wet-day precipitation
+#' in a reference period (default 1961 to 1990). A wet day is one with
+#' precipitation at or above 1 mm. The threshold is a single value derived
+#' from all wet days in the reference period (not calendar-day specific).
+#'
+#' @param precip Numeric vector of daily precipitation (mm).
+#' @param dates Date vector of the same length as `precip`. Must contain
+#'   data covering the reference period.
+#' @param ref_start,ref_end Integer. Reference period boundary years
+#'   (inclusive). Defaults to 1961 and 1990.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' precip <- pmax(rgamma(length(dates), shape = 0.4, scale = 8) - 1, 0)
+#' tail(ck_r95p(precip, dates))
+ck_r95p <- function(precip, dates, ref_start = 1961L, ref_end = 1990L,
+                    period = "annual") {
+  .precip_pct_total(precip, dates, 0.95, ref_start, ref_end, period, "r95p")
+}
+
+#' Extremely Wet Days Total (R99p)
+#'
+#' ETCCDI canonical index R99p. Annual total precipitation on days where
+#' daily precipitation exceeds the 99th percentile of wet-day precipitation
+#' in a reference period (default 1961 to 1990). Same convention as
+#' [ck_r95p()].
+#'
+#' @inheritParams ck_r95p
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' set.seed(1)
+#' dates <- seq(as.Date("1961-01-01"), as.Date("1991-12-31"), by = "day")
+#' precip <- pmax(rgamma(length(dates), shape = 0.4, scale = 8) - 1, 0)
+#' tail(ck_r99p(precip, dates))
+ck_r99p <- function(precip, dates, ref_start = 1961L, ref_end = 1990L,
+                    period = "annual") {
+  .precip_pct_total(precip, dates, 0.99, ref_start, ref_end, period, "r99p")
+}
+
+#' Implementation backbone for R95p / R99p
+#' @noRd
+.precip_pct_total <- function(precip, dates, percentile,
+                              ref_start, ref_end, period, index_name) {
+  validate_numeric(precip, "precip")
+  validate_dates(dates, length(precip))
+  period <- validate_period(period)
+
+  years <- as.integer(format(dates, "%Y"))
+  in_ref <- years >= ref_start & years <= ref_end
+  if (!any(in_ref)) {
+    cli::cli_abort(
+      "No data in reference period {ref_start}-{ref_end}; supply data covering the period or pass {.arg ref_start} / {.arg ref_end}."
+    )
+  }
+
+  ref_wet <- precip[in_ref]
+  ref_wet <- ref_wet[!is.na(ref_wet) & ref_wet >= 1]
+  if (length(ref_wet) == 0L) {
+    cli::cli_abort(
+      "No wet days (precip >= 1 mm) in reference period {ref_start}-{ref_end}."
+    )
+  }
+  threshold <- stats::quantile(ref_wet, percentile, names = FALSE,
+                               na.rm = TRUE, type = 8L)
+
+  is_wet <- !is.na(precip) & precip >= 1
+  exceeds <- is_wet & precip > threshold
+
+  contribution <- ifelse(exceeds, precip, 0)
+  result <- aggregate_by_period(contribution, dates, period, sum)
+  build_result(result$periods, result$values, index_name, "mm", period)
+}
+
 #' Max consecutive TRUE values in a logical vector
 #' @noRd
 max_consecutive <- function(x) {

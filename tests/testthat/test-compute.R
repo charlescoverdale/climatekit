@@ -151,3 +151,36 @@ test_that("ck_compute dispatches txx/tnx/txn/tnn", {
   expect_equal(ck_compute(d, "txn")$value, 3)
   expect_equal(ck_compute(d, "tnn")$value, -12)
 })
+
+test_that("ck_compute dispatches percentile indices", {
+  set.seed(99)
+  dates <- seq(as.Date("1961-01-01"), as.Date("1962-12-31"), by = "day")
+  d <- data.frame(
+    dates = dates,
+    tmax = 15 + 10 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+           rnorm(length(dates)),
+    tmin = 5 + 8 * sin(2 * pi * as.integer(format(dates, "%j")) / 365) +
+           rnorm(length(dates)),
+    precip = pmax(rgamma(length(dates), shape = 0.4, scale = 8) - 1, 0)
+  )
+  expect_s3_class(
+    ck_compute(d, "tx10p", ref_start = 1961L, ref_end = 1962L),
+    "data.frame"
+  )
+  expect_s3_class(
+    ck_compute(d, "tn90p", ref_start = 1961L, ref_end = 1962L),
+    "data.frame"
+  )
+  expect_s3_class(
+    ck_compute(d, "r95p", ref_start = 1961L, ref_end = 1962L),
+    "data.frame"
+  )
+})
+
+test_that("ck_etccdi_27 reports 25/27 implemented after Phase 2B", {
+  tab <- ck_etccdi_27()
+  expect_gte(sum(tab$status == "implemented"), 25L)
+  # The two remaining canonical-only-strict entries are CSDI plus the
+  # spell-duration upgrade for WSDI; warm_spell remains an approximation.
+  expect_equal(sum(tab$status == "approximation"), 1L)
+})
