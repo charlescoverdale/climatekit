@@ -2,6 +2,74 @@
 
 ## climatekit 0.2.0
 
+### Bug fixes
+
+- [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md)
+  now applies the canonical ‘ETCCDI’ ‘PRCPTOT’ wet-day filter
+  (precipitation \>= 1 mm) by default. Pass `wet_day_threshold = 0` to
+  recover the previous raw-sum behaviour.
+- [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md)
+  and
+  [`ck_last_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_last_frost.md)
+  gain a `lat` argument and use hemisphere-appropriate cutoffs. Southern
+  Hemisphere users no longer get silent NA results.
+- [`ck_branas()`](https://charlescoverdale.github.io/climatekit/reference/ck_branas.md)
+  gains a `lat` argument; Southern Hemisphere growing season is now
+  October-February of the following year.
+- [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.md)
+  (SDII) returns NA for periods with no valid observations rather than
+  NaN.
+
+### In-base bootstrap (Zhang 2005)
+
+- [`ck_tx10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx10p.md),
+  [`ck_tn10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn10p.md),
+  [`ck_tx90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx90p.md),
+  [`ck_tn90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn90p.md)
+  gain a `bootstrap = FALSE` argument. When `TRUE`, the leave-one-out
+  resampling of Zhang et al. (2005) is applied to remove self-inclusion
+  bias for analysis years inside the reference period. This is the
+  canonical ‘climdex.pcic’ / ‘climpact’ behaviour and is required for
+  climate-change attribution work spanning the base period.
+
+### ET-SCI heatwave family extensions
+
+- [`ck_hwm()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwm.md),
+  [`ck_hwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwa.md),
+  [`ck_cwm()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwm.md),
+  [`ck_cwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwa.md)
+  gain a `mode = c( "excess", "absolute")` argument. `"excess"`
+  (default) preserves the existing ‘ET-SCI’ / ‘climpact’ convention.
+  `"absolute"` returns mean / peak raw temperature on event days,
+  matching Perkins-Alexander (2013).
+- New function
+  [`ck_ehf()`](https://charlescoverdale.github.io/climatekit/reference/ck_ehf.md)
+  implements the Excess Heat Factor of Nairn and Fawcett (2013), the
+  Australian Bureau of Meteorology operational heatwave metric. Three
+  annual statistics are exposed via
+  `stat = c("max", "n_positive", "sum_positive")`.
+
+### SPI / SPEI distribution choice
+
+- [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.md)
+  gains `distribution = c("gamma", "pearsonIII")`. Pearson III is
+  preferred in arid regions where the wet-day distribution is highly
+  skewed (Stagge et al. 2015).
+- [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md)
+  gains `distribution = c("log-logistic", "gev")`. GEV is fitted via
+  Hosking (1985) L-moments.
+
+### FAO-56 Penman-Monteith reference ET
+
+- New function
+  [`ck_pet_pm()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet_pm.md)
+  implements the FAO-56 Penman-Monteith reference evapotranspiration
+  (Allen et al. 1998), the international standard. Optional inputs
+  include relative humidity, wind speed, incoming solar radiation, and
+  elevation; FAO-56 fallbacks are used where these are unavailable.
+  [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md)
+  remains as the simpler temperature-only Hargreaves estimator.
+
 ### ETCCDI canonical 27 coverage
 
 - Added 13 new functions completing the full canonical ‘ETCCDI’ 27 set:

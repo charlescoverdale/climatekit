@@ -39,6 +39,39 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="climatekit-020">climatekit 0.2.0<a class="anchor" aria-label="anchor" href="#climatekit-020"></a></h2>
 <div class="section level3">
+<h3 id="bug-fixes-0-2-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_total_precip.html">ck_total_precip()</a></code> now applies the canonical ‘ETCCDI’ ‘PRCPTOT’ wet-day filter (precipitation &gt;= 1 mm) by default. Pass <code>wet_day_threshold = 0</code> to recover the previous raw-sum behaviour.</li>
+<li>
+<code><a href="../reference/ck_first_frost.html">ck_first_frost()</a></code> and <code><a href="../reference/ck_last_frost.html">ck_last_frost()</a></code> gain a <code>lat</code> argument and use hemisphere-appropriate cutoffs. Southern Hemisphere users no longer get silent NA results.</li>
+<li>
+<code><a href="../reference/ck_branas.html">ck_branas()</a></code> gains a <code>lat</code> argument; Southern Hemisphere growing season is now October-February of the following year.</li>
+<li>
+<code><a href="../reference/ck_precip_intensity.html">ck_precip_intensity()</a></code> (SDII) returns NA for periods with no valid observations rather than NaN.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="in-base-bootstrap-zhang-0-2-0">In-base bootstrap (Zhang 2005)<a class="anchor" aria-label="anchor" href="#in-base-bootstrap-zhang-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_tx10p.html">ck_tx10p()</a></code>, <code><a href="../reference/ck_tn10p.html">ck_tn10p()</a></code>, <code><a href="../reference/ck_tx90p.html">ck_tx90p()</a></code>, <code><a href="../reference/ck_tn90p.html">ck_tn90p()</a></code> gain a <code>bootstrap = FALSE</code> argument. When <code>TRUE</code>, the leave-one-out resampling of Zhang et al. (2005) is applied to remove self-inclusion bias for analysis years inside the reference period. This is the canonical ‘climdex.pcic’ / ‘climpact’ behaviour and is required for climate-change attribution work spanning the base period.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="et-sci-heatwave-family-extensions-0-2-0">ET-SCI heatwave family extensions<a class="anchor" aria-label="anchor" href="#et-sci-heatwave-family-extensions-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_hwm.html">ck_hwm()</a></code>, <code><a href="../reference/ck_hwa.html">ck_hwa()</a></code>, <code><a href="../reference/ck_cwm.html">ck_cwm()</a></code>, <code><a href="../reference/ck_cwa.html">ck_cwa()</a></code> gain a <code>mode = c( "excess", "absolute")</code> argument. <code>"excess"</code> (default) preserves the existing ‘ET-SCI’ / ‘climpact’ convention. <code>"absolute"</code> returns mean / peak raw temperature on event days, matching Perkins-Alexander (2013).</li>
+<li>New function <code><a href="../reference/ck_ehf.html">ck_ehf()</a></code> implements the Excess Heat Factor of Nairn and Fawcett (2013), the Australian Bureau of Meteorology operational heatwave metric. Three annual statistics are exposed via <code>stat = c("max", "n_positive", "sum_positive")</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="spi--spei-distribution-choice-0-2-0">SPI / SPEI distribution choice<a class="anchor" aria-label="anchor" href="#spi--spei-distribution-choice-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_spi.html">ck_spi()</a></code> gains <code>distribution = c("gamma", "pearsonIII")</code>. Pearson III is preferred in arid regions where the wet-day distribution is highly skewed (Stagge et al. 2015).</li>
+<li>
+<code><a href="../reference/ck_spei.html">ck_spei()</a></code> gains <code>distribution = c("log-logistic", "gev")</code>. GEV is fitted via Hosking (1985) L-moments.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fao-penman-monteith-reference-et-0-2-0">FAO-56 Penman-Monteith reference ET<a class="anchor" aria-label="anchor" href="#fao-penman-monteith-reference-et-0-2-0"></a></h3>
+<ul><li>New function <code><a href="../reference/ck_pet_pm.html">ck_pet_pm()</a></code> implements the FAO-56 Penman-Monteith reference evapotranspiration (Allen et al. 1998), the international standard. Optional inputs include relative humidity, wind speed, incoming solar radiation, and elevation; FAO-56 fallbacks are used where these are unavailable. <code><a href="../reference/ck_pet.html">ck_pet()</a></code> remains as the simpler temperature-only Hargreaves estimator.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="etccdi-canonical-coverage-0-2-0">ETCCDI canonical 27 coverage<a class="anchor" aria-label="anchor" href="#etccdi-canonical-coverage-0-2-0"></a></h3>
 <ul><li>Added 13 new functions completing the full canonical ‘ETCCDI’ 27 set: <code><a href="../reference/ck_txx.html">ck_txx()</a></code>, <code><a href="../reference/ck_tnx.html">ck_tnx()</a></code>, <code><a href="../reference/ck_txn.html">ck_txn()</a></code>, <code><a href="../reference/ck_tnn.html">ck_tnn()</a></code> (extreme values); <code><a href="../reference/ck_tx10p.html">ck_tx10p()</a></code>, <code><a href="../reference/ck_tn10p.html">ck_tn10p()</a></code>, <code><a href="../reference/ck_tx90p.html">ck_tx90p()</a></code>, <code><a href="../reference/ck_tn90p.html">ck_tn90p()</a></code>, <code><a href="../reference/ck_r95p.html">ck_r95p()</a></code>, <code><a href="../reference/ck_r99p.html">ck_r99p()</a></code> (calendar-day percentile base, default reference period 1961-1990); <code><a href="../reference/ck_wsdi.html">ck_wsdi()</a></code>, <code><a href="../reference/ck_csdi.html">ck_csdi()</a></code> (proper calendar-day spell duration). <code><a href="../reference/ck_growing_season.html">ck_growing_season()</a></code> was already ETCCDI-compliant.</li>
 <li>

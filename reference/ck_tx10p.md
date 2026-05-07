@@ -9,7 +9,14 @@ period.
 ## Usage
 
 ``` r
-ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
+ck_tx10p(
+  tmax,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  period = "annual",
+  bootstrap = FALSE
+)
 ```
 
 ## Arguments
@@ -32,16 +39,30 @@ ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
 
   Character. Aggregation period: `"annual"` (default) or `"monthly"`.
 
+- bootstrap:
+
+  Logical. If `TRUE`, apply the Zhang (2005) in-base bootstrap
+  correction. Default `FALSE` for backward compatibility and speed.
+
 ## Value
 
 A data frame with columns `period`, `value`, `index`, and `unit`.
 
 ## Details
 
-This implementation does not apply the Zhang et al. (2005) in-base
-bootstrap correction, so years inside the reference period have a small
-self-inclusion bias. For climate-change attribution, restrict
-interpretation to years outside the reference window.
+Set `bootstrap = TRUE` to apply the Zhang et al. (2005) in-base
+leave-one-out bootstrap, which removes the self-inclusion bias for years
+inside the reference period. The bootstrap is computationally expensive
+(roughly N^2 percentile fits for an N-year reference) but is the
+canonical climdex.pcic / climpact behaviour and is required for
+climate-change attribution work that spans the base.
+
+## References
+
+Zhang, X., Hegerl, G. C., Zwiers, F. W., & Kenyon, J. (2005). Avoiding
+inhomogeneity in percentile-based indices of temperature extremes.
+*Journal of Climate*, 18(11), 1641-1651.
+[doi:10.1175/JCLI3366.1](https://doi.org/10.1175/JCLI3366.1) .
 
 ## Examples
 

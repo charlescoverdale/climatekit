@@ -93,6 +93,10 @@ Rainfall and drought indices
   : Standardized Precipitation Index (SPI)
 - [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md)
   : Standardized Precipitation-Evapotranspiration Index (SPEI)
+- [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md)
+  : Potential Evapotranspiration (Hargreaves Method)
+- [`ck_pet_pm()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet_pm.md)
+  : Reference Evapotranspiration (FAO-56 Penman-Monteith)
 
 ## Agroclimatic
 

@@ -4,12 +4,20 @@ ETCCDI canonical index TN90p. Percentage of days where daily Tmin
 exceeds the 90th percentile of the calendar-day distribution from a
 reference period (default 1961 to 1990). Computation follows the same
 convention as
-[`ck_tx10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx10p.md).
+[`ck_tx10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx10p.md)
+and supports the same `bootstrap` argument.
 
 ## Usage
 
 ``` r
-ck_tn90p(tmin, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
+ck_tn90p(
+  tmin,
+  dates,
+  ref_start = 1961L,
+  ref_end = 1990L,
+  period = "annual",
+  bootstrap = FALSE
+)
 ```
 
 ## Arguments
@@ -31,6 +39,11 @@ ck_tn90p(tmin, dates, ref_start = 1961L, ref_end = 1990L, period = "annual")
 - period:
 
   Character. Aggregation period: `"annual"` (default) or `"monthly"`.
+
+- bootstrap:
+
+  Logical. If `TRUE`, apply the Zhang (2005) in-base bootstrap
+  correction. Default `FALSE` for backward compatibility and speed.
 
 ## Value
 
