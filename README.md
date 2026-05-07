@@ -2,7 +2,19 @@
 
 [![CRAN status](https://www.r-pkg.org/badges/version/climatekit)](https://CRAN.R-project.org/package=climatekit) [![CRAN downloads](https://cranlogs.r-pkg.org/badges/climatekit)](https://CRAN.R-project.org/package=climatekit) [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/climatekit)](https://CRAN.R-project.org/package=climatekit) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-An R package for computing climate indices from daily weather observations. Takes vectors of temperature, precipitation, humidity, and wind data and returns tidy data frames - no file wrangling, no class coercion, no API calls.
+An R package for computing climate indices from daily weather observations. Takes vectors of temperature, precipitation, humidity, and wind data and returns tidy data frames: no file wrangling, no class coercion, no API calls.
+
+Coverage in v0.2.0:
+
+- **Full canonical ETCCDI 27** (Alexander et al. 2006; Zhang et al. 2011), with optional Zhang (2005) in-base bootstrap
+- **ET-SCI heatwave / cold-wave family** (`HWN`, `HWF`, `HWD`, `HWM`, `HWA` and cold-wave duals)
+- **EHF** (Excess Heat Factor, Nairn & Fawcett 2013) — Australian Bureau of Meteorology operational metric
+- **SPI / SPEI** with multiple distributions (gamma / Pearson III; log-logistic / GEV)
+- **FAO-56 Penman-Monteith** reference evapotranspiration alongside Hargreaves
+- **Agroclimatic** (Huglin, Winkler, Branas, frost dates) with hemisphere awareness
+- **Comfort** (heat index, humidex, wind chill, fire-danger proxy)
+- **Discovery surfaces**: `ck_etccdi_27()` audit table, `ck_catalogue()` / `ck_browse()` filter
+- **Gridded** support via `ck_apply_grid()` over a `terra::SpatRaster`
 
 ## What are climate indices?
 
@@ -79,7 +91,7 @@ R has the methods, but they are scattered across half a dozen packages with inco
 
 If you want frost days, degree days, SPI, and the Huglin index in the same analysis, you currently need four packages with four different input formats and four different output structures. One wants an S4 object, another wants a matrix, a third wants separate vectors, and none of them return a data frame with dates attached.
 
-`climatekit` replaces all of that with a single interface: vectors in, data frames out. Every function takes the same kind of input (numeric vector + date vector), every function returns the same kind of output (a data frame with `period`, `value`, `index`, and `unit` columns), and the 35 indices span temperature, precipitation, drought, agroclimatic, and comfort categories.
+`climatekit` replaces all of that with a single interface: vectors in, data frames out. Every function takes the same kind of input (numeric vector + date vector), every function returns the same kind of output (a data frame with `period`, `value`, `index`, and `unit` columns), and the 50+ indices span temperature, precipitation, drought, agroclimatic, and comfort categories.
 
 ```r
 # Without climatekit: four packages, four input formats, four output structures
@@ -117,43 +129,98 @@ devtools::install_github("charlescoverdale/climatekit")
 
 ## Functions
 
-| Category | Function | Description |
+### ETCCDI canonical 27
+
+The full ETCCDI core set (Alexander et al. 2006; Zhang et al. 2011) is implemented. `ck_etccdi_27()` returns an audit table mapping every code to its `climatekit` function.
+
+| Code | Function | Description |
 |---|---|---|
-| Temperature | `ck_frost_days()` | Days where Tmin < 0 degrees C |
-| Temperature | `ck_ice_days()` | Days where Tmax < 0 degrees C |
-| Temperature | `ck_summer_days()` | Days where Tmax > 25 degrees C |
-| Temperature | `ck_tropical_nights()` | Days where Tmin > 20 degrees C |
-| Temperature | `ck_growing_season()` | Growing season length (first to last 6-day spell > 5 degrees C) |
-| Temperature | `ck_heating_degree_days()` | Sum of (base - Tavg) for days below base temperature |
-| Temperature | `ck_cooling_degree_days()` | Sum of (Tavg - base) for days above base temperature |
-| Temperature | `ck_growing_degree_days()` | Accumulated growing degree days above base |
-| Temperature | `ck_diurnal_range()` | Mean daily temperature range (Tmax - Tmin) |
-| Temperature | `ck_warm_spell()` | Warm spell days (spells >= 6 days above 90th percentile) |
-| Precipitation | `ck_dry_days()` | Maximum consecutive dry days |
-| Precipitation | `ck_wet_days()` | Maximum consecutive wet days |
-| Precipitation | `ck_total_precip()` | Total precipitation by period |
-| Precipitation | `ck_heavy_precip()` | Days with precipitation >= 10 mm |
-| Precipitation | `ck_very_heavy_precip()` | Days with precipitation >= 20 mm |
-| Precipitation | `ck_max_1day_precip()` | Maximum 1-day precipitation |
-| Precipitation | `ck_max_5day_precip()` | Maximum 5-day precipitation total |
-| Precipitation | `ck_precip_intensity()` | Mean precipitation on wet days (SDII) |
-| Drought | `ck_spi()` | Standardized Precipitation Index |
-| Drought | `ck_spei()` | Standardized Precipitation-Evapotranspiration Index |
-| Drought | `ck_pet()` | Potential evapotranspiration (Hargreaves method) |
-| Agroclimatic | `ck_huglin()` | Huglin heliothermal index (viticulture) |
-| Agroclimatic | `ck_winkler()` | Winkler index (wine region classification) |
-| Agroclimatic | `ck_branas()` | Branas hydrothermal index (disease pressure) |
-| Agroclimatic | `ck_first_frost()` | Date of first autumn frost |
-| Agroclimatic | `ck_last_frost()` | Date of last spring frost |
-| Comfort | `ck_wind_chill()` | Wind chill temperature (Environment Canada / NWS) |
-| Comfort | `ck_heat_index()` | Heat index (Rothfusz / NWS) |
-| Comfort | `ck_humidex()` | Canadian humidex |
-| Comfort | `ck_fire_danger()` | Simplified fire danger index |
-| Infrastructure | `ck_compute()` | Generic dispatcher - pass index name as string |
-| Infrastructure | `ck_available()` | List all available indices with descriptions |
-| Infrastructure | `ck_metadata()` | Get metadata (units, reference, description) for an index |
-| Infrastructure | `ck_convert_temp()` | Convert between Celsius, Fahrenheit, and Kelvin |
-| Infrastructure | `clear_cache()` | Clear cached reference data |
+| FD | `ck_frost_days()` | Days where Tmin < 0 °C |
+| ID | `ck_ice_days()` | Days where Tmax < 0 °C |
+| SU | `ck_summer_days()` | Days where Tmax > 25 °C |
+| TR | `ck_tropical_nights()` | Days where Tmin > 20 °C |
+| TXx | `ck_txx()` | Annual / monthly max of Tmax |
+| TNx | `ck_tnx()` | Annual / monthly max of Tmin (warmest night) |
+| TXn | `ck_txn()` | Annual / monthly min of Tmax (coldest day) |
+| TNn | `ck_tnn()` | Annual / monthly min of Tmin (coldest night) |
+| DTR | `ck_diurnal_range()` | Mean daily temperature range |
+| GSL | `ck_growing_season()` | Growing season length |
+| TX10p | `ck_tx10p()` | % cool days (calendar-day base, optional Zhang 2005 bootstrap) |
+| TN10p | `ck_tn10p()` | % cool nights (calendar-day base, optional bootstrap) |
+| TX90p | `ck_tx90p()` | % warm days (calendar-day base, optional bootstrap) |
+| TN90p | `ck_tn90p()` | % warm nights (calendar-day base, optional bootstrap) |
+| WSDI | `ck_wsdi()` | Warm spell duration index |
+| CSDI | `ck_csdi()` | Cold spell duration index |
+| RX1day | `ck_max_1day_precip()` | Max 1-day precipitation |
+| RX5day | `ck_max_5day_precip()` | Max 5-day precipitation |
+| SDII | `ck_precip_intensity()` | Simple daily intensity index |
+| R10mm | `ck_heavy_precip()` (default 10) | Days with precip >= 10 mm |
+| R20mm | `ck_very_heavy_precip()` (default 20) | Days with precip >= 20 mm |
+| Rnnmm | `ck_heavy_precip(threshold = nn)` | Days with precip >= nn mm |
+| CDD | `ck_dry_days()` | Max consecutive dry days |
+| CWD | `ck_wet_days()` | Max consecutive wet days |
+| R95p | `ck_r95p()` | Total precip on very-wet days |
+| R99p | `ck_r99p()` | Total precip on extremely-wet days |
+| PRCPTOT | `ck_total_precip()` | Annual wet-day precip total |
+
+### ET-SCI heatwave family
+
+Period of >= 3 consecutive days with TX above the calendar-day 90th percentile, plus cold-wave duals (TN below 10th percentile).
+
+| Code | Function | Description |
+|---|---|---|
+| HWN | `ck_hwn()` | Number of distinct heatwave events |
+| HWF | `ck_hwf()` | Total days inside heatwave events |
+| HWD | `ck_hwd()` | Longest heatwave duration |
+| HWM | `ck_hwm(mode = "excess" / "absolute")` | Mean magnitude across event days |
+| HWA | `ck_hwa(mode = "excess" / "absolute")` | Peak magnitude across event days |
+| CWN | `ck_cwn()` | Cold-wave number |
+| CWF | `ck_cwf()` | Cold-wave frequency |
+| CWD | `ck_cwd()` | Cold-wave duration (note: ETCCDI also uses "CWD" for consecutive wet days, which is `ck_wet_days`) |
+| CWM | `ck_cwm()` | Cold-wave magnitude |
+| CWA | `ck_cwa()` | Cold-wave amplitude |
+| EHF | `ck_ehf()` | Excess Heat Factor (Nairn & Fawcett 2013) |
+
+### Drought, evapotranspiration
+
+| Function | Description |
+|---|---|
+| `ck_spi(distribution = "gamma" / "pearsonIII")` | Standardized Precipitation Index |
+| `ck_spei(distribution = "log-logistic" / "gev")` | Standardized Precipitation-Evapotranspiration Index |
+| `ck_pet()` | Reference evapotranspiration (Hargreaves) |
+| `ck_pet_pm()` | Reference evapotranspiration (FAO-56 Penman-Monteith) |
+
+### Agroclimatic, comfort, energy
+
+| Function | Description |
+|---|---|
+| `ck_huglin(lat)` | Huglin heliothermal index (viticulture) |
+| `ck_winkler()` | Winkler index (wine region classification) |
+| `ck_branas(lat)` | Branas hydrothermal index (disease pressure) |
+| `ck_first_frost(lat)` | First autumn frost date (NH or SH) |
+| `ck_last_frost(lat)` | Last spring frost date (NH or SH) |
+| `ck_growing_degree_days()` | Accumulated GDD above base |
+| `ck_heating_degree_days()` | Heating degree days |
+| `ck_cooling_degree_days()` | Cooling degree days |
+| `ck_warm_spell()` | Warm-spell days (series-quantile, simpler variant of WSDI) |
+| `ck_wind_chill()` | Wind chill (Environment Canada / NWS) |
+| `ck_heat_index()` | Heat index (Rothfusz / NWS) |
+| `ck_humidex()` | Canadian humidex |
+| `ck_fire_danger()` | Simplified fire-danger proxy (use `cffdrs` for full FWI) |
+
+### Discovery, dispatch, gridded
+
+| Function | Description |
+|---|---|
+| `ck_etccdi_27()` | Canonical ETCCDI 27 audit table |
+| `ck_catalogue()` | Full implementation catalogue |
+| `ck_browse(sector, standard, search)` | Filter the catalogue |
+| `ck_compute(data, index, ...)` | Dispatch any index by name |
+| `ck_available()`, `ck_metadata()` | Lightweight registry queries |
+| `ck_convert_temp()` | Celsius / Fahrenheit / Kelvin |
+| `ck_apply_grid(x, fun, dates, ...)` | Apply any function over a `terra::SpatRaster` |
+| `ck_from_netcdf(path, var)` | Thin reader for netCDF input |
+| `clear_cache()` | Clear the user-data cache |
 
 ---
 
@@ -296,6 +363,47 @@ ck_fire_danger(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
 
 ---
 
+### Removing the in-base bias with the Zhang (2005) bootstrap
+
+```r
+# The percentile-day indices (TX10p, TN10p, TX90p, TN90p) compute
+# thresholds from a reference period (default 1961-1990). For analysis
+# years inside the reference period, the year being assessed contributes
+# to its own threshold and biases the result toward 10% / 90%. Set
+# bootstrap = TRUE to apply Zhang et al. (2005) leave-one-out resampling
+# (the canonical climdex.pcic / climpact behaviour). Costs roughly
+# N^2 percentile fits for an N-year reference; opt in for attribution
+# work spanning the base.
+
+ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, bootstrap = TRUE)
+```
+
+### Operational heatwave intensity (Excess Heat Factor)
+
+```r
+# EHF combines a 3-day mean temperature anomaly above the 95th
+# percentile with an acclimatisation term. Positive EHF days are
+# heatwave conditions; larger values indicate more severe events.
+
+ck_ehf(tmax, tmin, dates, ref_start = 1961L, ref_end = 1990L,
+       stat = "max")           # peak EHF in year
+ck_ehf(tmax, tmin, dates, stat = "n_positive")    # count heatwave-condition days
+ck_ehf(tmax, tmin, dates, stat = "sum_positive")  # severity-weighted total
+```
+
+### FAO-56 Penman-Monteith reference evapotranspiration
+
+```r
+# ck_pet() is the Hargreaves estimator (Tmin / Tmax / lat only).
+# ck_pet_pm() is the international FAO-56 Penman-Monteith standard,
+# with optional humidity, wind, solar-radiation, and elevation inputs.
+# Sensible FAO-56 fallbacks are used where data are missing.
+
+ck_pet_pm(tmin, tmax, lat = 45, dates = dates,
+          elev = 200, wind = 2.5,
+          rh_min = rh_min, rh_max = rh_max)
+```
+
 ### Computing indices programmatically
 
 ```r
@@ -374,6 +482,29 @@ All outputs join cleanly on `period` or `date` columns, so you can compute multi
 | [`aemo`](https://github.com/charlescoverdale/aemo) | Australian Energy Market Operator data |
 
 ---
+
+## Migrating from `climdex.pcic`
+
+`climdex.pcic` (Pacific Climate Impacts Consortium) was for many years the standard R implementation of the canonical ETCCDI 27. It was archived from CRAN in 2023. `climatekit` covers the same set with a simpler interface:
+
+```r
+# climdex.pcic
+ci <- climdexInput.raw(tmax, tmin, prec, ..., base.range = c(1961, 1990))
+fd <- climdex.fd(ci)        # named numeric vector
+
+# climatekit
+fd <- ck_frost_days(tmin, dates)   # tidy data frame
+```
+
+See `vignette("climdex-migration", package = "climatekit")` for the full function-name crosswalk and interface-shift notes.
+
+## Citation
+
+```r
+citation("climatekit")
+```
+
+If you use the package in academic work, please also cite Alexander et al. (2006) and Zhang et al. (2011) (the canonical ETCCDI references), and Zhang et al. (2005) if you use the in-base bootstrap. `inst/CITATION` and the root-level `CITATION.cff` provide the bibentries.
 
 ## Issues
 
