@@ -13,8 +13,35 @@ MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/
 
 An R package for computing climate indices from daily weather
 observations. Takes vectors of temperature, precipitation, humidity, and
-wind data and returns tidy data frames - no file wrangling, no class
+wind data and returns tidy data frames: no file wrangling, no class
 coercion, no API calls.
+
+Coverage in v0.2.0:
+
+- **Full canonical ETCCDI 27** (Alexander et al. 2006; Zhang et
+  al. 2011), with optional Zhang (2005) in-base bootstrap
+- **ET-SCI heatwave / cold-wave family** (`HWN`, `HWF`, `HWD`, `HWM`,
+  `HWA` and cold-wave duals)
+- **EHF** (Excess Heat Factor, Nairn & Fawcett 2013) — Australian Bureau
+  of Meteorology operational metric
+- **SPI / SPEI** with multiple distributions (gamma / Pearson III;
+  log-logistic / GEV)
+- **FAO-56 Penman-Monteith** reference evapotranspiration alongside
+  Hargreaves
+- **Agroclimatic** (Huglin, Winkler, Branas, frost dates) with
+  hemisphere awareness
+- **Comfort** (heat index, humidex, wind chill, fire-danger proxy)
+- **Discovery surfaces**:
+  [`ck_etccdi_27()`](https://charlescoverdale.github.io/climatekit/reference/ck_etccdi_27.md)
+  audit table,
+  [`ck_catalogue()`](https://charlescoverdale.github.io/climatekit/reference/ck_catalogue.md)
+  /
+  [`ck_browse()`](https://charlescoverdale.github.io/climatekit/reference/ck_browse.md)
+  filter
+- **Gridded** support via
+  [`ck_apply_grid()`](https://charlescoverdale.github.io/climatekit/reference/ck_apply_grid.md)
+  over a
+  [`terra::SpatRaster`](https://rspatial.github.io/terra/reference/SpatRaster-class.html)
 
 ## What are climate indices?
 
@@ -125,7 +152,7 @@ of them return a data frame with dates attached.
 data frames out. Every function takes the same kind of input (numeric
 vector + date vector), every function returns the same kind of output (a
 data frame with `period`, `value`, `index`, and `unit` columns), and the
-35 indices span temperature, precipitation, drought, agroclimatic, and
+50+ indices span temperature, precipitation, drought, agroclimatic, and
 comfort categories.
 
 ``` r
@@ -166,43 +193,102 @@ devtools::install_github("charlescoverdale/climatekit")
 
 ## Functions
 
-| Category | Function | Description |
+### ETCCDI canonical 27
+
+The full ETCCDI core set (Alexander et al. 2006; Zhang et al. 2011) is
+implemented.
+[`ck_etccdi_27()`](https://charlescoverdale.github.io/climatekit/reference/ck_etccdi_27.md)
+returns an audit table mapping every code to its `climatekit` function.
+
+| Code | Function | Description |
 |----|----|----|
-| Temperature | [`ck_frost_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_frost_days.md) | Days where Tmin \< 0 degrees C |
-| Temperature | [`ck_ice_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_ice_days.md) | Days where Tmax \< 0 degrees C |
-| Temperature | [`ck_summer_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_summer_days.md) | Days where Tmax \> 25 degrees C |
-| Temperature | [`ck_tropical_nights()`](https://charlescoverdale.github.io/climatekit/reference/ck_tropical_nights.md) | Days where Tmin \> 20 degrees C |
-| Temperature | [`ck_growing_season()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_season.md) | Growing season length (first to last 6-day spell \> 5 degrees C) |
-| Temperature | [`ck_heating_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_heating_degree_days.md) | Sum of (base - Tavg) for days below base temperature |
-| Temperature | [`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.md) | Sum of (Tavg - base) for days above base temperature |
-| Temperature | [`ck_growing_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_degree_days.md) | Accumulated growing degree days above base |
-| Temperature | [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md) | Mean daily temperature range (Tmax - Tmin) |
-| Temperature | [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.md) | Warm spell days (spells \>= 6 days above 90th percentile) |
-| Precipitation | [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md) | Maximum consecutive dry days |
-| Precipitation | [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md) | Maximum consecutive wet days |
-| Precipitation | [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md) | Total precipitation by period |
-| Precipitation | [`ck_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_heavy_precip.md) | Days with precipitation \>= 10 mm |
-| Precipitation | [`ck_very_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_very_heavy_precip.md) | Days with precipitation \>= 20 mm |
-| Precipitation | [`ck_max_1day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_1day_precip.md) | Maximum 1-day precipitation |
-| Precipitation | [`ck_max_5day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_5day_precip.md) | Maximum 5-day precipitation total |
-| Precipitation | [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.md) | Mean precipitation on wet days (SDII) |
-| Drought | [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.md) | Standardized Precipitation Index |
-| Drought | [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md) | Standardized Precipitation-Evapotranspiration Index |
-| Drought | [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md) | Potential evapotranspiration (Hargreaves method) |
-| Agroclimatic | [`ck_huglin()`](https://charlescoverdale.github.io/climatekit/reference/ck_huglin.md) | Huglin heliothermal index (viticulture) |
-| Agroclimatic | [`ck_winkler()`](https://charlescoverdale.github.io/climatekit/reference/ck_winkler.md) | Winkler index (wine region classification) |
-| Agroclimatic | [`ck_branas()`](https://charlescoverdale.github.io/climatekit/reference/ck_branas.md) | Branas hydrothermal index (disease pressure) |
-| Agroclimatic | [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md) | Date of first autumn frost |
-| Agroclimatic | [`ck_last_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_last_frost.md) | Date of last spring frost |
-| Comfort | [`ck_wind_chill()`](https://charlescoverdale.github.io/climatekit/reference/ck_wind_chill.md) | Wind chill temperature (Environment Canada / NWS) |
-| Comfort | [`ck_heat_index()`](https://charlescoverdale.github.io/climatekit/reference/ck_heat_index.md) | Heat index (Rothfusz / NWS) |
-| Comfort | [`ck_humidex()`](https://charlescoverdale.github.io/climatekit/reference/ck_humidex.md) | Canadian humidex |
-| Comfort | [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.md) | Simplified fire danger index |
-| Infrastructure | [`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.md) | Generic dispatcher - pass index name as string |
-| Infrastructure | [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md) | List all available indices with descriptions |
-| Infrastructure | [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md) | Get metadata (units, reference, description) for an index |
-| Infrastructure | [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.md) | Convert between Celsius, Fahrenheit, and Kelvin |
-| Infrastructure | [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md) | Clear cached reference data |
+| FD | [`ck_frost_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_frost_days.md) | Days where Tmin \< 0 °C |
+| ID | [`ck_ice_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_ice_days.md) | Days where Tmax \< 0 °C |
+| SU | [`ck_summer_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_summer_days.md) | Days where Tmax \> 25 °C |
+| TR | [`ck_tropical_nights()`](https://charlescoverdale.github.io/climatekit/reference/ck_tropical_nights.md) | Days where Tmin \> 20 °C |
+| TXx | [`ck_txx()`](https://charlescoverdale.github.io/climatekit/reference/ck_txx.md) | Annual / monthly max of Tmax |
+| TNx | [`ck_tnx()`](https://charlescoverdale.github.io/climatekit/reference/ck_tnx.md) | Annual / monthly max of Tmin (warmest night) |
+| TXn | [`ck_txn()`](https://charlescoverdale.github.io/climatekit/reference/ck_txn.md) | Annual / monthly min of Tmax (coldest day) |
+| TNn | [`ck_tnn()`](https://charlescoverdale.github.io/climatekit/reference/ck_tnn.md) | Annual / monthly min of Tmin (coldest night) |
+| DTR | [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md) | Mean daily temperature range |
+| GSL | [`ck_growing_season()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_season.md) | Growing season length |
+| TX10p | [`ck_tx10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx10p.md) | % cool days (calendar-day base, optional Zhang 2005 bootstrap) |
+| TN10p | [`ck_tn10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn10p.md) | % cool nights (calendar-day base, optional bootstrap) |
+| TX90p | [`ck_tx90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx90p.md) | % warm days (calendar-day base, optional bootstrap) |
+| TN90p | [`ck_tn90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn90p.md) | % warm nights (calendar-day base, optional bootstrap) |
+| WSDI | [`ck_wsdi()`](https://charlescoverdale.github.io/climatekit/reference/ck_wsdi.md) | Warm spell duration index |
+| CSDI | [`ck_csdi()`](https://charlescoverdale.github.io/climatekit/reference/ck_csdi.md) | Cold spell duration index |
+| RX1day | [`ck_max_1day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_1day_precip.md) | Max 1-day precipitation |
+| RX5day | [`ck_max_5day_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_max_5day_precip.md) | Max 5-day precipitation |
+| SDII | [`ck_precip_intensity()`](https://charlescoverdale.github.io/climatekit/reference/ck_precip_intensity.md) | Simple daily intensity index |
+| R10mm | [`ck_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_heavy_precip.md) (default 10) | Days with precip \>= 10 mm |
+| R20mm | [`ck_very_heavy_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_very_heavy_precip.md) (default 20) | Days with precip \>= 20 mm |
+| Rnnmm | `ck_heavy_precip(threshold = nn)` | Days with precip \>= nn mm |
+| CDD | [`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md) | Max consecutive dry days |
+| CWD | [`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md) | Max consecutive wet days |
+| R95p | [`ck_r95p()`](https://charlescoverdale.github.io/climatekit/reference/ck_r95p.md) | Total precip on very-wet days |
+| R99p | [`ck_r99p()`](https://charlescoverdale.github.io/climatekit/reference/ck_r99p.md) | Total precip on extremely-wet days |
+| PRCPTOT | [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md) | Annual wet-day precip total |
+
+### ET-SCI heatwave family
+
+Period of \>= 3 consecutive days with TX above the calendar-day 90th
+percentile, plus cold-wave duals (TN below 10th percentile).
+
+| Code | Function | Description |
+|----|----|----|
+| HWN | [`ck_hwn()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwn.md) | Number of distinct heatwave events |
+| HWF | [`ck_hwf()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwf.md) | Total days inside heatwave events |
+| HWD | [`ck_hwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwd.md) | Longest heatwave duration |
+| HWM | `ck_hwm(mode = "excess" / "absolute")` | Mean magnitude across event days |
+| HWA | `ck_hwa(mode = "excess" / "absolute")` | Peak magnitude across event days |
+| CWN | [`ck_cwn()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwn.md) | Cold-wave number |
+| CWF | [`ck_cwf()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwf.md) | Cold-wave frequency |
+| CWD | [`ck_cwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwd.md) | Cold-wave duration (note: ETCCDI also uses “CWD” for consecutive wet days, which is `ck_wet_days`) |
+| CWM | [`ck_cwm()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwm.md) | Cold-wave magnitude |
+| CWA | [`ck_cwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwa.md) | Cold-wave amplitude |
+| EHF | [`ck_ehf()`](https://charlescoverdale.github.io/climatekit/reference/ck_ehf.md) | Excess Heat Factor (Nairn & Fawcett 2013) |
+
+### Drought, evapotranspiration
+
+| Function | Description |
+|----|----|
+| `ck_spi(distribution = "gamma" / "pearsonIII")` | Standardized Precipitation Index |
+| `ck_spei(distribution = "log-logistic" / "gev")` | Standardized Precipitation-Evapotranspiration Index |
+| [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md) | Reference evapotranspiration (Hargreaves) |
+| [`ck_pet_pm()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet_pm.md) | Reference evapotranspiration (FAO-56 Penman-Monteith) |
+
+### Agroclimatic, comfort, energy
+
+| Function | Description |
+|----|----|
+| `ck_huglin(lat)` | Huglin heliothermal index (viticulture) |
+| [`ck_winkler()`](https://charlescoverdale.github.io/climatekit/reference/ck_winkler.md) | Winkler index (wine region classification) |
+| `ck_branas(lat)` | Branas hydrothermal index (disease pressure) |
+| `ck_first_frost(lat)` | First autumn frost date (NH or SH) |
+| `ck_last_frost(lat)` | Last spring frost date (NH or SH) |
+| [`ck_growing_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_growing_degree_days.md) | Accumulated GDD above base |
+| [`ck_heating_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_heating_degree_days.md) | Heating degree days |
+| [`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.md) | Cooling degree days |
+| [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.md) | Warm-spell days (series-quantile, simpler variant of WSDI) |
+| [`ck_wind_chill()`](https://charlescoverdale.github.io/climatekit/reference/ck_wind_chill.md) | Wind chill (Environment Canada / NWS) |
+| [`ck_heat_index()`](https://charlescoverdale.github.io/climatekit/reference/ck_heat_index.md) | Heat index (Rothfusz / NWS) |
+| [`ck_humidex()`](https://charlescoverdale.github.io/climatekit/reference/ck_humidex.md) | Canadian humidex |
+| [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.md) | Simplified fire-danger proxy (use `cffdrs` for full FWI) |
+
+### Discovery, dispatch, gridded
+
+| Function | Description |
+|----|----|
+| [`ck_etccdi_27()`](https://charlescoverdale.github.io/climatekit/reference/ck_etccdi_27.md) | Canonical ETCCDI 27 audit table |
+| [`ck_catalogue()`](https://charlescoverdale.github.io/climatekit/reference/ck_catalogue.md) | Full implementation catalogue |
+| `ck_browse(sector, standard, search)` | Filter the catalogue |
+| `ck_compute(data, index, ...)` | Dispatch any index by name |
+| [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md), [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md) | Lightweight registry queries |
+| [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.md) | Celsius / Fahrenheit / Kelvin |
+| `ck_apply_grid(x, fun, dates, ...)` | Apply any function over a [`terra::SpatRaster`](https://rspatial.github.io/terra/reference/SpatRaster-class.html) |
+| `ck_from_netcdf(path, var)` | Thin reader for netCDF input |
+| [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md) | Clear the user-data cache |
 
 ------------------------------------------------------------------------
 
@@ -351,6 +437,50 @@ ck_fire_danger(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
 
 ------------------------------------------------------------------------
 
+### Removing the in-base bias with the Zhang (2005) bootstrap
+
+``` r
+
+# The percentile-day indices (TX10p, TN10p, TX90p, TN90p) compute
+# thresholds from a reference period (default 1961-1990). For analysis
+# years inside the reference period, the year being assessed contributes
+# to its own threshold and biases the result toward 10% / 90%. Set
+# bootstrap = TRUE to apply Zhang et al. (2005) leave-one-out resampling
+# (the canonical climdex.pcic / climpact behaviour). Costs roughly
+# N^2 percentile fits for an N-year reference; opt in for attribution
+# work spanning the base.
+
+ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, bootstrap = TRUE)
+```
+
+### Operational heatwave intensity (Excess Heat Factor)
+
+``` r
+
+# EHF combines a 3-day mean temperature anomaly above the 95th
+# percentile with an acclimatisation term. Positive EHF days are
+# heatwave conditions; larger values indicate more severe events.
+
+ck_ehf(tmax, tmin, dates, ref_start = 1961L, ref_end = 1990L,
+       stat = "max")           # peak EHF in year
+ck_ehf(tmax, tmin, dates, stat = "n_positive")    # count heatwave-condition days
+ck_ehf(tmax, tmin, dates, stat = "sum_positive")  # severity-weighted total
+```
+
+### FAO-56 Penman-Monteith reference evapotranspiration
+
+``` r
+
+# ck_pet() is the Hargreaves estimator (Tmin / Tmax / lat only).
+# ck_pet_pm() is the international FAO-56 Penman-Monteith standard,
+# with optional humidity, wind, solar-radiation, and elevation inputs.
+# Sensible FAO-56 fallbacks are used where data are missing.
+
+ck_pet_pm(tmin, tmax, lat = 45, dates = dates,
+          elev = 200, wind = 2.5,
+          rh_min = rh_min, rh_max = rh_max)
+```
+
 ### Computing indices programmatically
 
 ``` r
@@ -449,6 +579,40 @@ frame.
 | [`aemo`](https://github.com/charlescoverdale/aemo) | Australian Energy Market Operator data |
 
 ------------------------------------------------------------------------
+
+## Migrating from `climdex.pcic`
+
+`climdex.pcic` (Pacific Climate Impacts Consortium) was for many years
+the standard R implementation of the canonical ETCCDI 27. It was
+archived from CRAN in 2023. `climatekit` covers the same set with a
+simpler interface:
+
+``` r
+
+# climdex.pcic
+ci <- climdexInput.raw(tmax, tmin, prec, ..., base.range = c(1961, 1990))
+fd <- climdex.fd(ci)        # named numeric vector
+
+# climatekit
+fd <- ck_frost_days(tmin, dates)   # tidy data frame
+```
+
+See
+[`vignette("climdex-migration", package = "climatekit")`](https://charlescoverdale.github.io/climatekit/articles/climdex-migration.md)
+for the full function-name crosswalk and interface-shift notes.
+
+## Citation
+
+``` r
+
+citation("climatekit")
+```
+
+If you use the package in academic work, please also cite Alexander et
+al. (2006) and Zhang et al. (2011) (the canonical ETCCDI references),
+and Zhang et al. (2005) if you use the in-base bootstrap.
+`inst/CITATION` and the root-level `CITATION.cff` provide the
+bibentries.
 
 ## Issues
 
