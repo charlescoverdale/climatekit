@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,46 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="climatekit-020">climatekit 0.2.0<a class="anchor" aria-label="anchor" href="#climatekit-020"></a></h2>
+<div class="section level3">
+<h3 id="etccdi-canonical-coverage-0-2-0">ETCCDI canonical 27 coverage<a class="anchor" aria-label="anchor" href="#etccdi-canonical-coverage-0-2-0"></a></h3>
+<ul><li>Added 13 new functions completing the full canonical ‘ETCCDI’ 27 set: <code><a href="../reference/ck_txx.html">ck_txx()</a></code>, <code><a href="../reference/ck_tnx.html">ck_tnx()</a></code>, <code><a href="../reference/ck_txn.html">ck_txn()</a></code>, <code><a href="../reference/ck_tnn.html">ck_tnn()</a></code> (extreme values); <code><a href="../reference/ck_tx10p.html">ck_tx10p()</a></code>, <code><a href="../reference/ck_tn10p.html">ck_tn10p()</a></code>, <code><a href="../reference/ck_tx90p.html">ck_tx90p()</a></code>, <code><a href="../reference/ck_tn90p.html">ck_tn90p()</a></code>, <code><a href="../reference/ck_r95p.html">ck_r95p()</a></code>, <code><a href="../reference/ck_r99p.html">ck_r99p()</a></code> (calendar-day percentile base, default reference period 1961-1990); <code><a href="../reference/ck_wsdi.html">ck_wsdi()</a></code>, <code><a href="../reference/ck_csdi.html">ck_csdi()</a></code> (proper calendar-day spell duration). <code><a href="../reference/ck_growing_season.html">ck_growing_season()</a></code> was already ETCCDI-compliant.</li>
+<li>
+<code><a href="../reference/ck_warm_spell.html">ck_warm_spell()</a></code> is retained as a quick series-quantile approximation; its documentation now points to <code><a href="../reference/ck_wsdi.html">ck_wsdi()</a></code> for the canonical ETCCDI definition.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="et-sci-heatwave-and-cold-wave-families-0-2-0">ET-SCI heatwave and cold-wave families<a class="anchor" aria-label="anchor" href="#et-sci-heatwave-and-cold-wave-families-0-2-0"></a></h3>
+<ul><li>Added 10 new functions implementing the ‘ET-SCI’ heatwave and cold-wave families on a calendar-day percentile base. Heatwave family: <code><a href="../reference/ck_hwn.html">ck_hwn()</a></code>, <code><a href="../reference/ck_hwf.html">ck_hwf()</a></code>, <code><a href="../reference/ck_hwd.html">ck_hwd()</a></code>, <code><a href="../reference/ck_hwm.html">ck_hwm()</a></code>, <code><a href="../reference/ck_hwa.html">ck_hwa()</a></code> (number, frequency, duration, magnitude, amplitude). Cold-wave duals: <code><a href="../reference/ck_cwn.html">ck_cwn()</a></code>, <code><a href="../reference/ck_cwf.html">ck_cwf()</a></code>, <code><a href="../reference/ck_cwd.html">ck_cwd()</a></code>, <code><a href="../reference/ck_cwm.html">ck_cwm()</a></code>, <code><a href="../reference/ck_cwa.html">ck_cwa()</a></code>.</li>
+<li>The ‘CWD’ acronym is used by both ‘ETCCDI’ (Consecutive Wet Days) and ‘ET-SCI’ (Cold Wave Duration). <code><a href="../reference/ck_cwd.html">ck_cwd()</a></code> here is the ET-SCI cold-wave version; <code><a href="../reference/ck_wet_days.html">ck_wet_days()</a></code> is the ETCCDI precipitation index. Both function-level documentation pages cross-reference the other.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="discovery-surfaces-0-2-0">Discovery surfaces<a class="anchor" aria-label="anchor" href="#discovery-surfaces-0-2-0"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_etccdi_27.html">ck_etccdi_27()</a></code> returns the canonical 27 ‘ETCCDI’ indices as a data frame with <code>code</code>, <code>name</code>, <code>variable</code>, <code>unit</code>, <code>definition</code>, <code>ck_function</code>, and <code>status</code> columns. Use it to audit coverage or to locate the function for a given short code.</li>
+<li>
+<code><a href="../reference/ck_catalogue.html">ck_catalogue()</a></code> returns the full implementation catalogue (51 rows). <code>ck_browse(sector, standard, search)</code> filters by sector (‘agriculture’, ‘health’, ‘water’, ‘energy’), standard (‘ETCCDI’, ‘ET-SCI’, ‘agroclimatic’, etc.), or free-text search.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="gridded-support-0-2-0">Gridded support<a class="anchor" aria-label="anchor" href="#gridded-support-0-2-0"></a></h3>
+<ul><li>
+<code>ck_apply_grid(x, fun, dates, ...)</code> applies any <code>ck_*</code> function over the cells of a ‘terra’ ‘SpatRaster’ and returns a SpatRaster with one layer per output period.</li>
+<li>
+<code>ck_from_netcdf(path, var)</code> is a thin convenience wrapper around <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code> for ‘netCDF’ inputs with file-existence and argument validation.</li>
+<li>‘terra’ and ‘ncdf4’ are in ‘Suggests’; loading climatekit alone does not pull them in.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h3>
+<ul><li>
+<code>inst/CITATION</code> provides ‘bibentry’ records for the package and for Alexander et al. (2006) and Zhang et al. (2011).</li>
+<li>‘CITATION.cff’ at the repository root supports GitHub’s citation widget.</li>
+<li>New vignette <code>climdex-migration</code> documents the function-name crosswalk from ‘climdex.pcic’ to climatekit, plus interface-shift notes (numeric-vector inputs, tidy data-frame outputs, default reference period).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documented-limitations-0-2-0">Documented limitations<a class="anchor" aria-label="anchor" href="#documented-limitations-0-2-0"></a></h3>
+<ul><li>The percentile-based indices use the standard ±2-day calendar window but do not implement the Zhang et al. (2005) in-base bootstrap. Years inside the reference period therefore have a small self-inclusion bias. This is documented in each function’s documentation page.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="climatekit-010">climatekit 0.1.0<a class="anchor" aria-label="anchor" href="#climatekit-010"></a></h2><p class="text-muted">CRAN release: 2026-03-23</p>
 <ul><li>Initial release.</li>
 <li>10 temperature indices: frost days, ice days, summer days, tropical nights, growing season length, heating/cooling/growing degree days, diurnal temperature range, warm spell duration.</li>
@@ -50,7 +90,8 @@
 <li>
 <code><a href="../reference/ck_convert_temp.html">ck_convert_temp()</a></code> for temperature unit conversion.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
