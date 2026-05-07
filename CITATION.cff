@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata below, plus the ETCCDI references in inst/CITATION."
 type: software
-version: 0.1.0
+version: 0.2.0
 title: "climatekit: Unified Climate Indices for Temperature, Precipitation, and Drought"
 abstract: >
   Compute the standard suite of climate indices from daily weather
