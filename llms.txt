@@ -590,6 +590,15 @@ Heat, fire, and wind indices
 - [`ck_fire_danger()`](https://charlescoverdale.github.io/climatekit/reference/ck_fire_danger.md)
   : Fire Danger Index (Simplified)
 
+## Gridded / netCDF
+
+Apply any climatekit index over a SpatRaster or read netCDF input
+
+- [`ck_apply_grid()`](https://charlescoverdale.github.io/climatekit/reference/ck_apply_grid.md)
+  : Apply a climatekit Index Function Over a SpatRaster
+- [`ck_from_netcdf()`](https://charlescoverdale.github.io/climatekit/reference/ck_from_netcdf.md)
+  : Read a netCDF File as a SpatRaster
+
 ## General
 
 Compute any index by name; metadata; ETCCDI 27 audit; catalogue
