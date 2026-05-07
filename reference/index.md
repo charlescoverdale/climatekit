@@ -34,6 +34,26 @@ Daily temperature indices
   : Cold Spell Duration Index (CSDI)
 - [`ck_warm_spell()`](https://charlescoverdale.github.io/climatekit/reference/ck_warm_spell.md)
   : Warm Spell Days (Series-Quantile Approximation)
+- [`ck_hwn()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwn.md)
+  : Heatwave Number (HWN)
+- [`ck_hwf()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwf.md)
+  : Heatwave Frequency (HWF)
+- [`ck_hwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwd.md)
+  : Heatwave Duration (HWD)
+- [`ck_hwm()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwm.md)
+  : Heatwave Magnitude (HWM)
+- [`ck_hwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwa.md)
+  : Heatwave Amplitude (HWA)
+- [`ck_cwn()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwn.md)
+  : Cold-Wave Number (CWN)
+- [`ck_cwf()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwf.md)
+  : Cold-Wave Frequency (CWF)
+- [`ck_cwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwd.md)
+  : Cold-Wave Duration (CWD, ET-SCI)
+- [`ck_cwm()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwm.md)
+  : Cold-Wave Magnitude (CWM)
+- [`ck_cwa()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwa.md)
+  : Cold-Wave Amplitude (CWA)
 - [`ck_diurnal_range()`](https://charlescoverdale.github.io/climatekit/reference/ck_diurnal_range.md)
   : Diurnal Temperature Range
 - [`ck_first_frost()`](https://charlescoverdale.github.io/climatekit/reference/ck_first_frost.md)
@@ -108,7 +128,7 @@ Heat, fire, and wind indices
 
 ## General
 
-Compute any index by name; metadata; ETCCDI 27 audit
+Compute any index by name; metadata; ETCCDI 27 audit; catalogue
 
 - [`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.md)
   : Compute a Climate Index by Name
@@ -118,6 +138,10 @@ Compute any index by name; metadata; ETCCDI 27 audit
   : Get Metadata for a Climate Index
 - [`ck_etccdi_27()`](https://charlescoverdale.github.io/climatekit/reference/ck_etccdi_27.md)
   : Canonical ETCCDI 27 Indices
+- [`ck_catalogue()`](https://charlescoverdale.github.io/climatekit/reference/ck_catalogue.md)
+  : climatekit Index Catalogue
+- [`ck_browse()`](https://charlescoverdale.github.io/climatekit/reference/ck_browse.md)
+  : Browse the climatekit Index Catalogue
 - [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md)
   : Clear Cache
 
