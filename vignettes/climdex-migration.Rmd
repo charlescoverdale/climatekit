@@ -1,0 +1,128 @@
+---
+title: "Migrating from climdex.pcic"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Migrating from climdex.pcic}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`climdex.pcic` (Pacific Climate Impacts Consortium) was for many years the standard R implementation of the ETCCDI canonical 27 indices. It was archived from CRAN in 2023. `climatekit` covers the same ETCCDI 27 plus the ET-SCI heatwave family, on a tidy data-frame interface with no compiled code. This vignette walks through what changes when you migrate.
+
+## Function-name crosswalk
+
+Every ETCCDI 27 index in `climdex.pcic` maps to a `climatekit` function. The function names mirror the canonical ETCCDI codes where possible.
+
+| ETCCDI code | climdex.pcic                      | climatekit              |
+| :---------- | :-------------------------------- | :---------------------- |
+| FD          | `climdex.fd()`                    | `ck_frost_days()`       |
+| ID          | `climdex.id()`                    | `ck_ice_days()`         |
+| SU          | `climdex.su()`                    | `ck_summer_days()`      |
+| TR          | `climdex.tr()`                    | `ck_tropical_nights()`  |
+| TXx         | `climdex.txx()`                   | `ck_txx()`              |
+| TNx         | `climdex.tnx()`                   | `ck_tnx()`              |
+| TXn         | `climdex.txn()`                   | `ck_txn()`              |
+| TNn         | `climdex.tnn()`                   | `ck_tnn()`              |
+| TX10p       | `climdex.tx10p()`                 | `ck_tx10p()`            |
+| TN10p       | `climdex.tn10p()`                 | `ck_tn10p()`            |
+| TX90p       | `climdex.tx90p()`                 | `ck_tx90p()`            |
+| TN90p       | `climdex.tn90p()`                 | `ck_tn90p()`            |
+| WSDI        | `climdex.wsdi()`                  | `ck_wsdi()`             |
+| CSDI        | `climdex.csdi()`                  | `ck_csdi()`             |
+| DTR         | `climdex.dtr()`                   | `ck_diurnal_range()`    |
+| GSL         | `climdex.gsl()`                   | `ck_growing_season()`   |
+| RX1day      | `climdex.rx1day()`                | `ck_max_1day_precip()`  |
+| RX5day      | `climdex.rx5day()`                | `ck_max_5day_precip()`  |
+| SDII        | `climdex.sdii()`                  | `ck_precip_intensity()` |
+| R10mm       | `climdex.r10mm()`                 | `ck_heavy_precip()` (default `threshold = 10`) |
+| R20mm       | `climdex.r20mm()`                 | `ck_very_heavy_precip()` (default `threshold = 20`) |
+| Rnnmm       | `climdex.rnnmm(threshold = nn)`   | `ck_heavy_precip(threshold = nn)` |
+| CDD         | `climdex.cdd()`                   | `ck_dry_days()`         |
+| CWD         | `climdex.cwd()`                   | `ck_wet_days()`         |
+| R95p        | `climdex.r95p()` / `climdex.r95ptot()` | `ck_r95p()`        |
+| R99p        | `climdex.r99p()` / `climdex.r99ptot()` | `ck_r99p()`        |
+| PRCPTOT     | `climdex.prcptot()`               | `ck_total_precip()`     |
+
+Beyond ETCCDI 27, `climatekit` also exposes the ET-SCI heatwave family (`ck_hwn()`, `ck_hwf()`, `ck_hwd()`, `ck_hwm()`, `ck_hwa()`) and the cold-wave duals (`ck_cwn()` etc.), agroclimatic indices (Huglin, Winkler, Branas), drought indices (SPI, SPEI), and comfort indices (heat index, humidex, wind chill).
+
+`ck_etccdi_27()` returns an audit table that maps every ETCCDI code to its `climatekit` function in one place.
+
+## Interface shifts
+
+**Inputs.** `climdex.pcic` builds a `climdexInput` object from your daily temperature and precipitation series and then runs index functions against that object. `climatekit` takes the daily numeric vectors and a `Date` vector directly. There is no preliminary input object.
+
+```{r, eval = FALSE}
+# climdex.pcic
+ci <- climdexInput.raw(
+  tmax, tmin, precip, tmax.dates, tmin.dates, prec.dates,
+  base.range = c(1961, 1990)
+)
+fd <- climdex.fd(ci)
+
+# climatekit
+fd <- ck_frost_days(tmin, dates)
+```
+
+**Outputs.** `climdex.pcic` returns a numeric vector indexed by year (or month). `climatekit` returns a tidy data frame with `period`, `value`, `index`, and `unit` columns:
+
+```{r, eval = FALSE}
+ck_frost_days(tmin, dates)
+#> # period       value index        unit
+#> # 2020-01-01      72 frost_days   days
+#> # 2021-01-01      68 frost_days   days
+#> # ...
+```
+
+The tidy shape composes directly with `rbind()`, `ggplot2`, and downstream tabulation. No reshaping needed.
+
+**Reference period.** The percentile-based indices (`ck_tx10p()`, `ck_tn10p()`, `ck_tx90p()`, `ck_tn90p()`, `ck_r95p()`, `ck_r99p()`, `ck_wsdi()`, `ck_csdi()`, `ck_hwn()` and family) use `ref_start = 1961L`, `ref_end = 1990L` by default. Pass other values to override:
+
+```{r, eval = FALSE}
+ck_tx90p(tmax, dates, ref_start = 1981L, ref_end = 2010L)
+```
+
+**In-base bootstrap.** `climdex.pcic` implements the Zhang et al. (2005) in-base bootstrap to remove the self-inclusion bias for years inside the reference period. `climatekit` does **not** implement the bootstrap in v0.2.0. Years inside the reference period therefore show a small bias (this is documented in each function's roxygen). For climate-change attribution work, restrict interpretation to years outside the reference window, or apply the bootstrap externally. Future versions may add it.
+
+**Calendar-day window.** Both packages use a 5-day window centred on each day of year for percentile estimation, pooled across the reference period.
+
+**Spell-counting conventions.** Both packages use 6 days minimum for WSDI / CSDI. `climatekit`'s ET-SCI heatwave family uses 3 days minimum (`min_spell = 3L`), matching ET-SCI / `climpact`.
+
+## Sanity-check workflow
+
+When migrating a real station record, sanity-check the new outputs against your previous `climdex.pcic` runs at the annual scale:
+
+```{r, eval = FALSE}
+# Old climdex.pcic outputs
+old_fd <- climdex.fd(ci)
+old_txx <- climdex.txx(ci)
+
+# New climatekit outputs
+new_fd  <- ck_frost_days(tmin, dates)
+new_txx <- ck_txx(tmax, dates)
+
+# Compare; expect agreement up to NA-handling and base-period self-inclusion
+all.equal(old_fd, new_fd$value)
+all.equal(old_txx, new_txx$value)
+```
+
+Most ETCCDI indices are NA-handling-tolerant by construction. Differences typically come from:
+
+1. **Default missing-day handling.** `climdex.pcic` has more elaborate rules (e.g. min number of valid days per month) that `climatekit` does not enforce in v0.2.0.
+2. **In-base bootstrap.** As noted above, percentile indices for years 1961-1990 will differ slightly.
+3. **Calendar leap-day handling.** Both packages handle DOY 60 (29 February) without special-casing in v0.2.0.
+
+For all other ETCCDI 27 indices, `climatekit` and `climdex.pcic` should agree to within numerical noise on the same input.
+
+## See also
+
+- [`ck_etccdi_27()`](../reference/ck_etccdi_27.html): canonical ETCCDI 27 audit table.
+- [`ck_catalogue()`](../reference/ck_catalogue.html) and [`ck_browse()`](../reference/ck_browse.html): full implementation catalogue and filter.
+- Alexander, L. V. et al. (2006). Global observed changes in daily climate extremes of temperature and precipitation. *Journal of Geophysical Research: Atmospheres*, 111(D5). \doi{10.1029/2005JD006290}.
+- Zhang, X. et al. (2011). Indices for monitoring changes in extremes based on daily temperature and precipitation data. *WIREs Climate Change*, 2(6), 851-870. \doi{10.1002/wcc.147}.
