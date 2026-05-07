@@ -174,3 +174,70 @@ test_that("CDD with base=0 returns sum of all temps", {
   result <- ck_cooling_degree_days(tavg, dates, base = 0)
   expect_equal(result$value, 75)
 })
+
+# ETCCDI extreme-value indices (TXx / TNx / TXn / TNn) ------------------------
+
+test_that("ck_txx returns max of daily Tmax", {
+  dates <- as.Date("2024-01-01") + 0:9
+  tmax <- c(5, 10, 18, 12, 4, 8, 22, 3, 7, 6)
+  result <- ck_txx(tmax, dates)
+  expect_s3_class(result, "data.frame")
+  expect_equal(result$value, 22)
+  expect_equal(result$index, "txx")
+  expect_equal(result$unit, "\u00b0C")
+})
+
+test_that("ck_txx monthly aggregation works", {
+  dates <- c(as.Date("2024-01-01") + 0:4, as.Date("2024-02-01") + 0:4)
+  tmax <- c(5, 10, 18, 12, 4, 8, 22, 3, 7, 6)
+  result <- ck_txx(tmax, dates, period = "monthly")
+  expect_equal(nrow(result), 2)
+  expect_equal(result$value, c(18, 22))
+})
+
+test_that("ck_tnx returns max of daily Tmin (warmest night)", {
+  dates <- as.Date("2024-07-01") + 0:9
+  tmin <- c(15, 18, 22, 19, 14, 21, 23, 17, 20, 19)
+  result <- ck_tnx(tmin, dates)
+  expect_equal(result$value, 23)
+  expect_equal(result$index, "tnx")
+})
+
+test_that("ck_txn returns min of daily Tmax (coldest day)", {
+  dates <- as.Date("2024-01-01") + 0:9
+  tmax <- c(5, 10, -3, 12, 4, 8, 22, -8, 7, 6)
+  result <- ck_txn(tmax, dates)
+  expect_equal(result$value, -8)
+  expect_equal(result$index, "txn")
+})
+
+test_that("ck_tnn returns min of daily Tmin (coldest night)", {
+  dates <- as.Date("2024-01-01") + 0:9
+  tmin <- c(-2, 3, -1, 5, -8, 0, 2, -12, 1, -1)
+  result <- ck_tnn(tmin, dates)
+  expect_equal(result$value, -12)
+  expect_equal(result$index, "tnn")
+})
+
+test_that("extreme-value functions reject non-numeric", {
+  dates <- as.Date("2024-01-01") + 0:2
+  expect_error(ck_txx("a", dates), "numeric")
+  expect_error(ck_tnx("a", dates), "numeric")
+  expect_error(ck_txn("a", dates), "numeric")
+  expect_error(ck_tnn("a", dates), "numeric")
+})
+
+test_that("extreme-value functions reject mismatched lengths", {
+  expect_error(ck_txx(c(1, 2), as.Date("2024-01-01")), "same length")
+  expect_error(ck_tnn(c(1, 2), as.Date("2024-01-01")), "same length")
+})
+
+test_that("ETCCDI: txx >= tnx >= tnn and txx >= txn", {
+  set.seed(42)
+  dates <- as.Date("2024-01-01") + 0:364
+  tmin <- rnorm(365, mean = 5, sd = 8)
+  tmax <- tmin + abs(rnorm(365, mean = 8, sd = 3))
+  expect_gte(ck_txx(tmax, dates)$value, ck_tnx(tmin, dates)$value)
+  expect_gte(ck_tnx(tmin, dates)$value, ck_tnn(tmin, dates)$value)
+  expect_gte(ck_txx(tmax, dates)$value, ck_txn(tmax, dates)$value)
+})

@@ -97,3 +97,57 @@ test_that("ck_convert_temp same unit returns unchanged", {
 test_that("ck_convert_temp rejects non-numeric", {
   expect_error(ck_convert_temp("a", "C", "F"), "numeric")
 })
+
+# ck_etccdi_27 audit table ----------------------------------------------------
+
+test_that("ck_etccdi_27 returns canonical 27 rows with required columns", {
+  tab <- ck_etccdi_27()
+  expect_s3_class(tab, "data.frame")
+  expect_equal(nrow(tab), 27)
+  expect_true(all(c("code", "name", "variable", "unit",
+                    "definition", "ck_function", "status") %in% names(tab)))
+})
+
+test_that("ck_etccdi_27 codes are unique and canonical", {
+  tab <- ck_etccdi_27()
+  expect_equal(length(unique(tab$code)), 27)
+  canonical <- c("TXx", "TNx", "TXn", "TNn", "FD", "ID", "SU", "TR",
+                 "TX10p", "TN10p", "TX90p", "TN90p", "DTR", "WSDI", "CSDI",
+                 "GSL", "RX1day", "RX5day", "SDII", "R10mm", "R20mm",
+                 "Rnnmm", "CDD", "CWD", "R95p", "R99p", "PRCPTOT")
+  expect_setequal(tab$code, canonical)
+})
+
+test_that("ck_etccdi_27 implemented entries point to real functions", {
+  tab <- ck_etccdi_27()
+  impl <- subset(tab, status == "implemented")
+  for (fn in unique(impl$ck_function)) {
+    expect_true(exists(fn, mode = "function"),
+                info = paste("Function not exported:", fn))
+  }
+})
+
+test_that("ck_etccdi_27 status values are within allowed set", {
+  tab <- ck_etccdi_27()
+  expect_true(all(tab$status %in% c("implemented", "approximation", "missing")))
+})
+
+test_that("ck_etccdi_27 missing entries have NA ck_function", {
+  tab <- ck_etccdi_27()
+  miss <- subset(tab, status == "missing")
+  expect_true(all(is.na(miss$ck_function)))
+})
+
+# Dispatch for new extreme-value indices --------------------------------------
+
+test_that("ck_compute dispatches txx/tnx/txn/tnn", {
+  d <- data.frame(
+    dates = as.Date("2024-01-01") + 0:9,
+    tmax = c(5, 10, 18, 12, 4, 8, 22, 3, 7, 6),
+    tmin = c(-2, 3, -1, 5, -8, 0, 2, -12, 1, -1)
+  )
+  expect_equal(ck_compute(d, "txx")$value, 22)
+  expect_equal(ck_compute(d, "tnx")$value, 5)
+  expect_equal(ck_compute(d, "txn")$value, 3)
+  expect_equal(ck_compute(d, "tnn")$value, -12)
+})

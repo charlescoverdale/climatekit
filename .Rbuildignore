@@ -6,3 +6,8 @@
 ^README\.Rmd$
 ^\.claude$
 ^CRAN-SUBMISSION$
+^paper$
+^_pkgdown\.yml$
+^docs$
+^llms\.txt$
+^llms-full\.txt$

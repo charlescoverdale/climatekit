@@ -98,6 +98,110 @@ ck_tropical_nights <- function(tmin, dates, period = "annual") {
   build_result(result$periods, result$values, "tropical_nights", "days", period)
 }
 
+#' Annual or Monthly Maximum of Daily Maximum Temperature (TXx)
+#'
+#' ETCCDI canonical index TXx. The maximum value of daily maximum
+#' temperature (Tmax) within each reporting period.
+#'
+#' @param tmax Numeric vector of daily maximum temperatures (degrees C).
+#' @param dates Date vector of the same length as `tmax`.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' dates <- as.Date("2024-01-01") + 0:9
+#' tmax <- c(5, 10, 18, 12, 4, 8, 22, 3, 7, 6)
+#' ck_txx(tmax, dates)
+ck_txx <- function(tmax, dates, period = "annual") {
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmax))
+  period <- validate_period(period)
+
+  result <- aggregate_by_period(tmax, dates, period, max)
+  build_result(result$periods, result$values, "txx", "\u00b0C", period)
+}
+
+#' Annual or Monthly Maximum of Daily Minimum Temperature (TNx)
+#'
+#' ETCCDI canonical index TNx. The maximum value of daily minimum
+#' temperature (Tmin) within each reporting period (warmest night).
+#'
+#' @param tmin Numeric vector of daily minimum temperatures (degrees C).
+#' @param dates Date vector of the same length as `tmin`.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' dates <- as.Date("2024-07-01") + 0:9
+#' tmin <- c(15, 18, 22, 19, 14, 21, 23, 17, 20, 19)
+#' ck_tnx(tmin, dates)
+ck_tnx <- function(tmin, dates, period = "annual") {
+  validate_numeric(tmin, "tmin")
+  validate_dates(dates, length(tmin))
+  period <- validate_period(period)
+
+  result <- aggregate_by_period(tmin, dates, period, max)
+  build_result(result$periods, result$values, "tnx", "\u00b0C", period)
+}
+
+#' Annual or Monthly Minimum of Daily Maximum Temperature (TXn)
+#'
+#' ETCCDI canonical index TXn. The minimum value of daily maximum
+#' temperature (Tmax) within each reporting period (coldest day).
+#'
+#' @param tmax Numeric vector of daily maximum temperatures (degrees C).
+#' @param dates Date vector of the same length as `tmax`.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' dates <- as.Date("2024-01-01") + 0:9
+#' tmax <- c(5, 10, -3, 12, 4, 8, 22, -8, 7, 6)
+#' ck_txn(tmax, dates)
+ck_txn <- function(tmax, dates, period = "annual") {
+  validate_numeric(tmax, "tmax")
+  validate_dates(dates, length(tmax))
+  period <- validate_period(period)
+
+  result <- aggregate_by_period(tmax, dates, period, min)
+  build_result(result$periods, result$values, "txn", "\u00b0C", period)
+}
+
+#' Annual or Monthly Minimum of Daily Minimum Temperature (TNn)
+#'
+#' ETCCDI canonical index TNn. The minimum value of daily minimum
+#' temperature (Tmin) within each reporting period (coldest night).
+#'
+#' @param tmin Numeric vector of daily minimum temperatures (degrees C).
+#' @param dates Date vector of the same length as `tmin`.
+#' @param period Character. Aggregation period: `"annual"` (default) or
+#'   `"monthly"`.
+#'
+#' @return A data frame with columns `period`, `value`, `index`, and `unit`.
+#'
+#' @export
+#' @examples
+#' dates <- as.Date("2024-01-01") + 0:9
+#' tmin <- c(-2, 3, -1, 5, -8, 0, 2, -12, 1, -1)
+#' ck_tnn(tmin, dates)
+ck_tnn <- function(tmin, dates, period = "annual") {
+  validate_numeric(tmin, "tmin")
+  validate_dates(dates, length(tmin))
+  period <- validate_period(period)
+
+  result <- aggregate_by_period(tmin, dates, period, min)
+  build_result(result$periods, result$values, "tnn", "\u00b0C", period)
+}
+
 #' Growing Season Length
 #'
 #' Compute the growing season length following the ETCCDI definition: the
