@@ -60,62 +60,86 @@ along with its category, unit, and a short description.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3          summer_days   temperature          days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4      tropical_nights   temperature          days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5       growing_season   temperature          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  heating_degree_days   temperature   degree-days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  cooling_degree_days   temperature   degree-days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  growing_degree_days   temperature   degree-days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9        diurnal_range   temperature            °C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10          warm_spell   temperature          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11            dry_days precipitation          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12            wet_days precipitation          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13        total_precip precipitation            mm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14        heavy_precip precipitation          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15   very_heavy_precip precipitation          days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     max_1day_precip precipitation            mm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     max_5day_precip precipitation            mm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18    precip_intensity precipitation        mm/day</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                 spi       drought dimensionless</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20                spei       drought dimensionless</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21                 pet       drought            mm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22              huglin  agroclimatic   degree-days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23             winkler  agroclimatic   degree-days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24              branas  agroclimatic         mm·°C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25         first_frost  agroclimatic   day of year</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26          last_frost  agroclimatic   day of year</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27          wind_chill       comfort            °C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28          heat_index       comfort            °C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29             humidex       comfort      unitless</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30         fire_danger       comfort      unitless</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                               Count of days where Tmin &lt; 0°C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                               Count of days where Tmax &lt; 0°C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                              Count of days where Tmax &gt; 25°C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                              Count of days where Tmin &gt; 20°C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  Growing season length (ETCCDI: 6-day spells of Tmean &gt; 5°C)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         Sum of (base - Tavg) for days below base temperature</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7         Sum of (Tavg - base) for days above base temperature</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8         Sum of (Tavg - base) for days above base temperature</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                   Mean daily temperature range (Tmax - Tmin)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10               Warm spell days (simplified, not ETCCDI WSDI)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11           Maximum consecutive dry days (precip &lt; threshold)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12          Maximum consecutive wet days (precip &gt;= threshold)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                               Total precipitation by period</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14               Count of days with precipitation &gt;= threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15               Count of days with precipitation &gt;= threshold</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                 Maximum 1-day precipitation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                           Maximum 5-day precipitation total</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                       Mean precipitation on wet days (SDII)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                            Standardized Precipitation Index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20         Standardized Precipitation-Evapotranspiration Index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21            Potential evapotranspiration (Hargreaves method)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22                   Huglin heliothermal index for viticulture</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23        Winkler index (growing degree days for wine regions)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24                                   Branas hydrothermal index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25                     Date of first autumn frost (Tmin &lt; 0°C)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26                      Date of last spring frost (Tmin &lt; 0°C)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27                                      Wind chill temperature</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28                           Heat index (apparent temperature)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29                                            Canadian humidex</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30                      Simplified fire danger proxy (not FWI)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  txx   temperature            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                  tnx   temperature            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                  txn   temperature            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                  tnn   temperature            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10               tx10p   temperature             %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11               tn10p   temperature             %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12               tx90p   temperature             %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13               tn90p   temperature             %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 heating_degree_days   temperature   degree-days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 cooling_degree_days   temperature   degree-days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 growing_degree_days   temperature   degree-days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17       diurnal_range   temperature            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18          warm_spell   temperature          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                wsdi   temperature          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20                csdi   temperature          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21            dry_days precipitation          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22            wet_days precipitation          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        total_precip precipitation            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        heavy_precip precipitation          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25   very_heavy_precip precipitation          days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     max_1day_precip precipitation            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     max_5day_precip precipitation            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28    precip_intensity precipitation        mm/day</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29                r95p precipitation            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30                r99p precipitation            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31                 spi       drought dimensionless</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32                spei       drought dimensionless</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33                 pet       drought            mm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34              huglin  agroclimatic   degree-days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35             winkler  agroclimatic   degree-days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36              branas  agroclimatic         mm·°C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37         first_frost  agroclimatic   day of year</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38          last_frost  agroclimatic   day of year</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39          wind_chill       comfort            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40          heat_index       comfort            °C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41             humidex       comfort      unitless</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42         fire_danger       comfort      unitless</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                             description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                        Count of days where Tmin &lt; 0°C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                        Count of days where Tmax &lt; 0°C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                       Count of days where Tmax &gt; 25°C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                                       Count of days where Tmin &gt; 20°C</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                           Growing season length (ETCCDI: 6-day spells of Tmean &gt; 5°C)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                  Annual or monthly maximum of daily Tmax (ETCCDI TXx)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                   Annual or monthly maximum of daily Tmin (ETCCDI TNx, warmest night)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                     Annual or monthly minimum of daily Tmax (ETCCDI TXn, coldest day)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                   Annual or monthly minimum of daily Tmin (ETCCDI TNn, coldest night)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                      Percentage of cool days (ETCCDI TX10p, Tmax below calendar-day 10th percentile)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                    Percentage of cool nights (ETCCDI TN10p, Tmin below calendar-day 10th percentile)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                      Percentage of warm days (ETCCDI TX90p, Tmax above calendar-day 90th percentile)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                    Percentage of warm nights (ETCCDI TN90p, Tmin above calendar-day 90th percentile)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                                                 Sum of (base - Tavg) for days below base temperature</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                                                 Sum of (Tavg - base) for days above base temperature</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                                 Sum of (Tavg - base) for days above base temperature</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17                                                           Mean daily temperature range (Tmax - Tmin)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                            Warm spell days (simplified, see ck_wsdi for ETCCDI WSDI)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                        Warm spell duration index (ETCCDI WSDI, 1961-1990 calendar-day Tmax 90p base)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20                        Cold spell duration index (ETCCDI CSDI, 1961-1990 calendar-day Tmin 10p base)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21                                                    Maximum consecutive dry days (precip &lt; threshold)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22                                                   Maximum consecutive wet days (precip &gt;= threshold)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23                                                                        Total precipitation by period</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24                                                        Count of days with precipitation &gt;= threshold</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25                                                        Count of days with precipitation &gt;= threshold</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26                                                                          Maximum 1-day precipitation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27                                                                    Maximum 5-day precipitation total</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28                                                                Mean precipitation on wet days (SDII)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 Annual total precipitation on days above 95th percentile of 1961-1990 wet-day baseline (ETCCDI R95p)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 Annual total precipitation on days above 99th percentile of 1961-1990 wet-day baseline (ETCCDI R99p)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31                                                                     Standardized Precipitation Index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32                                                  Standardized Precipitation-Evapotranspiration Index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33                                                     Potential evapotranspiration (Hargreaves method)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34                                                            Huglin heliothermal index for viticulture</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35                                                 Winkler index (growing degree days for wine regions)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36                                                                            Branas hydrothermal index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37                                                              Date of first autumn frost (Tmin &lt; 0°C)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38                                                               Date of last spring frost (Tmin &lt; 0°C)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39                                                                               Wind chill temperature</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40                                                                    Heat index (apparent temperature)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41                                                                                     Canadian humidex</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42                                                               Simplified fire danger proxy (not FWI)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

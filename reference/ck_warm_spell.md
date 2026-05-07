@@ -1,10 +1,9 @@
-# Warm Spell Days
+# Warm Spell Days (Series-Quantile Approximation)
 
 Count the number of days in warm spells, where a warm spell is defined
-as at least 6 consecutive days with Tmax above the `threshold` quantile
-of the full series. This computes warm spell days using a quantile
-threshold from the input series. It does not implement the ETCCDI WSDI,
-which requires calendar-day percentiles from a 1961-1990 reference
+as at least six consecutive days with Tmax above the `threshold`
+quantile of the full input series. This is a quick approximation driven
+by a single series-wide quantile, and does not require a reference
 period.
 
 ## Usage
@@ -34,6 +33,12 @@ ck_warm_spell(tmax, dates, threshold = 0.9, period = "annual")
 ## Value
 
 A data frame with columns `period`, `value`, `index`, and `unit`.
+
+## Details
+
+For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
+six-day spell rule), use
+[`ck_wsdi()`](https://charlescoverdale.github.io/climatekit/reference/ck_wsdi.md).
 
 ## Examples
 
