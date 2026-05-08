@@ -57,28 +57,6 @@
 </h1></div>
 <p><a href="https://CRAN.R-project.org/package=climatekit" class="external-link"><img src="https://www.r-pkg.org/badges/version/climatekit" alt="CRAN status"></a> <a href="https://CRAN.R-project.org/package=climatekit" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/climatekit" alt="CRAN downloads"></a> <a href="https://CRAN.R-project.org/package=climatekit" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/grand-total/climatekit" alt="Total Downloads"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a> <a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a></p>
 <p>An R package for computing climate indices from daily weather observations. Takes vectors of temperature, precipitation, humidity, and wind data and returns tidy data frames: no file wrangling, no class coercion, no API calls.</p>
-<p>Coverage in v0.2.0:</p>
-<ul>
-<li>
-<strong>Full canonical ETCCDI 27</strong> (Alexander et al. 2006; Zhang et al. 2011), with optional Zhang (2005) in-base bootstrap</li>
-<li>
-<strong>ET-SCI heatwave / cold-wave family</strong> (<code>HWN</code>, <code>HWF</code>, <code>HWD</code>, <code>HWM</code>, <code>HWA</code> and cold-wave duals)</li>
-<li>
-<strong>EHF</strong> (Excess Heat Factor, Nairn &amp; Fawcett 2013) — Australian Bureau of Meteorology operational metric</li>
-<li>
-<strong>SPI / SPEI</strong> with multiple distributions (gamma / Pearson III; log-logistic / GEV)</li>
-<li>
-<strong>FAO-56 Penman-Monteith</strong> reference evapotranspiration alongside Hargreaves</li>
-<li>
-<strong>Agroclimatic</strong> (Huglin, Winkler, Branas, frost dates) with hemisphere awareness</li>
-<li>
-<strong>Comfort</strong> (heat index, humidex, wind chill, fire-danger proxy)</li>
-<li>
-<strong>Discovery surfaces</strong>: <code><a href="reference/ck_etccdi_27.html">ck_etccdi_27()</a></code> audit table, <code><a href="reference/ck_catalogue.html">ck_catalogue()</a></code> / <code><a href="reference/ck_browse.html">ck_browse()</a></code> filter</li>
-<li>
-<strong>Gridded</strong> support via <code><a href="reference/ck_apply_grid.html">ck_apply_grid()</a></code> over a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a></code>
-</li>
-</ul>
 <div class="section level2">
 <h2 id="what-are-climate-indices">What are climate indices?<a class="anchor" aria-label="anchor" href="#what-are-climate-indices"></a>
 </h2>

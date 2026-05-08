@@ -16,33 +16,6 @@ observations. Takes vectors of temperature, precipitation, humidity, and
 wind data and returns tidy data frames: no file wrangling, no class
 coercion, no API calls.
 
-Coverage in v0.2.0:
-
-- **Full canonical ETCCDI 27** (Alexander et al. 2006; Zhang et
-  al. 2011), with optional Zhang (2005) in-base bootstrap
-- **ET-SCI heatwave / cold-wave family** (`HWN`, `HWF`, `HWD`, `HWM`,
-  `HWA` and cold-wave duals)
-- **EHF** (Excess Heat Factor, Nairn & Fawcett 2013) — Australian Bureau
-  of Meteorology operational metric
-- **SPI / SPEI** with multiple distributions (gamma / Pearson III;
-  log-logistic / GEV)
-- **FAO-56 Penman-Monteith** reference evapotranspiration alongside
-  Hargreaves
-- **Agroclimatic** (Huglin, Winkler, Branas, frost dates) with
-  hemisphere awareness
-- **Comfort** (heat index, humidex, wind chill, fire-danger proxy)
-- **Discovery surfaces**:
-  [`ck_etccdi_27()`](https://charlescoverdale.github.io/climatekit/reference/ck_etccdi_27.md)
-  audit table,
-  [`ck_catalogue()`](https://charlescoverdale.github.io/climatekit/reference/ck_catalogue.md)
-  /
-  [`ck_browse()`](https://charlescoverdale.github.io/climatekit/reference/ck_browse.md)
-  filter
-- **Gridded** support via
-  [`ck_apply_grid()`](https://charlescoverdale.github.io/climatekit/reference/ck_apply_grid.md)
-  over a
-  [`terra::SpatRaster`](https://rspatial.github.io/terra/reference/SpatRaster-class.html)
-
 ## What are climate indices?
 
 Climate indices are standardised summary statistics that reduce daily
