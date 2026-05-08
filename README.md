@@ -422,44 +422,6 @@ ck_available()
 
 ---
 
-## Input / output contract
-
-Every function follows the same pattern:
-
-**Input:** Numeric vectors + a date vector. No special objects, no S4 classes, no preprocessing required.
-
-```r
-ck_frost_days(
-  tmin = c(-2, 3, -1, 5, -3),
-  dates = as.Date("2024-01-01") + 0:4
-)
-```
-
-**Output:** A tidy data frame with consistent columns.
-
-```r
-# Period-aggregated indices return:
-#>   period (Date) | value (numeric) | index (character) | unit (character)
-
-# Daily indices (PET, wind chill, heat index) return:
-#>   date (Date) | value (numeric) | index (character) | unit (character)
-```
-
-All outputs join cleanly on `period` or `date` columns, so you can compute multiple indices and merge them into a single analysis data frame.
-
----
-
-## Design decisions
-
-- **`ck_` prefix** - short, distinctive, won't collide with other packages. Easy to type and easy to autocomplete.
-- **Vectors in, data frames out** - the simplest possible interface. No custom S4 objects to construct, no `ts()` coercion, no `zoo` or `xts` dependencies. If you have a column of temperatures and a column of dates, you can use this package.
-- **No API calls** - this is a pure computation package. It does not download data. Pair it with [`readnoaa`](https://github.com/charlescoverdale/readnoaa) or any other data source. This separation keeps the package fast, testable, and CRAN-friendly.
-- **No heavy dependencies** - depends only on `cli`, `stats`, and `tools`. No tidyverse, no Rcpp, no external system libraries.
-- **Period aggregation** - most indices are naturally period-aggregated (e.g. "how many frost days this year?"). All aggregated functions accept `period = "annual"` (default) or `period = "monthly"`.
-- **NA handling** - all functions handle missing values gracefully. NAs are excluded from counts and aggregations, matching the behaviour researchers expect.
-
----
-
 ## Related packages
 
 | Package | Description |
@@ -497,7 +459,3 @@ If you use the package in academic work, please also cite Alexander et al. (2006
 ## Issues
 
 Please report bugs or requests at <https://github.com/charlescoverdale/climatekit/issues>.
-
-## Keywords
-
-climate indices, ETCCDI, frost days, degree days, growing season, SPI, SPEI, drought, precipitation, heat index, wind chill, Huglin, Winkler, fire weather, agroclimatic, viticulture, climate change, weather data, R package
