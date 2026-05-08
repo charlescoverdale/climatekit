@@ -828,45 +828,6 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="input--output-contract">Input / output contract<a class="anchor" aria-label="anchor" href="#input--output-contract"></a>
-</h2>
-<p>Every function follows the same pattern:</p>
-<p><strong>Input:</strong> Numeric vectors + a date vector. No special objects, no S4 classes, no preprocessing required.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/ck_frost_days.html">ck_frost_days</a></span><span class="op">(</span></span>
-<span>  tmin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="op">-</span><span class="fl">3</span><span class="op">)</span>,</span>
-<span>  dates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">4</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><strong>Output:</strong> A tidy data frame with consistent columns.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Period-aggregated indices return:</span></span>
-<span><span class="co">#&gt;   period (Date) | value (numeric) | index (character) | unit (character)</span></span>
-<span></span>
-<span><span class="co"># Daily indices (PET, wind chill, heat index) return:</span></span>
-<span><span class="co">#&gt;   date (Date) | value (numeric) | index (character) | unit (character)</span></span></code></pre></div>
-<p>All outputs join cleanly on <code>period</code> or <code>date</code> columns, so you can compute multiple indices and merge them into a single analysis data frame.</p>
-<hr>
-</div>
-<div class="section level2">
-<h2 id="design-decisions">Design decisions<a class="anchor" aria-label="anchor" href="#design-decisions"></a>
-</h2>
-<ul>
-<li>
-<strong><code>ck_</code> prefix</strong> - short, distinctive, won’t collide with other packages. Easy to type and easy to autocomplete.</li>
-<li>
-<strong>Vectors in, data frames out</strong> - the simplest possible interface. No custom S4 objects to construct, no <code><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts()</a></code> coercion, no <code>zoo</code> or <code>xts</code> dependencies. If you have a column of temperatures and a column of dates, you can use this package.</li>
-<li>
-<strong>No API calls</strong> - this is a pure computation package. It does not download data. Pair it with <a href="https://github.com/charlescoverdale/readnoaa" class="external-link"><code>readnoaa</code></a> or any other data source. This separation keeps the package fast, testable, and CRAN-friendly.</li>
-<li>
-<strong>No heavy dependencies</strong> - depends only on <code>cli</code>, <code>stats</code>, and <code>tools</code>. No tidyverse, no Rcpp, no external system libraries.</li>
-<li>
-<strong>Period aggregation</strong> - most indices are naturally period-aggregated (e.g. “how many frost days this year?”). All aggregated functions accept <code>period = "annual"</code> (default) or <code>period = "monthly"</code>.</li>
-<li>
-<strong>NA handling</strong> - all functions handle missing values gracefully. NAs are excluded from counts and aggregations, matching the behaviour researchers expect.</li>
-</ul>
-<hr>
-</div>
-<div class="section level2">
 <h2 id="related-packages">Related packages<a class="anchor" aria-label="anchor" href="#related-packages"></a>
 </h2>
 <table class="table">
@@ -904,7 +865,7 @@
 <a class="anchor" aria-label="anchor" href="#migrating-from-climdexpcic"></a>
 </h2>
 <p><code>climdex.pcic</code> (Pacific Climate Impacts Consortium) was for many years the standard R implementation of the canonical ETCCDI 27. It was archived from CRAN in 2023. <code>climatekit</code> covers the same set with a simpler interface:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># climdex.pcic</span></span>
 <span><span class="va">ci</span> <span class="op">&lt;-</span> <span class="fu">climdexInput.raw</span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">prec</span>, <span class="va">...</span>, base.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1961</span>, <span class="fl">1990</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu">climdex.fd</span><span class="op">(</span><span class="va">ci</span><span class="op">)</span>        <span class="co"># named numeric vector</span></span>
@@ -916,7 +877,7 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"climatekit"</span><span class="op">)</span></span></code></pre></div>
 <p>If you use the package in academic work, please also cite Alexander et al. (2006) and Zhang et al. (2011) (the canonical ETCCDI references), and Zhang et al. (2005) if you use the in-base bootstrap. <code>inst/CITATION</code> and the root-level <code>CITATION.cff</code> provide the bibentries.</p>
 </div>
@@ -924,11 +885,6 @@
 <h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
 </h2>
 <p>Please report bugs or requests at <a href="https://github.com/charlescoverdale/climatekit/issues" class="external-link uri">https://github.com/charlescoverdale/climatekit/issues</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="keywords">Keywords<a class="anchor" aria-label="anchor" href="#keywords"></a>
-</h2>
-<p>climate indices, ETCCDI, frost days, degree days, growing season, SPI, SPEI, drought, precipitation, heat index, wind chill, Huglin, Winkler, fire weather, agroclimatic, viticulture, climate change, weather data, R package</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
