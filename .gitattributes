@@ -1,0 +1,19 @@
+# Keep these tracked but exclude them from GitHub's Linguist language
+# stats. The repo's "primary language" should reflect the R source in
+# R/, not the rendered working paper, slides, or build artefacts.
+
+paper/**       linguist-generated=true
+paper/**/*.csv linguist-generated=true
+paper/**/*.html linguist-generated=true
+paper/**/*.pdf  linguist-generated=true
+paper/**/*.tex  linguist-generated=true
+paper/**/*.log  linguist-generated=true
+paper/**/*.sty  linguist-generated=true
+
+# pkgdown / vignette HTML output is also generated.
+docs/**         linguist-generated=true
+inst/doc/*.html linguist-generated=true
+
+# llms.txt files are documentation indices, not source code.
+llms.txt        linguist-documentation=true
+llms-full.txt   linguist-documentation=true
