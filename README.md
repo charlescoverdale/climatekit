@@ -10,21 +10,15 @@ Standardised summary statistics that compress daily weather observations into me
 
 ## Getting started: where to get the data
 
-`climatekit` computes indices from weather data that you provide. It doesn't download anything itself: you bring the data, it does the maths.
-
-**If you already have data** (a CSV, a database export, an Excel file), all you need is a numeric vector of observations and a date vector:
+You bring the data, `climatekit` does the maths. If you already have a CSV:
 
 ```r
 library(climatekit)
-
-# Read your own data
 weather <- read.csv("my_weather_station.csv")
-
-# Compute frost days
 ck_frost_days(weather$tmin, weather$date)
 ```
 
-**If you don't have data yet**, the easiest way to get started is with [`readnoaa`](https://github.com/charlescoverdale/readnoaa), which downloads free daily weather observations from NOAA's global archive of 100,000+ stations. No API key needed:
+If you don't have data yet, pair with [`readnoaa`](https://github.com/charlescoverdale/readnoaa) for free NOAA daily observations from 100,000+ stations. No API key:
 
 ```r
 install.packages("readnoaa")  # or devtools::install_github("charlescoverdale/readnoaa")
@@ -45,8 +39,6 @@ ck_frost_days(weather$tmin, weather$date, period = "annual")
 ck_spi(weather$prcp, weather$date, scale = 3)
 ck_heating_degree_days((weather$tmax + weather$tmin) / 2, weather$date)
 ```
-
-As long as you have a numeric vector and a date vector, `climatekit` will work with it.
 
 ### Common data sources
 
@@ -76,23 +68,11 @@ R has the methods scattered across packages with incompatible interfaces:
 `climatekit` replaces these with a single interface: vectors in, tidy data frames out, 50+ indices spanning temperature, precipitation, drought, agroclimatic, and comfort categories.
 
 ```r
-# Without climatekit: four packages, four input formats, four output structures
-library(climdex.pcic)
-ci <- climdexInput.raw(tmax = ..., tmin = ..., prec = ..., ...)  # S4 object
-fd <- climdex.fd(ci)  # returns named numeric vector, no dates
-
-library(SPEI)
-spi_result <- spi(ts(monthly_precip, frequency = 12), 3)  # returns S4, needs ts()
-
-library(ClimInd)
-gdd <- gdd(tavg_vector, 10)  # returns raw numeric, no metadata
-
-# With climatekit: one package, one interface
 library(climatekit)
-ck_frost_days(tmin, dates)                     # → data.frame
-ck_spi(precip, dates, scale = 3)               # → data.frame
-ck_growing_degree_days(tavg, dates, base = 10)  # → data.frame
-ck_huglin(tmin, tmax, dates, lat = 45)          # → data.frame
+ck_frost_days(tmin, dates)                      # data.frame
+ck_spi(precip, dates, scale = 3)                # data.frame
+ck_growing_degree_days(tavg, dates, base = 10)  # data.frame
+ck_huglin(tmin, tmax, dates, lat = 45)          # data.frame
 ```
 
 ---
@@ -237,9 +217,7 @@ ck_frost_days(tmin, dates, period = "monthly")
 ### How much heating energy does a building need?
 
 ```r
-# Heating degree days tell energy companies how much heating demand to expect.
-# Each degree below the base temperature (default 18C) for each day adds to the total.
-
+# Heating degree days: cumulative warmth deficit below the base (default 18C).
 tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 12 + 10
 ck_heating_degree_days(tavg, dates, period = "monthly")
 #>       period  value                index        unit
@@ -257,11 +235,8 @@ ck_cooling_degree_days(tavg, dates, base = 22)
 ### Is a region in drought?
 
 ```r
-# The Standardized Precipitation Index (SPI) fits a gamma distribution to
-# monthly precipitation totals over a rolling window, then transforms to
-# standard normal deviates. Values below -1 indicate moderate drought,
-# below -1.5 severe drought, below -2 extreme drought.
-
+# SPI standardises rolling-window precipitation totals to N(0, 1).
+# Values below -1 = moderate, -1.5 = severe, -2 = extreme drought.
 dates_long <- seq(as.Date("2015-01-01"), as.Date("2024-12-31"), by = "day")
 set.seed(42)
 precip <- rgamma(length(dates_long), shape = 2, rate = 0.5)
@@ -308,8 +283,6 @@ ck_winkler(tavg_gs, dates_gs)
 ### When did frost season start and end?
 
 ```r
-# First and last frost dates matter for agriculture, construction, and transport.
-
 dates_year <- as.Date("2024-01-01") + 0:364
 set.seed(42)
 tmin_year <- -10 + seq_along(dates_year) * 0.08 + rnorm(365, sd = 4)
@@ -326,9 +299,7 @@ ck_first_frost(tmin_year, dates_year)
 ### How dangerous is a heatwave?
 
 ```r
-# The heat index combines temperature and humidity to estimate
-# how hot it actually feels. Values above 40C are dangerous.
-
+# Heat index = apparent temperature from T + RH. Above ~40C is dangerous.
 ck_heat_index(tavg = c(30, 33, 36, 39), humidity = c(60, 65, 70, 75))
 #>      value      index unit
 #>   32.94844 heat_index   °C
@@ -348,39 +319,26 @@ ck_fire_danger(tavg = 35, humidity = 15, wind_speed = 30, precip = 0)
 ### Removing the in-base bias with the Zhang (2005) bootstrap
 
 ```r
-# The percentile-day indices (TX10p, TN10p, TX90p, TN90p) compute
-# thresholds from a reference period (default 1961-1990). For analysis
-# years inside the reference period, the year being assessed contributes
-# to its own threshold and biases the result toward 10% / 90%. Set
-# bootstrap = TRUE to apply Zhang et al. (2005) leave-one-out resampling
-# (the canonical climdex.pcic / climpact behaviour). Costs roughly
-# N^2 percentile fits for an N-year reference; opt in for attribution
-# work spanning the base.
-
+# Inside the reference period, each year biases its own threshold.
+# bootstrap = TRUE applies Zhang (2005) leave-one-out resampling.
 ck_tx10p(tmax, dates, ref_start = 1961L, ref_end = 1990L, bootstrap = TRUE)
 ```
 
 ### Operational heatwave intensity (Excess Heat Factor)
 
 ```r
-# EHF combines a 3-day mean temperature anomaly above the 95th
-# percentile with an acclimatisation term. Positive EHF days are
-# heatwave conditions; larger values indicate more severe events.
-
-ck_ehf(tmax, tmin, dates, ref_start = 1961L, ref_end = 1990L,
-       stat = "max")           # peak EHF in year
-ck_ehf(tmax, tmin, dates, stat = "n_positive")    # count heatwave-condition days
+# EHF: 3-day mean anomaly above the 95th percentile + acclimatisation.
+# Australian BoM operational metric; positive EHF = heatwave conditions.
+ck_ehf(tmax, tmin, dates, ref_start = 1961L, ref_end = 1990L, stat = "max")
+ck_ehf(tmax, tmin, dates, stat = "n_positive")    # heatwave-condition day count
 ck_ehf(tmax, tmin, dates, stat = "sum_positive")  # severity-weighted total
 ```
 
 ### FAO-56 Penman-Monteith reference evapotranspiration
 
 ```r
-# ck_pet() is the Hargreaves estimator (Tmin / Tmax / lat only).
-# ck_pet_pm() is the international FAO-56 Penman-Monteith standard,
-# with optional humidity, wind, solar-radiation, and elevation inputs.
-# Sensible FAO-56 fallbacks are used where data are missing.
-
+# ck_pet() is Hargreaves (Tmin / Tmax / lat). ck_pet_pm() is FAO-56
+# Penman-Monteith with optional humidity, wind, Rs, and elevation.
 ck_pet_pm(tmin, tmax, lat = 45, dates = dates,
           elev = 200, wind = 2.5,
           rh_min = rh_min, rh_max = rh_max)
@@ -389,10 +347,7 @@ ck_pet_pm(tmin, tmax, lat = 45, dates = dates,
 ### Computing indices programmatically
 
 ```r
-# If you are computing many indices over the same dataset, use ck_compute()
-# with the index name as a string. This is useful in loops, Shiny apps,
-# or any workflow where the index is selected at runtime.
-
+# ck_compute() dispatches on a string index name. Useful in loops or apps.
 weather <- data.frame(
   dates = as.Date("2024-01-01") + 0:364,
   tmin = sin(seq(0, 2 * pi, length.out = 365)) * 15 + 2,
@@ -429,7 +384,7 @@ ck_available()
 
 ## Migrating from `climdex.pcic`
 
-`climdex.pcic` (Pacific Climate Impacts Consortium) was for many years the standard R implementation of the canonical ETCCDI 27. It was archived from CRAN in 2023. `climatekit` covers the same set with a simpler interface:
+`climdex.pcic` was the standard R implementation of the canonical ETCCDI 27 until it was archived from CRAN in 2023. `climatekit` covers the same set with a simpler interface:
 
 ```r
 # climdex.pcic
@@ -448,7 +403,7 @@ See `vignette("climdex-migration", package = "climatekit")` for the full functio
 citation("climatekit")
 ```
 
-If you use the package in academic work, please also cite Alexander et al. (2006) and Zhang et al. (2011) (the canonical ETCCDI references), and Zhang et al. (2005) if you use the in-base bootstrap. `inst/CITATION` and the root-level `CITATION.cff` provide the bibentries.
+For academic use, also cite Alexander et al. (2006) and Zhang et al. (2011) (canonical ETCCDI), and Zhang et al. (2005) if you use the in-base bootstrap. `inst/CITATION` and `CITATION.cff` carry the bibentries.
 
 ## Issues
 
