@@ -18,28 +18,12 @@ coercion, no API calls.
 
 ## What are climate indices?
 
-Climate indices are standardised summary statistics that reduce daily
-weather observations into meaningful measures of climate conditions. A
-single year of weather data for one station is 365 rows of temperature,
-precipitation, wind, and humidity readings. Climate indices compress
-that into interpretable numbers: how many frost days occurred, how long
-the growing season lasted, whether the region is in drought.
-
-These indices matter because they are how climate science connects with
-the real economy. Energy companies use heating and cooling degree days
-to forecast demand. Agricultural ministries track growing degree days
-and frost dates. Water authorities monitor SPI and SPEI drought indices.
-Urban planners measure heat index exceedances. Insurance actuaries count
-extreme precipitation events. Viticulturists use Huglin and Winkler
-indices to assess grape-growing potential. Fire services monitor fire
-weather indices.
-
-The definitions come from international standards bodies - the WMO
-Expert Team on Climate Change Detection and Indices (ETCCDI) defines 27
-core indices, the Expert Team on Sector-specific Climate Indices
-(ET-SCI) extends these into health, agriculture, and energy domains, and
-individual research communities have added domain-specific measures like
-SPEI for drought and Huglin for viticulture.
+Standardised summary statistics that compress daily weather observations
+into measures like frost-day counts, growing-season length, drought
+severity, and heat-index exceedances. The definitions come from
+international bodies (WMO ETCCDI 27, ET-SCI extensions) and from
+individual research communities (SPI / SPEI for drought, Huglin /
+Winkler for viticulture).
 
 ## Getting started: where to get the data
 
@@ -104,29 +88,20 @@ will work with it.
 
 ## Why does this package exist?
 
-R has the methods, but they are scattered across half a dozen packages
-with incompatible interfaces:
+R has the methods scattered across packages with incompatible
+interfaces:
 
 | Package | Coverage | Limitation |
 |----|----|----|
-| `ClimInd` | 138 indices (SPI, SPEI, heat/cold waves) | Returns raw vectors with no metadata, no dates, no units |
-| `climdex.pcic` | 27 ETCCDI core indices | Requires a custom `climdexInput` S4 object; locked to ETCCDI standard |
-| `SPEI` | SPI + SPEI drought indices | Single-purpose; only does drought |
-| `heatwaveR` | Marine + atmospheric heatwaves | Single-purpose; only does heatwaves |
+| `ClimInd` | Multi-family climate indices | Returns raw vectors with no metadata, dates, or units |
+| `climdex.pcic` (archived from CRAN, 2023) | 27 ETCCDI core indices | Requires a custom `climdexInput` S4 object |
+| `SPEI` | SPI + SPEI drought indices | Single-purpose |
+| `heatwaveR` | Marine + atmospheric heatwaves | Single-purpose |
 | `weathermetrics` | Unit conversions + heat index | No climate indices |
 
-If you want frost days, degree days, SPI, and the Huglin index in the
-same analysis, you currently need four packages with four different
-input formats and four different output structures. One wants an S4
-object, another wants a matrix, a third wants separate vectors, and none
-of them return a data frame with dates attached.
-
-`climatekit` replaces all of that with a single interface: vectors in,
-data frames out. Every function takes the same kind of input (numeric
-vector + date vector), every function returns the same kind of output (a
-data frame with `period`, `value`, `index`, and `unit` columns), and the
-50+ indices span temperature, precipitation, drought, agroclimatic, and
-comfort categories.
+`climatekit` replaces these with a single interface: vectors in, tidy
+data frames out, 50+ indices spanning temperature, precipitation,
+drought, agroclimatic, and comfort categories.
 
 ``` r
 
