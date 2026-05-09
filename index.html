@@ -65,17 +65,12 @@
 <div class="section level2">
 <h2 id="getting-started-where-to-get-the-data">Getting started: where to get the data<a class="anchor" aria-label="anchor" href="#getting-started-where-to-get-the-data"></a>
 </h2>
-<p><code>climatekit</code> computes indices from weather data that you provide. It doesn’t download anything itself: you bring the data, it does the maths.</p>
-<p><strong>If you already have data</strong> (a CSV, a database export, an Excel file), all you need is a numeric vector of observations and a date vector:</p>
+<p>You bring the data, <code>climatekit</code> does the maths. If you already have a CSV:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://charlescoverdale.github.io/climatekit/">climatekit</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Read your own data</span></span>
 <span><span class="va">weather</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"my_weather_station.csv"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compute frost days</span></span>
 <span><span class="fu"><a href="reference/ck_frost_days.html">ck_frost_days</a></span><span class="op">(</span><span class="va">weather</span><span class="op">$</span><span class="va">tmin</span>, <span class="va">weather</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span></code></pre></div>
-<p><strong>If you don’t have data yet</strong>, the easiest way to get started is with <a href="https://github.com/charlescoverdale/readnoaa" class="external-link"><code>readnoaa</code></a>, which downloads free daily weather observations from NOAA’s global archive of 100,000+ stations. No API key needed:</p>
+<p>If you don’t have data yet, pair with <a href="https://github.com/charlescoverdale/readnoaa" class="external-link"><code>readnoaa</code></a> for free NOAA daily observations from 100,000+ stations. No API key:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"readnoaa"</span><span class="op">)</span>  <span class="co"># or devtools::install_github("charlescoverdale/readnoaa")</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/charlescoverdale/readnoaa" class="external-link">readnoaa</a></span><span class="op">)</span></span>
@@ -94,7 +89,6 @@
 <span><span class="fu"><a href="reference/ck_frost_days.html">ck_frost_days</a></span><span class="op">(</span><span class="va">weather</span><span class="op">$</span><span class="va">tmin</span>, <span class="va">weather</span><span class="op">$</span><span class="va">date</span>, period <span class="op">=</span> <span class="st">"annual"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ck_spi.html">ck_spi</a></span><span class="op">(</span><span class="va">weather</span><span class="op">$</span><span class="va">prcp</span>, <span class="va">weather</span><span class="op">$</span><span class="va">date</span>, scale <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/ck_heating_degree_days.html">ck_heating_degree_days</a></span><span class="op">(</span><span class="op">(</span><span class="va">weather</span><span class="op">$</span><span class="va">tmax</span> <span class="op">+</span> <span class="va">weather</span><span class="op">$</span><span class="va">tmin</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>, <span class="va">weather</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span></code></pre></div>
-<p>As long as you have a numeric vector and a date vector, <code>climatekit</code> will work with it.</p>
 <div class="section level3">
 <h3 id="common-data-sources">Common data sources<a class="anchor" aria-label="anchor" href="#common-data-sources"></a>
 </h3>
@@ -200,23 +194,11 @@
 </table>
 <p><code>climatekit</code> replaces these with a single interface: vectors in, tidy data frames out, 50+ indices spanning temperature, precipitation, drought, agroclimatic, and comfort categories.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Without climatekit: four packages, four input formats, four output structures</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">climdex.pcic</span><span class="op">)</span></span>
-<span><span class="va">ci</span> <span class="op">&lt;-</span> <span class="fu">climdexInput.raw</span><span class="op">(</span>tmax <span class="op">=</span> <span class="va">...</span>, tmin <span class="op">=</span> <span class="va">...</span>, prec <span class="op">=</span> <span class="va">...</span>, <span class="va">...</span><span class="op">)</span>  <span class="co"># S4 object</span></span>
-<span><span class="va">fd</span> <span class="op">&lt;-</span> <span class="fu">climdex.fd</span><span class="op">(</span><span class="va">ci</span><span class="op">)</span>  <span class="co"># returns named numeric vector, no dates</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://spei.csic.es" class="external-link">SPEI</a></span><span class="op">)</span></span>
-<span><span class="va">spi_result</span> <span class="op">&lt;-</span> <span class="fu">spi</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/ts.html" class="external-link">ts</a></span><span class="op">(</span><span class="va">monthly_precip</span>, frequency <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>  <span class="co"># returns S4, needs ts()</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gitlab.com/indecis-eu/indecis" class="external-link">ClimInd</a></span><span class="op">)</span></span>
-<span><span class="va">gdd</span> <span class="op">&lt;-</span> <span class="fu">gdd</span><span class="op">(</span><span class="va">tavg_vector</span>, <span class="fl">10</span><span class="op">)</span>  <span class="co"># returns raw numeric, no metadata</span></span>
-<span></span>
-<span><span class="co"># With climatekit: one package, one interface</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://charlescoverdale.github.io/climatekit/">climatekit</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/ck_frost_days.html">ck_frost_days</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">dates</span><span class="op">)</span>                     <span class="co"># → data.frame</span></span>
-<span><span class="fu"><a href="reference/ck_spi.html">ck_spi</a></span><span class="op">(</span><span class="va">precip</span>, <span class="va">dates</span>, scale <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>               <span class="co"># → data.frame</span></span>
-<span><span class="fu"><a href="reference/ck_growing_degree_days.html">ck_growing_degree_days</a></span><span class="op">(</span><span class="va">tavg</span>, <span class="va">dates</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>  <span class="co"># → data.frame</span></span>
-<span><span class="fu"><a href="reference/ck_huglin.html">ck_huglin</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span>, <span class="va">dates</span>, lat <span class="op">=</span> <span class="fl">45</span><span class="op">)</span>          <span class="co"># → data.frame</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://charlescoverdale.github.io/climatekit/">climatekit</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ck_frost_days.html">ck_frost_days</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">dates</span><span class="op">)</span>                      <span class="co"># data.frame</span></span>
+<span><span class="fu"><a href="reference/ck_spi.html">ck_spi</a></span><span class="op">(</span><span class="va">precip</span>, <span class="va">dates</span>, scale <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>                <span class="co"># data.frame</span></span>
+<span><span class="fu"><a href="reference/ck_growing_degree_days.html">ck_growing_degree_days</a></span><span class="op">(</span><span class="va">tavg</span>, <span class="va">dates</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>  <span class="co"># data.frame</span></span>
+<span><span class="fu"><a href="reference/ck_huglin.html">ck_huglin</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span>, <span class="va">dates</span>, lat <span class="op">=</span> <span class="fl">45</span><span class="op">)</span>          <span class="co"># data.frame</span></span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -652,9 +634,7 @@
 <h3 id="how-much-heating-energy-does-a-building-need">How much heating energy does a building need?<a class="anchor" aria-label="anchor" href="#how-much-heating-energy-does-a-building-need"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Heating degree days tell energy companies how much heating demand to expect.</span></span>
-<span><span class="co"># Each degree below the base temperature (default 18C) for each day adds to the total.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># Heating degree days: cumulative warmth deficit below the base (default 18C).</span></span>
 <span><span class="va">tavg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>, length.out <span class="op">=</span> <span class="fl">365</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fl">12</span> <span class="op">+</span> <span class="fl">10</span></span>
 <span><span class="fu"><a href="reference/ck_heating_degree_days.html">ck_heating_degree_days</a></span><span class="op">(</span><span class="va">tavg</span>, <span class="va">dates</span>, period <span class="op">=</span> <span class="st">"monthly"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       period  value                index        unit</span></span>
@@ -671,11 +651,8 @@
 <h3 id="is-a-region-in-drought">Is a region in drought?<a class="anchor" aria-label="anchor" href="#is-a-region-in-drought"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># The Standardized Precipitation Index (SPI) fits a gamma distribution to</span></span>
-<span><span class="co"># monthly precipitation totals over a rolling window, then transforms to</span></span>
-<span><span class="co"># standard normal deviates. Values below -1 indicate moderate drought,</span></span>
-<span><span class="co"># below -1.5 severe drought, below -2 extreme drought.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># SPI standardises rolling-window precipitation totals to N(0, 1).</span></span>
+<span><span class="co"># Values below -1 = moderate, -1.5 = severe, -2 = extreme drought.</span></span>
 <span><span class="va">dates_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2015-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-12-31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">precip</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dates_long</span><span class="op">)</span>, shape <span class="op">=</span> <span class="fl">2</span>, rate <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
@@ -720,9 +697,7 @@
 <h3 id="when-did-frost-season-start-and-end">When did frost season start and end?<a class="anchor" aria-label="anchor" href="#when-did-frost-season-start-and-end"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First and last frost dates matter for agriculture, construction, and transport.</span></span>
-<span></span>
-<span><span class="va">dates_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">364</span></span>
+<code class="sourceCode R"><span><span class="va">dates_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">364</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">tmin_year</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">10</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">dates_year</span><span class="op">)</span> <span class="op">*</span> <span class="fl">0.08</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">365</span>, sd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span></span>
@@ -737,9 +712,7 @@
 <h3 id="how-dangerous-is-a-heatwave">How dangerous is a heatwave?<a class="anchor" aria-label="anchor" href="#how-dangerous-is-a-heatwave"></a>
 </h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># The heat index combines temperature and humidity to estimate</span></span>
-<span><span class="co"># how hot it actually feels. Values above 40C are dangerous.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># Heat index = apparent temperature from T + RH. Above ~40C is dangerous.</span></span>
 <span><span class="fu"><a href="reference/ck_heat_index.html">ck_heat_index</a></span><span class="op">(</span>tavg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">33</span>, <span class="fl">36</span>, <span class="fl">39</span><span class="op">)</span>, humidity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">65</span>, <span class="fl">70</span>, <span class="fl">75</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      value      index unit</span></span>
 <span><span class="co">#&gt;   32.94844 heat_index   °C</span></span>
@@ -758,39 +731,26 @@
 <h3 id="removing-the-in-base-bias-with-the-zhang-2005-bootstrap">Removing the in-base bias with the Zhang (2005) bootstrap<a class="anchor" aria-label="anchor" href="#removing-the-in-base-bias-with-the-zhang-2005-bootstrap"></a>
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># The percentile-day indices (TX10p, TN10p, TX90p, TN90p) compute</span></span>
-<span><span class="co"># thresholds from a reference period (default 1961-1990). For analysis</span></span>
-<span><span class="co"># years inside the reference period, the year being assessed contributes</span></span>
-<span><span class="co"># to its own threshold and biases the result toward 10% / 90%. Set</span></span>
-<span><span class="co"># bootstrap = TRUE to apply Zhang et al. (2005) leave-one-out resampling</span></span>
-<span><span class="co"># (the canonical climdex.pcic / climpact behaviour). Costs roughly</span></span>
-<span><span class="co"># N^2 percentile fits for an N-year reference; opt in for attribution</span></span>
-<span><span class="co"># work spanning the base.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># Inside the reference period, each year biases its own threshold.</span></span>
+<span><span class="co"># bootstrap = TRUE applies Zhang (2005) leave-one-out resampling.</span></span>
 <span><span class="fu"><a href="reference/ck_tx10p.html">ck_tx10p</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">dates</span>, ref_start <span class="op">=</span> <span class="fl">1961L</span>, ref_end <span class="op">=</span> <span class="fl">1990L</span>, bootstrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="operational-heatwave-intensity-excess-heat-factor">Operational heatwave intensity (Excess Heat Factor)<a class="anchor" aria-label="anchor" href="#operational-heatwave-intensity-excess-heat-factor"></a>
 </h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># EHF combines a 3-day mean temperature anomaly above the 95th</span></span>
-<span><span class="co"># percentile with an acclimatisation term. Positive EHF days are</span></span>
-<span><span class="co"># heatwave conditions; larger values indicate more severe events.</span></span>
-<span></span>
-<span><span class="fu"><a href="reference/ck_ehf.html">ck_ehf</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span>, ref_start <span class="op">=</span> <span class="fl">1961L</span>, ref_end <span class="op">=</span> <span class="fl">1990L</span>,</span>
-<span>       stat <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span>           <span class="co"># peak EHF in year</span></span>
-<span><span class="fu"><a href="reference/ck_ehf.html">ck_ehf</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span>, stat <span class="op">=</span> <span class="st">"n_positive"</span><span class="op">)</span>    <span class="co"># count heatwave-condition days</span></span>
+<code class="sourceCode R"><span><span class="co"># EHF: 3-day mean anomaly above the 95th percentile + acclimatisation.</span></span>
+<span><span class="co"># Australian BoM operational metric; positive EHF = heatwave conditions.</span></span>
+<span><span class="fu"><a href="reference/ck_ehf.html">ck_ehf</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span>, ref_start <span class="op">=</span> <span class="fl">1961L</span>, ref_end <span class="op">=</span> <span class="fl">1990L</span>, stat <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ck_ehf.html">ck_ehf</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span>, stat <span class="op">=</span> <span class="st">"n_positive"</span><span class="op">)</span>    <span class="co"># heatwave-condition day count</span></span>
 <span><span class="fu"><a href="reference/ck_ehf.html">ck_ehf</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span>, stat <span class="op">=</span> <span class="st">"sum_positive"</span><span class="op">)</span>  <span class="co"># severity-weighted total</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fao-56-penman-monteith-reference-evapotranspiration">FAO-56 Penman-Monteith reference evapotranspiration<a class="anchor" aria-label="anchor" href="#fao-56-penman-monteith-reference-evapotranspiration"></a>
 </h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># ck_pet() is the Hargreaves estimator (Tmin / Tmax / lat only).</span></span>
-<span><span class="co"># ck_pet_pm() is the international FAO-56 Penman-Monteith standard,</span></span>
-<span><span class="co"># with optional humidity, wind, solar-radiation, and elevation inputs.</span></span>
-<span><span class="co"># Sensible FAO-56 fallbacks are used where data are missing.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># ck_pet() is Hargreaves (Tmin / Tmax / lat). ck_pet_pm() is FAO-56</span></span>
+<span><span class="co"># Penman-Monteith with optional humidity, wind, Rs, and elevation.</span></span>
 <span><span class="fu"><a href="reference/ck_pet_pm.html">ck_pet_pm</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span>, lat <span class="op">=</span> <span class="fl">45</span>, dates <span class="op">=</span> <span class="va">dates</span>,</span>
 <span>          elev <span class="op">=</span> <span class="fl">200</span>, wind <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>          rh_min <span class="op">=</span> <span class="va">rh_min</span>, rh_max <span class="op">=</span> <span class="va">rh_max</span><span class="op">)</span></span></code></pre></div>
@@ -799,10 +759,7 @@
 <h3 id="computing-indices-programmatically">Computing indices programmatically<a class="anchor" aria-label="anchor" href="#computing-indices-programmatically"></a>
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># If you are computing many indices over the same dataset, use ck_compute()</span></span>
-<span><span class="co"># with the index name as a string. This is useful in loops, Shiny apps,</span></span>
-<span><span class="co"># or any workflow where the index is selected at runtime.</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># ck_compute() dispatches on a string index name. Useful in loops or apps.</span></span>
 <span><span class="va">weather</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  dates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">364</span>,</span>
 <span>  tmin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>, length.out <span class="op">=</span> <span class="fl">365</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fl">15</span> <span class="op">+</span> <span class="fl">2</span>,</span>
@@ -862,7 +819,7 @@
 <h2 id="migrating-from-climdexpcic">Migrating from <code>climdex.pcic</code>
 <a class="anchor" aria-label="anchor" href="#migrating-from-climdexpcic"></a>
 </h2>
-<p><code>climdex.pcic</code> (Pacific Climate Impacts Consortium) was for many years the standard R implementation of the canonical ETCCDI 27. It was archived from CRAN in 2023. <code>climatekit</code> covers the same set with a simpler interface:</p>
+<p><code>climdex.pcic</code> was the standard R implementation of the canonical ETCCDI 27 until it was archived from CRAN in 2023. <code>climatekit</code> covers the same set with a simpler interface:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># climdex.pcic</span></span>
 <span><span class="va">ci</span> <span class="op">&lt;-</span> <span class="fu">climdexInput.raw</span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">prec</span>, <span class="va">...</span>, base.range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1961</span>, <span class="fl">1990</span><span class="op">)</span><span class="op">)</span></span>
@@ -877,7 +834,7 @@
 </h2>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"climatekit"</span><span class="op">)</span></span></code></pre></div>
-<p>If you use the package in academic work, please also cite Alexander et al. (2006) and Zhang et al. (2011) (the canonical ETCCDI references), and Zhang et al. (2005) if you use the in-base bootstrap. <code>inst/CITATION</code> and the root-level <code>CITATION.cff</code> provide the bibentries.</p>
+<p>For academic use, also cite Alexander et al. (2006) and Zhang et al. (2011) (canonical ETCCDI), and Zhang et al. (2005) if you use the in-base bootstrap. <code>inst/CITATION</code> and <code>CITATION.cff</code> carry the bibentries.</p>
 </div>
 <div class="section level2">
 <h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
