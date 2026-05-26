@@ -2,6 +2,8 @@
 
 ## climatekit 0.2.0
 
+CRAN release: 2026-05-09
+
 ### Bug fixes
 
 - [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md)

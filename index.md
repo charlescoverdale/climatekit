@@ -459,3 +459,8 @@ bibentries.
 
 Please report bugs or requests at
 <https://github.com/charlescoverdale/climatekit/issues>.
+
+r, r-package, climate-indices, etccdi, climate-extremes,
+temperature-extremes, precipitation-extremes, heatwave, cold-wave,
+drought, spi, spei, evapotranspiration, penman-monteith, frost-days,
+growing-degree-days, climate-change, climatology
