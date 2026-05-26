@@ -408,3 +408,5 @@ For academic use, also cite Alexander et al. (2006) and Zhang et al. (2011) (can
 ## Issues
 
 Please report bugs or requests at <https://github.com/charlescoverdale/climatekit/issues>.
+
+r, r-package, climate-indices, etccdi, climate-extremes, temperature-extremes, precipitation-extremes, heatwave, cold-wave, drought, spi, spei, evapotranspiration, penman-monteith, frost-days, growing-degree-days, climate-change, climatology
