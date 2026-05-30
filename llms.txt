@@ -11,6 +11,9 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+A technical working paper for this package can be found
+[here](https://charlescoverdale.github.io/files/coverdale_climatekit_2026.pdf).
+
 An R package for computing climate indices from daily weather
 observations. Takes vectors of temperature, precipitation, humidity, and
 wind data and returns tidy data frames: no file wrangling, no class
