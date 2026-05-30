@@ -2,6 +2,8 @@
 
 [![CRAN status](https://www.r-pkg.org/badges/version/climatekit)](https://CRAN.R-project.org/package=climatekit) [![CRAN downloads](https://cranlogs.r-pkg.org/badges/climatekit)](https://CRAN.R-project.org/package=climatekit) [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/climatekit)](https://CRAN.R-project.org/package=climatekit) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+A technical working paper for this package can be found [here](https://charlescoverdale.github.io/files/coverdale_climatekit_2026.pdf).
+
 An R package for computing climate indices from daily weather observations. Takes vectors of temperature, precipitation, humidity, and wind data and returns tidy data frames: no file wrangling, no class coercion, no API calls.
 
 ## What are climate indices?
