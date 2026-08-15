@@ -291,7 +291,7 @@ p5 <- ggplot(df5, aes(x = date)) +
   labs(x = NULL, y = "12-month SPI (standard deviations)") +
   theme_wp(base_size = 10)
 
-ggsave(file.path(fig_dir, "fig5_heat.pdf"),
+ggsave(file.path(fig_dir, "fig5_spi_central_park.pdf"),
        p5, width = 5.5, height = 3.2, device = cairo_pdf)
 
 # -----------------------------------------------------------------------------

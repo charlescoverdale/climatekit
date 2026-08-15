@@ -1,0 +1,87 @@
+\begin{thebibliography}{14}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alexander et~al.(2006)Alexander, Zhang, Peterson, Caesar, Gleason, Klein~Tank, Haylock, Collins, Trewin, Rahimzadeh, Tagipour, Rupa~Kumar, Revadekar, Griffiths, Vincent, Stephenson, Burn, Aguilar, Brunet, Taylor, New, Zhai, Rusticucci, and Vazquez-Aguirre]{alexander2006global}
+L.~V. Alexander, X.~Zhang, T.~C. Peterson, J.~Caesar, B.~Gleason, A.~M.~G. Klein~Tank, M.~Haylock, D.~Collins, B.~Trewin, F.~Rahimzadeh, A.~Tagipour, K.~Rupa~Kumar, J.~Revadekar, G.~Griffiths, L.~Vincent, D.~B. Stephenson, J.~Burn, E.~Aguilar, M.~Brunet, M.~Taylor, M.~New, P.~Zhai, M.~Rusticucci, and J.~L. Vazquez-Aguirre.
+\newblock Global observed changes in daily climate extremes of temperature and precipitation.
+\newblock \emph{Journal of Geophysical Research: Atmospheres}, 111\penalty0 (D5), 2006.
+\newblock \doi{10.1029/2005JD006290}.
+
+\bibitem[Donat et~al.(2013)Donat, Alexander, Yang, Durre, Vose, Dunn, Willett, Aguilar, Brunet, Caesar, Hewitson, Jack, Klein~Tank, Kruger, Marengo, Peterson, Renom, Oria~Rojas, Rusticucci, Salinger, Elrayah, Sekele, Srivastava, Trewin, Villarroel, Vincent, Zhai, Zhang, and Kitching]{donat2013hadex}
+M.~G. Donat, L.~V. Alexander, H.~Yang, I.~Durre, R.~Vose, R.~J.~H. Dunn, K.~M. Willett, E.~Aguilar, M.~Brunet, J.~Caesar, B.~Hewitson, C.~Jack, A.~M.~G. Klein~Tank, A.~C. Kruger, J.~Marengo, T.~C. Peterson, M.~Renom, C.~Oria~Rojas, M.~Rusticucci, J.~Salinger, A.~S. Elrayah, S.~S. Sekele, A.~K. Srivastava, B.~Trewin, C.~Villarroel, L.~A. Vincent, P.~Zhai, X.~Zhang, and S.~Kitching.
+\newblock Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The {HadEX2} dataset.
+\newblock \emph{Journal of Geophysical Research: Atmospheres}, 118\penalty0 (5):\penalty0 2098--2118, 2013.
+\newblock \doi{10.1002/jgrd.50150}.
+
+\bibitem[Frich et~al.(2002)Frich, Alexander, Della-Marta, Gleason, Haylock, Klein~Tank, and Peterson]{frich2002observed}
+P.~Frich, L.~V. Alexander, P.~Della-Marta, B.~Gleason, M.~Haylock, A.~M.~G. Klein~Tank, and T.~C. Peterson.
+\newblock Observed coherent changes in climatic extremes during the second half of the twentieth century.
+\newblock \emph{Climate Research}, 19\penalty0 (3):\penalty0 193--212, 2002.
+\newblock \doi{10.3354/cr019193}.
+
+\bibitem[Hargreaves and Samani(1985)]{hargreaves1985reference}
+G.~H. Hargreaves and Z.~A. Samani.
+\newblock Reference crop evapotranspiration from temperature.
+\newblock \emph{Applied Engineering in Agriculture}, 1\penalty0 (2):\penalty0 96--99, 1985.
+\newblock \doi{10.13031/2013.26773}.
+
+\bibitem[Huglin(1978)]{huglin1978nouveau}
+P.~Huglin.
+\newblock Nouveau mode d'{\'e}valuation des possibilit{\'e}s h{\'e}liothermiques d'un milieu viticole.
+\newblock In \emph{Proceedings of the Symposium International sur l'\'Ecologie de la Vigne}, pages 89--98, 1978.
+
+\bibitem[Masterton and Richardson(1979)]{masterton1979humidex}
+J.~M. Masterton and F.~A. Richardson.
+\newblock Humidex: A method of quantifying human discomfort due to excessive heat and humidity.
+\newblock Technical report, Environment Canada, Atmospheric Environment Service, 1979.
+
+\bibitem[McKee et~al.(1993)McKee, Doesken, and Kleist]{mckee1993relationship}
+T.~B. McKee, N.~J. Doesken, and J.~Kleist.
+\newblock The relationship of drought frequency and duration to time scales.
+\newblock In \emph{Preprints, Eighth Conference on Applied Climatology}, pages 179--184. American Meteorological Society, 1993.
+
+\bibitem[Osczevski and Bluestein(2005)]{osczevski2005new}
+R.~Osczevski and M.~Bluestein.
+\newblock The new wind chill equivalent temperature chart.
+\newblock \emph{Bulletin of the American Meteorological Society}, 86\penalty0 (10):\penalty0 1453--1458, 2005.
+\newblock \doi{10.1175/BAMS-86-10-1453}.
+
+\bibitem[Rothfusz(1990)]{rothfusz1990heat}
+L.~P. Rothfusz.
+\newblock The heat index `equation' (or, more than you ever wanted to know about heat index).
+\newblock Technical Attachment SR 90-23, National Weather Service, Office of Meteorology, 1990.
+
+\bibitem[Sillmann et~al.(2013)Sillmann, Kharin, Zhang, Zwiers, and Bronaugh]{sillmann2013indices}
+J.~Sillmann, V.~V. Kharin, X.~Zhang, F.~W. Zwiers, and D.~Bronaugh.
+\newblock Climate extremes indices in the {CMIP5} multimodel ensemble: Part 1. model evaluation in the present climate.
+\newblock \emph{Journal of Geophysical Research: Atmospheres}, 118\penalty0 (4):\penalty0 1716--1733, 2013.
+\newblock \doi{10.1002/jgrd.50203}.
+
+\bibitem[Stagge et~al.(2015)Stagge, Tallaksen, Gudmundsson, Van~Loon, and Stahl]{stagge2015candidate}
+J.~H. Stagge, L.~M. Tallaksen, L.~Gudmundsson, A.~F. Van~Loon, and K.~Stahl.
+\newblock Candidate distributions for climatological drought indices ({SPI} and {SPEI}).
+\newblock \emph{International Journal of Climatology}, 35\penalty0 (13):\penalty0 4027--4040, 2015.
+\newblock \doi{10.1002/joc.4267}.
+
+\bibitem[Vicente-Serrano et~al.(2010)Vicente-Serrano, Beguer{\'\i}a, and L{\'o}pez-Moreno]{vicente2010multiscalar}
+S.~M. Vicente-Serrano, S.~Beguer{\'\i}a, and J.~I. L{\'o}pez-Moreno.
+\newblock A multiscalar drought index sensitive to global warming: The standardized precipitation evapotranspiration index.
+\newblock \emph{Journal of Climate}, 23\penalty0 (7):\penalty0 1696--1718, 2010.
+\newblock \doi{10.1175/2009JCLI2909.1}.
+
+\bibitem[Winkler et~al.(1974)Winkler, Cook, Kliewer, and Lider]{winkler1974general}
+A.~J. Winkler, J.~A. Cook, W.~M. Kliewer, and L.~A. Lider.
+\newblock \emph{General Viticulture}.
+\newblock University of California Press, Berkeley, 1974.
+
+\bibitem[Zhang et~al.(2011)Zhang, Alexander, Hegerl, Jones, Klein~Tank, Peterson, Trewin, and Zwiers]{zhang2011indices}
+X.~Zhang, L.~Alexander, G.~C. Hegerl, P.~Jones, A.~Klein~Tank, T.~C. Peterson, B.~Trewin, and F.~W. Zwiers.
+\newblock Indices for monitoring changes in extremes based on daily temperature and precipitation data.
+\newblock \emph{Wiley Interdisciplinary Reviews: Climate Change}, 2\penalty0 (6):\penalty0 851--870, 2011.
+\newblock \doi{10.1002/wcc.147}.
+
+\end{thebibliography}
