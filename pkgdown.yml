@@ -1,9 +1,9 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   climdex-migration: climdex-migration.html
-last_built: 2026-05-30T15:00Z
+last_built: 2026-08-15T11:03Z
 urls:
   reference: https://charlescoverdale.github.io/climatekit/reference
   article: https://charlescoverdale.github.io/climatekit/articles
