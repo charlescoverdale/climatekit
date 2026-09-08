@@ -30,6 +30,11 @@ reference period.
 \details{
 For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
 six-day spell rule), use \code{\link[=ck_wsdi]{ck_wsdi()}}.
+
+The quantile is estimated with the Hyndman and Fan type 8 estimator,
+matching every other percentile in \code{climatekit}. Before v0.2.1 this
+function alone used R's default type 7. The two estimators differ by
+order 1/n, so counts rarely change on multi-year daily series.
 }
 \examples{
 dates <- as.Date("2024-01-01") + 0:364

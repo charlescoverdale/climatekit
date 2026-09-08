@@ -96,8 +96,11 @@ reference:
       - ck_etccdi_27
       - ck_catalogue
       - ck_browse
-      - clear_cache
 
+  - title: "Deprecated"
+    desc: "Kept so existing scripts keep running; scheduled for removal"
+    contents:
+      - clear_cache
 
   - title: "Package"
     contents:

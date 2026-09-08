@@ -21,7 +21,14 @@ A data frame with columns \code{period}, \code{value}, \code{index}, and \code{u
 }
 \description{
 Maximum number of consecutive days with precipitation at or above a
-threshold.
+threshold. This is the ETCCDI \strong{CWD} index.
+}
+\details{
+Note: the same letters CWD also denote the ET-SCI \strong{cold-wave duration}
+index, which is unrelated and is implemented in \code{\link[=ck_cwd]{ck_cwd()}}. In
+\code{\link[=ck_compute]{ck_compute()}} the name \code{"cwd"} resolves to cold-wave duration, not to
+this function; use \code{"wet_days"} or the unambiguous alias
+\code{"consecutive_wet_days"} for consecutive wet days.
 }
 \examples{
 dates <- as.Date("2024-01-01") + 0:9

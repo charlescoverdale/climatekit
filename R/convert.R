@@ -34,30 +34,31 @@ ck_convert_temp <- function(x, from, to) {
   )
 }
 
-#' Clear Cache
+#' Clear Cache (Deprecated)
 #'
-#' Removes any cached reference data stored by `climatekit`.
+#' Deprecated in v0.2.1 and scheduled for removal in v0.4.0. `climatekit`
+#' performs no I/O and never writes a cache, so this function has never had
+#' anything to clear. It remains only so that existing scripts keep running.
 #'
-#' @return Invisibly returns `TRUE` if cache was cleared, `FALSE` if no cache
-#'   existed.
+#' If you are caching downloaded weather data, clear it with the tools of
+#' whichever data package fetched it (for example `readnoaa`), not here.
+#'
+#' @return Invisibly returns `FALSE`. Prior to v0.2.1 this returned `TRUE`
+#'   when a directory set through `options(climatekit.cache_dir = ...)`
+#'   contained files, which only ever happened if something outside
+#'   `climatekit` had written there.
 #'
 #' @export
 #' @examples
 #' \donttest{
-#' op <- options(climatekit.cache_dir = tempdir())
-#' clear_cache()
-#' options(op)
+#' # Deprecated: this warns and does nothing.
+#' suppressWarnings(clear_cache())
 #' }
 clear_cache <- function() {
-  cache_dir <- getOption("climatekit.cache_dir",
-                         default = tools::R_user_dir("climatekit", "cache"))
-  if (dir.exists(cache_dir)) {
-    files <- list.files(cache_dir, full.names = TRUE)
-    if (length(files)) unlink(files, recursive = TRUE)
-    cli::cli_alert_success("Cache cleared.")
-    invisible(TRUE)
-  } else {
-    cli::cli_alert_info("No cache to clear.")
-    invisible(FALSE)
-  }
+  cli::cli_warn(c(
+    "{.fn clear_cache} is deprecated and will be removed in climatekit 0.4.0.",
+    "i" = "{.pkg climatekit} is pure computation and never writes a cache.",
+    "i" = "To clear cached weather data, use the data package that fetched it."
+  ))
+  invisible(FALSE)
 }

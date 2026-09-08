@@ -1,3 +1,46 @@
+# climatekit 0.2.1
+
+## Bug fixes
+
+* `ck_available()` and `ck_metadata()` now know about every index the
+  package computes. The index table had been maintained as three
+  separate hand-written lists, and the twelve indices added in 0.2.0
+  (`ck_hwn()`, `ck_hwf()`, `ck_hwd()`, `ck_hwm()`, `ck_hwa()`,
+  `ck_cwn()`, `ck_cwf()`, `ck_cwd()`, `ck_cwm()`, `ck_cwa()`,
+  `ck_ehf()` and `ck_pet_pm()`) reached only the `ck_compute()` list.
+  `ck_available()` returned 42 rows instead of 54, and
+  `ck_metadata("ehf")` failed with "Unknown index". All four views
+  (`ck_available()`, `ck_metadata()`, `ck_catalogue()` and the
+  `ck_compute()` dispatch) are now derived from one internal table, so
+  they cannot drift apart again. `ck_catalogue()` and `ck_etccdi_27()`
+  are unchanged.
+* `ck_warm_spell()` estimated its series quantile with R's default
+  Hyndman-Fan type 7. Every other percentile in the package uses type
+  8, the 'ETCCDI' convention. It now uses type 8 as well. The two
+  estimators differ by order 1/n, so on a decade of daily data the
+  threshold moves by around 0.003 degrees C and counts are typically
+  unchanged; the gap is larger on short series.
+
+## Deprecations
+
+* `clear_cache()` is deprecated and will be removed in 0.4.0. It warns
+  and returns `FALSE` invisibly. `climatekit` performs no I/O and has
+  never written a cache, so the function never had anything to clear.
+  Clear cached weather data with the package that downloaded it.
+* `tools` is no longer a dependency; it was needed only by
+  `clear_cache()`.
+
+## Documentation
+
+* `ck_dry_days()` and `ck_wet_days()` now state their 'ETCCDI' codes
+  and warn about the two acronym collisions in the literature: CWD is
+  both consecutive wet days and cold-wave duration, and CDD is both
+  consecutive dry days and cooling degree days. `ck_compute()` keeps
+  the meaning each `ck_*` function already carried, and additionally
+  accepts the unambiguous aliases `"consecutive_wet_days"`,
+  `"consecutive_dry_days"`, `"cold_wave_duration"`, `"cdd"` and the
+  matching cold-wave names.
+
 # climatekit 0.2.0
 
 ## Bug fixes

@@ -50,6 +50,15 @@ Every ETCCDI 27 index in `climdex.pcic` maps to a `climatekit` function. The fun
 | R99p        | `climdex.r99p()` / `climdex.r99ptot()` | `ck_r99p()`        |
 | PRCPTOT     | `climdex.prcptot()`               | `ck_total_precip()`     |
 
+Two rows above are acronym traps. `ck_cwd()` is **not** the CWD in that
+table: it is the ET-SCI cold-wave duration index, and ETCCDI consecutive
+wet days is `ck_wet_days()`. Likewise `ck_cooling_degree_days()` is not
+ETCCDI CDD; consecutive dry days is `ck_dry_days()`. `ck_compute()`
+resolves `"cwd"` to cold-wave duration and `"cdd"` to consecutive dry
+days, following the meaning each `ck_*` function already carried, and
+also accepts `"consecutive_wet_days"`, `"consecutive_dry_days"` and
+`"cold_wave_duration"` when you would rather be explicit.
+
 Beyond ETCCDI 27, `climatekit` also exposes the ET-SCI heatwave family (`ck_hwn()`, `ck_hwf()`, `ck_hwd()`, `ck_hwm()`, `ck_hwa()`) and the cold-wave duals (`ck_cwn()` etc.), agroclimatic indices (Huglin, Winkler, Branas), drought indices (SPI, SPEI), and comfort indices (heat index, humidex, wind chill).
 
 `ck_etccdi_27()` returns an audit table that maps every ETCCDI code to its `climatekit` function in one place.
@@ -115,7 +124,11 @@ all.equal(old_txx, new_txx$value)
 Most ETCCDI indices are NA-handling-tolerant by construction. Differences typically come from:
 
 1. **Default missing-day handling.** `climdex.pcic` has more elaborate rules (e.g. min number of valid days per month) that `climatekit` does not enforce in v0.2.0.
-2. **In-base bootstrap.** As noted above, percentile indices for years 1961-1990 will differ slightly.
+2. **In-base bootstrap.** Percentile indices differ inside the base period
+   unless you ask for the correction. Pass `bootstrap = TRUE` to
+   `ck_tx10p()`, `ck_tn10p()`, `ck_tx90p()` or `ck_tn90p()` to apply the
+   Zhang et al. (2005) leave-one-out resampling that `climdex.pcic` uses
+   by default. It is off by default here because it is expensive.
 3. **Calendar leap-day handling.** Both packages handle DOY 60 (29 February) without special-casing in v0.2.0.
 
 For all other ETCCDI 27 indices, `climatekit` and `climdex.pcic` should agree to within numerical noise on the same input.

@@ -21,6 +21,13 @@ A data frame with columns \code{period}, \code{value}, \code{index}, and \code{u
 }
 \description{
 Maximum number of consecutive days with precipitation below a threshold.
+This is the ETCCDI \strong{CDD} index.
+}
+\details{
+Note: \code{CDD} also denotes climpact's cooling degree days, which is
+unrelated and is implemented in \code{\link[=ck_cooling_degree_days]{ck_cooling_degree_days()}}. In
+\code{\link[=ck_compute]{ck_compute()}} the name \code{"cdd"} resolves here, to consecutive dry days;
+\code{"consecutive_dry_days"} is accepted as an unambiguous alias.
 }
 \examples{
 dates <- as.Date("2024-01-01") + 0:9

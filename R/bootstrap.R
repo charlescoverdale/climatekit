@@ -17,7 +17,7 @@
 #'
 #' Returns a numeric vector aligned with `values` and `dates`.
 #' Out-of-base years yield 0/1 booleans (NA where the value or
-#' threshold is missing). In-base years yield averages in [0, 1]
+#' threshold is missing). In-base years yield averages in `[0, 1]`
 #' from the leave-one-out resampling. Used by [ck_tx10p()],
 #' [ck_tn10p()], [ck_tx90p()], and [ck_tn90p()] when
 #' `bootstrap = TRUE`.
@@ -180,7 +180,7 @@
 #' Aggregate per-day exceedance proportions to per-period percentages
 #'
 #' Helper used by the percentile-day functions to convert a daily
-#' soft exceedance vector (in [0, 1] or NA) into a per-period
+#' soft exceedance vector (in `[0, 1]` or NA) into a per-period
 #' percentage. Periods with no valid days return NA.
 #' @noRd
 .aggregate_pct_exceedance <- function(soft_ex, dates, period) {

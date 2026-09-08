@@ -1,6 +1,12 @@
 #' Maximum Consecutive Dry Days
 #'
 #' Maximum number of consecutive days with precipitation below a threshold.
+#' This is the ETCCDI **CDD** index.
+#'
+#' Note: `CDD` also denotes climpact's cooling degree days, which is
+#' unrelated and is implemented in [ck_cooling_degree_days()]. In
+#' [ck_compute()] the name `"cdd"` resolves here, to consecutive dry days;
+#' `"consecutive_dry_days"` is accepted as an unambiguous alias.
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
 #' @param dates Date vector of the same length as `precip`.
@@ -35,7 +41,13 @@ ck_dry_days <- function(precip, dates, threshold = 1, period = "annual") {
 #' Maximum Consecutive Wet Days
 #'
 #' Maximum number of consecutive days with precipitation at or above a
-#' threshold.
+#' threshold. This is the ETCCDI **CWD** index.
+#'
+#' Note: the same letters CWD also denote the ET-SCI **cold-wave duration**
+#' index, which is unrelated and is implemented in [ck_cwd()]. In
+#' [ck_compute()] the name `"cwd"` resolves to cold-wave duration, not to
+#' this function; use `"wet_days"` or the unambiguous alias
+#' `"consecutive_wet_days"` for consecutive wet days.
 #'
 #' @param precip Numeric vector of daily precipitation (mm).
 #' @param dates Date vector of the same length as `precip`.

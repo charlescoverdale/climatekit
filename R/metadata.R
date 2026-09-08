@@ -10,12 +10,12 @@
 #' @examples
 #' ck_available()
 ck_available <- function() {
-  idx <- .index_registry()
+  d <- .ck_index_df()
   data.frame(
-    index = vapply(idx, `[[`, character(1), "index"),
-    category = vapply(idx, `[[`, character(1), "category"),
-    unit = vapply(idx, `[[`, character(1), "unit"),
-    description = vapply(idx, `[[`, character(1), "description"),
+    index = d$index,
+    category = d$category,
+    unit = d$unit,
+    description = d$description,
     stringsAsFactors = FALSE,
     row.names = NULL
   )
@@ -39,16 +39,22 @@ ck_metadata <- function(index) {
   if (!is.character(index) || length(index) != 1) {
     cli::cli_abort("{.arg index} must be a single character string.")
   }
-  registry <- .index_registry()
-  names_vec <- vapply(registry, `[[`, character(1), "index")
-  pos <- match(index, names_vec)
+  index <- .ck_resolve_index(index)
+  d <- .ck_index_df()
+  pos <- match(index, d$index)
   if (is.na(pos)) {
     cli::cli_abort(
       c("Unknown index {.val {index}}.",
         "i" = "Run {.fn ck_available} to see valid index names.")
     )
   }
-  registry[[pos]]
+  list(
+    index = d$index[pos],
+    category = d$category[pos],
+    unit = d$unit[pos],
+    description = d$description[pos],
+    reference = d$reference[pos]
+  )
 }
 
 #' Canonical ETCCDI 27 Indices
@@ -281,235 +287,17 @@ ck_browse <- function(sector = NULL, standard = NULL, search = NULL) {
 #' # Tally indices by standard:
 #' table(tab$standard)
 ck_catalogue <- function() {
-  rows <- list(
-    # Temperature: ETCCDI canonical
-    c("ck_frost_days",     "FD",     "Frost days",                              "temperature",   "agriculture", "days",       "ETCCDI",        "alexander2006global"),
-    c("ck_ice_days",       "ID",     "Ice days",                                "temperature",   NA_character_, "days",       "ETCCDI",        "alexander2006global"),
-    c("ck_summer_days",    "SU",     "Summer days",                             "temperature",   "health",      "days",       "ETCCDI",        "alexander2006global"),
-    c("ck_tropical_nights","TR",     "Tropical nights",                         "temperature",   "health",      "days",       "ETCCDI",        "alexander2006global"),
-    c("ck_txx",            "TXx",    "Max Tmax (warmest day)",                  "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
-    c("ck_tnx",            "TNx",    "Max Tmin (warmest night)",                "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
-    c("ck_txn",            "TXn",    "Min Tmax (coldest day)",                  "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
-    c("ck_tnn",            "TNn",    "Min Tmin (coldest night)",                "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
-    c("ck_tx10p",          "TX10p",  "Cool days",                               "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
-    c("ck_tn10p",          "TN10p",  "Cool nights",                             "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
-    c("ck_tx90p",          "TX90p",  "Warm days",                               "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
-    c("ck_tn90p",          "TN90p",  "Warm nights",                             "temperature",   "health",      "%",          "ETCCDI",        "zhang2011indices"),
-    c("ck_wsdi",           "WSDI",   "Warm spell duration index",               "temperature",   "health",      "days",       "ETCCDI",        "zhang2011indices"),
-    c("ck_csdi",           "CSDI",   "Cold spell duration index",               "temperature",   "health",      "days",       "ETCCDI",        "zhang2011indices"),
-    c("ck_diurnal_range",  "DTR",    "Diurnal temperature range",               "temperature",   NA_character_, "\u00b0C",    "ETCCDI",        "alexander2006global"),
-    c("ck_growing_season", "GSL",    "Growing season length",                   "temperature",   "agriculture", "days",       "ETCCDI",        "alexander2006global"),
-
-    # Temperature: ETCCDI approximation
-    c("ck_warm_spell",     "WSDI*",  "Warm spell days (series-quantile approx.)","temperature",  NA_character_, "days",       "ETCCDI-approx", "zhang2011indices"),
-
-    # Temperature: ET-SCI heatwave family (TX > 90th percentile, calendar-day base)
-    c("ck_hwn", "HWN", "Heatwave number",     "temperature", "health", "events",   "ET-SCI", "perkins2013measurement"),
-    c("ck_hwf", "HWF", "Heatwave frequency",  "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
-    c("ck_hwd", "HWD", "Heatwave duration",   "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
-    c("ck_hwm", "HWM", "Heatwave magnitude",  "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
-    c("ck_hwa", "HWA", "Heatwave amplitude",  "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
-
-    # Temperature: ET-SCI cold-wave family (TN < 10th percentile, calendar-day base)
-    c("ck_cwn", "CWN", "Cold-wave number",    "temperature", "health", "events",   "ET-SCI", "perkins2013measurement"),
-    c("ck_cwf", "CWF", "Cold-wave frequency", "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
-    c("ck_cwd", "CWD", "Cold-wave duration",  "temperature", "health", "days",     "ET-SCI", "perkins2013measurement"),
-    c("ck_cwm", "CWM", "Cold-wave magnitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
-    c("ck_cwa", "CWA", "Cold-wave amplitude", "temperature", "health", "\u00b0C",  "ET-SCI", "perkins2013measurement"),
-
-    # Temperature: Excess Heat Factor (Nairn & Fawcett 2013, Bureau of Meteorology operational metric)
-    c("ck_ehf", "EHF", "Excess Heat Factor",  "temperature", "health", "\u00b0C^2", "ET-SCI", "nairn2013defining"),
-
-    # Temperature: energy and agriculture
-    c("ck_heating_degree_days", NA_character_, "Heating degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
-    c("ck_cooling_degree_days", NA_character_, "Cooling degree days", "temperature", "energy",      "degree-days", "energy",       NA_character_),
-    c("ck_growing_degree_days", NA_character_, "Growing degree days", "temperature", "agriculture", "degree-days", "agroclimatic", NA_character_),
-
-    # Precipitation: ETCCDI canonical
-    c("ck_total_precip",      "PRCPTOT",     "Total wet-day precipitation",        "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
-    c("ck_dry_days",          "CDD",         "Consecutive dry days",               "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
-    c("ck_wet_days",          "CWD",         "Consecutive wet days",               "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
-    c("ck_heavy_precip",      "R10mm/Rnnmm", "Heavy-precipitation days",           "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
-    c("ck_very_heavy_precip", "R20mm",       "Very heavy precipitation days",      "precipitation", "water", "days",   "ETCCDI", "alexander2006global"),
-    c("ck_max_1day_precip",   "RX1day",      "Max 1-day precipitation",            "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
-    c("ck_max_5day_precip",   "RX5day",      "Max 5-day precipitation",            "precipitation", "water", "mm",     "ETCCDI", "alexander2006global"),
-    c("ck_precip_intensity",  "SDII",        "Simple daily intensity",             "precipitation", "water", "mm/day", "ETCCDI", "alexander2006global"),
-    c("ck_r95p",              "R95p",        "Very wet days total",                "precipitation", "water", "mm",     "ETCCDI", "zhang2011indices"),
-    c("ck_r99p",              "R99p",        "Extremely wet days total",           "precipitation", "water", "mm",     "ETCCDI", "zhang2011indices"),
-
-    # Drought
-    c("ck_spi",  NA_character_, "Standardised Precipitation Index",                 "drought", "water", "dimensionless", "drought", "mckee1993relationship"),
-    c("ck_spei", NA_character_, "Standardised Precipitation-Evapotranspiration Index","drought","water","dimensionless", "drought", "vicente2010multiscalar"),
-    c("ck_pet",     NA_character_, "Potential evapotranspiration (Hargreaves)",       "drought", "water", "mm", "drought", "hargreaves1985reference"),
-    c("ck_pet_pm",  NA_character_, "Reference evapotranspiration (FAO-56 Penman-Monteith)", "drought", "water", "mm", "drought", "allen1998crop"),
-
-    # Agroclimatic
-    c("ck_huglin",      NA_character_, "Huglin heliothermal index",    "agroclimatic", "agriculture", "degree-days",      "agroclimatic", "huglin1978nouveau"),
-    c("ck_winkler",     NA_character_, "Winkler index",                "agroclimatic", "agriculture", "degree-days",      "agroclimatic", "winkler1974general"),
-    c("ck_branas",      NA_character_, "Branas hydrothermal index",    "agroclimatic", "agriculture", "mm\u00b7\u00b0C",  "agroclimatic", NA_character_),
-    c("ck_first_frost", NA_character_, "First autumn frost date",      "agroclimatic", "agriculture", "day of year",      "agroclimatic", NA_character_),
-    c("ck_last_frost",  NA_character_, "Last spring frost date",       "agroclimatic", "agriculture", "day of year",      "agroclimatic", NA_character_),
-
-    # Comfort
-    c("ck_heat_index",  NA_character_, "Heat index (NWS apparent temperature)", "comfort", "health", "\u00b0C",   "comfort", "rothfusz1990heat"),
-    c("ck_humidex",     NA_character_, "Canadian humidex",                      "comfort", "health", "unitless",  "comfort", "masterton1979humidex"),
-    c("ck_wind_chill",  NA_character_, "Wind chill",                            "comfort", "health", "\u00b0C",   "comfort", "osczevski2005new"),
-    c("ck_fire_danger", NA_character_, "Fire danger proxy",                     "comfort", NA_character_, "unitless", "comfort", NA_character_)
-  )
-
-  m <- do.call(rbind, rows)
+  d <- .ck_index_df()
   data.frame(
-    ck_function  = m[, 1],
-    code         = m[, 2],
-    name         = m[, 3],
-    category     = m[, 4],
-    sector       = m[, 5],
-    unit         = m[, 6],
-    standard     = m[, 7],
-    citation_key = m[, 8],
+    ck_function  = d$ck_function,
+    code         = d$code,
+    name         = d$name,
+    category     = d$category,
+    sector       = d$sector,
+    unit         = d$unit,
+    standard     = d$standard,
+    citation_key = d$citation_key,
     stringsAsFactors = FALSE,
     row.names = NULL
-  )
-}
-
-#' Index registry (internal)
-#' @noRd
-.index_registry <- function() {
-  list(
-    # Temperature
-    list(index = "frost_days", category = "temperature", unit = "days",
-         description = "Count of days where Tmin < 0\u00b0C",
-         reference = "ETCCDI"),
-    list(index = "ice_days", category = "temperature", unit = "days",
-         description = "Count of days where Tmax < 0\u00b0C",
-         reference = "ETCCDI"),
-    list(index = "summer_days", category = "temperature", unit = "days",
-         description = "Count of days where Tmax > 25\u00b0C",
-         reference = "ETCCDI"),
-    list(index = "tropical_nights", category = "temperature", unit = "days",
-         description = "Count of days where Tmin > 20\u00b0C",
-         reference = "ETCCDI"),
-    list(index = "growing_season", category = "temperature", unit = "days",
-         description = "Growing season length (ETCCDI: 6-day spells of Tmean > 5\u00b0C)",
-         reference = "ETCCDI"),
-    list(index = "txx", category = "temperature", unit = "\u00b0C",
-         description = "Annual or monthly maximum of daily Tmax (ETCCDI TXx)",
-         reference = "ETCCDI"),
-    list(index = "tnx", category = "temperature", unit = "\u00b0C",
-         description = "Annual or monthly maximum of daily Tmin (ETCCDI TNx, warmest night)",
-         reference = "ETCCDI"),
-    list(index = "txn", category = "temperature", unit = "\u00b0C",
-         description = "Annual or monthly minimum of daily Tmax (ETCCDI TXn, coldest day)",
-         reference = "ETCCDI"),
-    list(index = "tnn", category = "temperature", unit = "\u00b0C",
-         description = "Annual or monthly minimum of daily Tmin (ETCCDI TNn, coldest night)",
-         reference = "ETCCDI"),
-    list(index = "tx10p", category = "temperature", unit = "%",
-         description = "Percentage of cool days (ETCCDI TX10p, Tmax below calendar-day 10th percentile)",
-         reference = "ETCCDI"),
-    list(index = "tn10p", category = "temperature", unit = "%",
-         description = "Percentage of cool nights (ETCCDI TN10p, Tmin below calendar-day 10th percentile)",
-         reference = "ETCCDI"),
-    list(index = "tx90p", category = "temperature", unit = "%",
-         description = "Percentage of warm days (ETCCDI TX90p, Tmax above calendar-day 90th percentile)",
-         reference = "ETCCDI"),
-    list(index = "tn90p", category = "temperature", unit = "%",
-         description = "Percentage of warm nights (ETCCDI TN90p, Tmin above calendar-day 90th percentile)",
-         reference = "ETCCDI"),
-    list(index = "heating_degree_days", category = "temperature", unit = "degree-days",
-         description = "Sum of (base - Tavg) for days below base temperature",
-         reference = "ASHRAE"),
-    list(index = "cooling_degree_days", category = "temperature", unit = "degree-days",
-         description = "Sum of (Tavg - base) for days above base temperature",
-         reference = "ASHRAE"),
-    list(index = "growing_degree_days", category = "temperature", unit = "degree-days",
-         description = "Sum of (Tavg - base) for days above base temperature",
-         reference = "McMaster & Wilhelm 1997"),
-    list(index = "diurnal_range", category = "temperature", unit = "\u00b0C",
-         description = "Mean daily temperature range (Tmax - Tmin)",
-         reference = "ETCCDI"),
-    list(index = "warm_spell", category = "temperature", unit = "days",
-         description = "Warm spell days (simplified, see ck_wsdi for ETCCDI WSDI)",
-         reference = "Simplified (see documentation)"),
-    list(index = "wsdi", category = "temperature", unit = "days",
-         description = "Warm spell duration index (ETCCDI WSDI, 1961-1990 calendar-day Tmax 90p base)",
-         reference = "ETCCDI"),
-    list(index = "csdi", category = "temperature", unit = "days",
-         description = "Cold spell duration index (ETCCDI CSDI, 1961-1990 calendar-day Tmin 10p base)",
-         reference = "ETCCDI"),
-
-    # Precipitation
-    list(index = "dry_days", category = "precipitation", unit = "days",
-         description = "Maximum consecutive dry days (precip < threshold)",
-         reference = "ETCCDI"),
-    list(index = "wet_days", category = "precipitation", unit = "days",
-         description = "Maximum consecutive wet days (precip >= threshold)",
-         reference = "ETCCDI"),
-    list(index = "total_precip", category = "precipitation", unit = "mm",
-         description = "Total precipitation by period",
-         reference = "ETCCDI"),
-    list(index = "heavy_precip", category = "precipitation", unit = "days",
-         description = "Count of days with precipitation >= threshold",
-         reference = "ETCCDI"),
-    list(index = "very_heavy_precip", category = "precipitation", unit = "days",
-         description = "Count of days with precipitation >= threshold",
-         reference = "ETCCDI"),
-    list(index = "max_1day_precip", category = "precipitation", unit = "mm",
-         description = "Maximum 1-day precipitation",
-         reference = "ETCCDI"),
-    list(index = "max_5day_precip", category = "precipitation", unit = "mm",
-         description = "Maximum 5-day precipitation total",
-         reference = "ETCCDI"),
-    list(index = "precip_intensity", category = "precipitation", unit = "mm/day",
-         description = "Mean precipitation on wet days (SDII)",
-         reference = "ETCCDI"),
-    list(index = "r95p", category = "precipitation", unit = "mm",
-         description = "Annual total precipitation on days above 95th percentile of 1961-1990 wet-day baseline (ETCCDI R95p)",
-         reference = "ETCCDI"),
-    list(index = "r99p", category = "precipitation", unit = "mm",
-         description = "Annual total precipitation on days above 99th percentile of 1961-1990 wet-day baseline (ETCCDI R99p)",
-         reference = "ETCCDI"),
-
-    # Drought
-    list(index = "spi", category = "drought", unit = "dimensionless",
-         description = "Standardized Precipitation Index",
-         reference = "McKee et al. 1993"),
-    list(index = "spei", category = "drought", unit = "dimensionless",
-         description = "Standardized Precipitation-Evapotranspiration Index",
-         reference = "Vicente-Serrano et al. 2010"),
-    list(index = "pet", category = "drought", unit = "mm",
-         description = "Potential evapotranspiration (Hargreaves method)",
-         reference = "Hargreaves & Samani 1985"),
-
-    # Agroclimatic
-    list(index = "huglin", category = "agroclimatic", unit = "degree-days",
-         description = "Huglin heliothermal index for viticulture",
-         reference = "Huglin 1978"),
-    list(index = "winkler", category = "agroclimatic", unit = "degree-days",
-         description = "Winkler index (growing degree days for wine regions)",
-         reference = "Amerine & Winkler 1944"),
-    list(index = "branas", category = "agroclimatic", unit = "mm\u00b7\u00b0C",
-         description = "Branas hydrothermal index",
-         reference = "Branas et al. 1946"),
-    list(index = "first_frost", category = "agroclimatic", unit = "day of year",
-         description = "Date of first autumn frost (Tmin < 0\u00b0C)",
-         reference = ""),
-    list(index = "last_frost", category = "agroclimatic", unit = "day of year",
-         description = "Date of last spring frost (Tmin < 0\u00b0C)",
-         reference = ""),
-
-    # Comfort
-    list(index = "wind_chill", category = "comfort", unit = "\u00b0C",
-         description = "Wind chill temperature",
-         reference = "Environment Canada / NWS"),
-    list(index = "heat_index", category = "comfort", unit = "\u00b0C",
-         description = "Heat index (apparent temperature)",
-         reference = "Rothfusz 1990"),
-    list(index = "humidex", category = "comfort", unit = "unitless",
-         description = "Canadian humidex",
-         reference = "Masterson & Richardson 1979"),
-    list(index = "fire_danger", category = "comfort", unit = "unitless",
-         description = "Simplified fire danger proxy (not FWI)",
-         reference = "")
   )
 }

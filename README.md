@@ -180,11 +180,10 @@ Period of >= 3 consecutive days with TX above the calendar-day 90th percentile, 
 | `ck_catalogue()` | Full implementation catalogue |
 | `ck_browse(sector, standard, search)` | Filter the catalogue |
 | `ck_compute(data, index, ...)` | Dispatch any index by name |
-| `ck_available()`, `ck_metadata()` | Lightweight registry queries |
+| `ck_available()`, `ck_metadata()` | Lightweight index lookups (all 54 indices) |
 | `ck_convert_temp()` | Celsius / Fahrenheit / Kelvin |
 | `ck_apply_grid(x, fun, dates, ...)` | Apply any function over a `terra::SpatRaster` |
 | `ck_from_netcdf(path, var)` | Thin reader for netCDF input |
-| `clear_cache()` | Clear the user-data cache |
 
 ---
 

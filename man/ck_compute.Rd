@@ -12,7 +12,14 @@ vectors. Column names should match function argument names (e.g.
 \code{tmin}, \code{tmax}, \code{precip}, \code{dates}).}
 
 \item{index}{Character. Name of the index to compute (e.g.
-\code{"frost_days"}). Use \code{\link[=ck_available]{ck_available()}} to see valid names.}
+\code{"frost_days"}). Use \code{\link[=ck_available]{ck_available()}} to see valid names.
+
+Where ETCCDI and ET-SCI share an acronym, \code{climatekit} follows the
+meaning its own \verb{ck_*} function carries: \code{"cwd"} is ET-SCI cold-wave
+duration (\code{\link[=ck_cwd]{ck_cwd()}}), not ETCCDI consecutive wet days, and \code{"cdd"}
+is ETCCDI consecutive dry days (\code{\link[=ck_dry_days]{ck_dry_days()}}), not cooling degree
+days. The unambiguous aliases \code{"consecutive_wet_days"},
+\code{"consecutive_dry_days"} and \code{"cold_wave_duration"} are also accepted.}
 
 \item{...}{Additional arguments passed to the underlying function (e.g.
 \code{period}, \code{threshold}, \code{base}).}

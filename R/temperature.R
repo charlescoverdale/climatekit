@@ -634,6 +634,11 @@ ck_csdi <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
 #' six-day spell rule), use [ck_wsdi()].
 #'
+#' The quantile is estimated with the Hyndman and Fan type 8 estimator,
+#' matching every other percentile in `climatekit`. Before v0.2.1 this
+#' function alone used R's default type 7. The two estimators differ by
+#' order 1/n, so counts rarely change on multi-year daily series.
+#'
 #' @param tmax Numeric vector of daily maximum temperatures (degrees C).
 #' @param dates Date vector of the same length as `tmax`.
 #' @param threshold Numeric. Quantile threshold (default 0.9, i.e. 90th
@@ -654,27 +659,11 @@ ck_warm_spell <- function(tmax, dates, threshold = 0.9, period = "annual") {
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 
-  thresh_val <- stats::quantile(tmax, threshold, na.rm = TRUE)
-  above <- tmax > thresh_val
+  thresh_val <- stats::quantile(tmax, threshold, na.rm = TRUE,
+                                names = FALSE, type = 8L)
+  above <- !is.na(tmax) & tmax > thresh_val
 
-  # Mark days that are part of spells >= 6 days
-  in_spell <- logical(length(tmax))
-  n <- length(tmax)
-  i <- 1
-  while (i <= n) {
-    if (!is.na(above[i]) && above[i]) {
-      start <- i
-      while (i <= n && !is.na(above[i]) && above[i]) {
-        i <- i + 1
-      }
-      spell_len <- i - start
-      if (spell_len >= 6) {
-        in_spell[start:(i - 1)] <- TRUE
-      }
-    } else {
-      i <- i + 1
-    }
-  }
+  in_spell <- .find_spells(above, 6L)
 
   result <- count_by_period(in_spell, dates, period)
   build_result(result$periods, result$values, "warm_spell", "days", period)

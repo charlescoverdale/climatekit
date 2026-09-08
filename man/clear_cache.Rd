@@ -2,21 +2,28 @@
 % Please edit documentation in R/convert.R
 \name{clear_cache}
 \alias{clear_cache}
-\title{Clear Cache}
+\title{Clear Cache (Deprecated)}
 \usage{
 clear_cache()
 }
 \value{
-Invisibly returns \code{TRUE} if cache was cleared, \code{FALSE} if no cache
-existed.
+Invisibly returns \code{FALSE}. Prior to v0.2.1 this returned \code{TRUE}
+when a directory set through \code{options(climatekit.cache_dir = ...)}
+contained files, which only ever happened if something outside
+\code{climatekit} had written there.
 }
 \description{
-Removes any cached reference data stored by \code{climatekit}.
+Deprecated in v0.2.1 and scheduled for removal in v0.4.0. \code{climatekit}
+performs no I/O and never writes a cache, so this function has never had
+anything to clear. It remains only so that existing scripts keep running.
+}
+\details{
+If you are caching downloaded weather data, clear it with the tools of
+whichever data package fetched it (for example \code{readnoaa}), not here.
 }
 \examples{
 \donttest{
-op <- options(climatekit.cache_dir = tempdir())
-clear_cache()
-options(op)
+# Deprecated: this warns and does nothing.
+suppressWarnings(clear_cache())
 }
 }
