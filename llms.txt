@@ -51,8 +51,8 @@ Version: 0.2.1. Licence: MIT. 64 exported functions, 54 catalogued indices.
 
 ## Drought and evapotranspiration
 
-- [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.html): Standardized Precipitation Index (SPI)
-- [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.html): Standardized Precipitation-Evapotranspiration Index (SPEI)
+- [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.html): Standardised Precipitation Index (SPI)
+- [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.html): Standardised Precipitation-Evapotranspiration Index (SPEI)
 - [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.html): Potential Evapotranspiration (Hargreaves Method)
 - [`ck_pet_pm()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet_pm.html): Reference Evapotranspiration (FAO-56 Penman-Monteith)
 

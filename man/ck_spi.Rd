@@ -2,7 +2,7 @@
 % Please edit documentation in R/drought.R
 \name{ck_spi}
 \alias{ck_spi}
-\title{Standardized Precipitation Index (SPI)}
+\title{Standardised Precipitation Index (SPI)}
 \usage{
 ck_spi(precip, dates, scale = 3, distribution = c("gamma", "pearsonIII"))
 }

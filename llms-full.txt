@@ -1638,7 +1638,7 @@ Standardised drought indices with a choice of fitting distribution, and two refe
 
 ## `ck_spi()`
 
-**Standardized Precipitation Index (SPI)**
+**Standardised Precipitation Index (SPI)**
 
 Compute the SPI by fitting a parametric distribution to rolling monthly precipitation accumulations and transforming to standard normal deviates. Two distributions are supported: the two-parameter gamma (default; WMO-1090 standard) and the three-parameter Pearson III. The Pearson III tail is heavier and is preferred in arid regions where the wet-day distribution is highly skewed (Stagge et al. 2015).
 
@@ -1676,7 +1676,7 @@ ck_spi(precip, dates, scale = 3)
 
 ## `ck_spei()`
 
-**Standardized Precipitation-Evapotranspiration Index (SPEI)**
+**Standardised Precipitation-Evapotranspiration Index (SPEI)**
 
 Compute the SPEI by fitting a log-logistic distribution to the monthly climatic water balance (precipitation minus potential evapotranspiration) accumulated over a rolling window.
 
