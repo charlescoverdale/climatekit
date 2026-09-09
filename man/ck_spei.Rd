@@ -2,7 +2,7 @@
 % Please edit documentation in R/drought.R
 \name{ck_spei}
 \alias{ck_spei}
-\title{Standardized Precipitation-Evapotranspiration Index (SPEI)}
+\title{Standardised Precipitation-Evapotranspiration Index (SPEI)}
 \usage{
 ck_spei(precip, pet, dates, scale = 3, distribution = c("log-logistic", "gev"))
 }
@@ -18,7 +18,15 @@ ck_spei(precip, pet, dates, scale = 3, distribution = c("log-logistic", "gev"))
 \item{distribution}{Character. Either \code{"log-logistic"} (default,
 Vicente-Serrano et al. 2010) or \code{"gev"} (Generalised Extreme
 Value, fitted by L-moments; preferred for water-balance series
-with heavy upper or lower tails).}
+with heavy upper or lower tails).
+
+The three-parameter log-logistic is fitted by L-moments, which
+requires an L-skewness in \verb{(0, 1)}. A calendar month whose water
+balance is symmetric or left-skewed falls outside that range; the
+fit warns and returns \code{NA} for that month rather than reporting a
+value from a distribution that does not describe the data. Use
+\code{distribution = "gev"}, which accommodates both tails, when this
+happens often in your series.}
 }
 \value{
 A data frame with columns \code{period}, \code{value}, \code{index}, and \code{unit}.

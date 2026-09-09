@@ -25,12 +25,13 @@
 #' tmax <- tmin + runif(length(dates), 8, 15)
 #' ck_huglin(tmin, tmax, dates, lat = 45)
 ck_huglin <- function(tmin, tmax, dates, lat) {
-  validate_numeric(tmin, "tmin")
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmin, "tmin")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmin))
   if (length(tmin) != length(tmax)) {
     cli::cli_abort("{.arg tmin} and {.arg tmax} must have the same length.")
   }
+  validate_tmin_tmax(tmin, tmax)
   if (!is.numeric(lat) || length(lat) != 1) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
   }
@@ -91,7 +92,7 @@ ck_huglin <- function(tmin, tmax, dates, lat) {
 #' tavg <- rnorm(length(dates), mean = 18, sd = 4)
 #' ck_winkler(tavg, dates)
 ck_winkler <- function(tavg, dates) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(tavg))
 
   years <- as.integer(format(dates, "%Y"))
@@ -137,8 +138,8 @@ ck_winkler <- function(tavg, dates) {
 #' precip <- rgamma(length(dates), shape = 0.5, rate = 0.2)
 #' ck_branas(precip, tavg, dates)
 ck_branas <- function(precip, tavg, dates, lat = 50) {
-  validate_numeric(precip, "precip")
-  validate_numeric(tavg, "tavg")
+  validate_precip(precip, "precip")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(precip))
   if (length(precip) != length(tavg)) {
     cli::cli_abort("{.arg precip} and {.arg tavg} must have the same length.")
@@ -203,7 +204,7 @@ ck_branas <- function(precip, tavg, dates, lat = 50) {
 #' tmin <- 15 - seq_along(dates) * 0.15 + rnorm(length(dates), sd = 3)
 #' ck_first_frost(tmin, dates)
 ck_first_frost <- function(tmin, dates, lat = 50) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   if (!is.numeric(lat) || length(lat) != 1L) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
@@ -258,7 +259,7 @@ ck_first_frost <- function(tmin, dates, lat = 50) {
 #' tmin <- -10 + seq_along(dates) * 0.12 + rnorm(length(dates), sd = 3)
 #' ck_last_frost(tmin, dates)
 ck_last_frost <- function(tmin, dates, lat = 50) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   if (!is.numeric(lat) || length(lat) != 1L) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")

@@ -139,7 +139,7 @@
 #' tail(ck_hwn(tmax, dates))
 ck_hwn <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
                                percentile = 0.90, op = ">",
@@ -166,7 +166,7 @@ ck_hwn <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_hwf(tmax, dates))
 ck_hwf <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
                                percentile = 0.90, op = ">",
@@ -193,7 +193,7 @@ ck_hwf <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_hwd(tmax, dates))
 ck_hwd <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
                                percentile = 0.90, op = ">",
@@ -225,7 +225,7 @@ ck_hwd <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_hwm(tmax, dates))
 ck_hwm <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L, mode = c("excess", "absolute")) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
@@ -259,7 +259,7 @@ ck_hwm <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_hwa(tmax, dates))
 ck_hwa <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L, mode = c("excess", "absolute")) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmax, dates, ref_start, ref_end,
@@ -294,7 +294,7 @@ ck_hwa <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_cwn(tmin, dates))
 ck_cwn <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
                                percentile = 0.10, op = "<",
@@ -321,7 +321,7 @@ ck_cwn <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_cwf(tmin, dates))
 ck_cwf <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
                                percentile = 0.10, op = "<",
@@ -354,7 +354,7 @@ ck_cwf <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_cwd(tmin, dates))
 ck_cwd <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
                                percentile = 0.10, op = "<",
@@ -385,7 +385,7 @@ ck_cwd <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_cwm(tmin, dates))
 ck_cwm <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L, mode = c("excess", "absolute")) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,
@@ -418,7 +418,7 @@ ck_cwm <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_cwa(tmin, dates))
 ck_cwa <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                    min_spell = 3L, mode = c("excess", "absolute")) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   mode <- .validate_spell_mode(mode)
   stats <- .spell_family_stats(tmin, dates, ref_start, ref_end,

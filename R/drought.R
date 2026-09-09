@@ -1,4 +1,4 @@
-#' Standardized Precipitation Index (SPI)
+#' Standardised Precipitation Index (SPI)
 #'
 #' Compute the SPI by fitting a parametric distribution to rolling monthly
 #' precipitation accumulations and transforming to standard normal
@@ -32,7 +32,7 @@
 #' ck_spi(precip, dates, scale = 3)
 ck_spi <- function(precip, dates, scale = 3,
                    distribution = c("gamma", "pearsonIII")) {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   if (!is.numeric(scale) || length(scale) != 1 || scale < 1) {
     cli::cli_abort("{.arg scale} must be a positive integer.")
@@ -75,7 +75,7 @@ ck_spi <- function(precip, dates, scale = 3,
   result[!is.na(result$value), ]
 }
 
-#' Standardized Precipitation-Evapotranspiration Index (SPEI)
+#' Standardised Precipitation-Evapotranspiration Index (SPEI)
 #'
 #' Compute the SPEI by fitting a log-logistic distribution to the monthly
 #' climatic water balance (precipitation minus potential evapotranspiration)
@@ -89,6 +89,14 @@ ck_spi <- function(precip, dates, scale = 3,
 #'   Vicente-Serrano et al. 2010) or `"gev"` (Generalised Extreme
 #'   Value, fitted by L-moments; preferred for water-balance series
 #'   with heavy upper or lower tails).
+#'
+#'   The three-parameter log-logistic is fitted by L-moments, which
+#'   requires an L-skewness in `(0, 1)`. A calendar month whose water
+#'   balance is symmetric or left-skewed falls outside that range; the
+#'   fit warns and returns `NA` for that month rather than reporting a
+#'   value from a distribution that does not describe the data. Use
+#'   `distribution = "gev"`, which accommodates both tails, when this
+#'   happens often in your series.
 #'
 #' @return A data frame with columns `period`, `value`, `index`, and `unit`.
 #'
@@ -106,7 +114,7 @@ ck_spi <- function(precip, dates, scale = 3,
 #' ck_spei(precip, pet, dates, scale = 3)
 ck_spei <- function(precip, pet, dates, scale = 3,
                     distribution = c("log-logistic", "gev")) {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_numeric(pet, "pet")
   validate_dates(dates, length(precip))
   if (length(precip) != length(pet)) {
@@ -177,12 +185,13 @@ ck_spei <- function(precip, pet, dates, scale = 3,
 #' tmax <- c(30, 32, 28, 33, 31, 27, 34, 29, 30, 32)
 #' ck_pet(tmin, tmax, lat = 45, dates = dates)
 ck_pet <- function(tmin, tmax, lat, dates) {
-  validate_numeric(tmin, "tmin")
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmin, "tmin")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmin))
   if (length(tmin) != length(tmax)) {
     cli::cli_abort("{.arg tmin} and {.arg tmax} must have the same length.")
   }
+  validate_tmin_tmax(tmin, tmax)
   if (!is.numeric(lat) || length(lat) != 1) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
   }
@@ -273,12 +282,13 @@ ck_pet_pm <- function(tmin, tmax, lat, dates,
                       elev = 0, wind = 2,
                       rh_min = NULL, rh_max = NULL, rs = NULL,
                       albedo = 0.23, krs = 0.16) {
-  validate_numeric(tmin, "tmin")
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmin, "tmin")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmin))
   if (length(tmin) != length(tmax)) {
     cli::cli_abort("{.arg tmin} and {.arg tmax} must have the same length.")
   }
+  validate_tmin_tmax(tmin, tmax)
   if (!is.numeric(lat) || length(lat) != 1L) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
   }
@@ -393,11 +403,13 @@ ck_pet_pm <- function(tmin, tmax, lat, dates,
   # Solar declination
   delta <- 0.409 * sin(2 * pi / 365 * doy - 1.39)
 
-  # Sunset hour angle
-  ws <- acos(-tan(phi) * tan(delta))
-  # Clamp to valid range
-
-  ws[is.nan(ws)] <- if (lat >= 0) pi else 0
+  # Sunset hour angle. Clamp the argument to [-1, 1] so polar latitudes
+  # resolve correctly: an argument of +1 or more means the sun never rises
+  # (polar night, ws = 0) and -1 or less means it never sets (polar day,
+  # ws = pi). Selecting on the argument rather than the hemisphere is what
+  # makes both poles come out right in both solstices, and it also avoids
+  # acos() emitting NaN warnings.
+  ws <- acos(pmin(pmax(-tan(phi) * tan(delta), -1), 1))
 
   # Inverse relative distance Earth-Sun
 
@@ -619,12 +631,15 @@ ck_pet_pm <- function(tmin, tmax, lat, dates,
   }
   t3 <- l3 / l2  # L-skewness
 
-  if (abs(t3) >= 1) {
+  # The three-parameter log-logistic has tau3 = 1 / beta (Vicente-Serrano
+  # et al. 2010, appendix). beta must exceed 1 for Gamma(1 - 1/beta) to be
+  # finite and positive, which requires 0 < tau3 < 1.
+  if (!is.finite(t3) || t3 <= 0 || t3 >= 1) {
     cli::cli_warn("SPEI fitting failed: L-skewness out of range. Returning NAs.")
     return(result)
   }
 
-  beta_ll <- t3 * pi / (3 * sin(t3 * pi / 3))
+  beta_ll <- 1 / t3
 
   if (is.na(beta_ll) || !is.finite(beta_ll) || beta_ll <= 0) {
     cli::cli_warn("SPEI fitting failed: invalid shape parameter. Returning NAs.")
@@ -638,7 +653,7 @@ ck_pet_pm <- function(tmin, tmax, lat, dates,
     return(result)
   }
 
-  alpha_ll <- l2 / (g1 * g2)
+  alpha_ll <- l2 * beta_ll / (g1 * g2)
   xi <- l1 - alpha_ll * g1 * g2
 
   if (is.na(alpha_ll) || alpha_ll <= 0) {

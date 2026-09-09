@@ -15,7 +15,7 @@
 #' tmin <- c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
 #' ck_frost_days(tmin, dates)
 ck_frost_days <- function(tmin, dates, period = "annual") {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
 
@@ -40,7 +40,7 @@ ck_frost_days <- function(tmin, dates, period = "annual") {
 #' tmax <- c(-2, 3, -1, 5, -3, 0, 2, -4, 1, -1)
 #' ck_ice_days(tmax, dates)
 ck_ice_days <- function(tmax, dates, period = "annual") {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 
@@ -65,7 +65,7 @@ ck_ice_days <- function(tmax, dates, period = "annual") {
 #' tmax <- c(22, 26, 28, 24, 30, 25, 27, 23, 31, 29)
 #' ck_summer_days(tmax, dates)
 ck_summer_days <- function(tmax, dates, period = "annual") {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 
@@ -90,7 +90,7 @@ ck_summer_days <- function(tmax, dates, period = "annual") {
 #' tmin <- c(18, 21, 22, 19, 25, 20, 23, 17, 24, 21)
 #' ck_tropical_nights(tmin, dates)
 ck_tropical_nights <- function(tmin, dates, period = "annual") {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
 
@@ -116,7 +116,7 @@ ck_tropical_nights <- function(tmin, dates, period = "annual") {
 #' tmax <- c(5, 10, 18, 12, 4, 8, 22, 3, 7, 6)
 #' ck_txx(tmax, dates)
 ck_txx <- function(tmax, dates, period = "annual") {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 
@@ -142,7 +142,7 @@ ck_txx <- function(tmax, dates, period = "annual") {
 #' tmin <- c(15, 18, 22, 19, 14, 21, 23, 17, 20, 19)
 #' ck_tnx(tmin, dates)
 ck_tnx <- function(tmin, dates, period = "annual") {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
 
@@ -168,7 +168,7 @@ ck_tnx <- function(tmin, dates, period = "annual") {
 #' tmax <- c(5, 10, -3, 12, 4, 8, 22, -8, 7, 6)
 #' ck_txn(tmax, dates)
 ck_txn <- function(tmax, dates, period = "annual") {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 
@@ -194,7 +194,7 @@ ck_txn <- function(tmax, dates, period = "annual") {
 #' tmin <- c(-2, 3, -1, 5, -8, 0, 2, -12, 1, -1)
 #' ck_tnn(tmin, dates)
 ck_tnn <- function(tmin, dates, period = "annual") {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
 
@@ -244,7 +244,7 @@ ck_tnn <- function(tmin, dates, period = "annual") {
 #' tail(ck_tx10p(tmax, dates))
 ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                      period = "annual", bootstrap = FALSE) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
   if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
@@ -280,7 +280,7 @@ ck_tx10p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_tn10p(tmin, dates))
 ck_tn10p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                      period = "annual", bootstrap = FALSE) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
   if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
@@ -315,7 +315,7 @@ ck_tn10p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_tx90p(tmax, dates))
 ck_tx90p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                      period = "annual", bootstrap = FALSE) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
   if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
@@ -350,7 +350,7 @@ ck_tx90p <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_tn90p(tmin, dates))
 ck_tn90p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                      period = "annual", bootstrap = FALSE) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
   period <- validate_period(period)
   if (!is.logical(bootstrap) || length(bootstrap) != 1L) {
@@ -386,7 +386,7 @@ ck_tn90p <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 5
 #' ck_growing_season(tavg, dates)
 ck_growing_season <- function(tavg, dates, lat = 50) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(tavg))
   if (!is.numeric(lat) || length(lat) != 1) {
     cli::cli_abort("{.arg lat} must be a single numeric value.")
@@ -452,7 +452,7 @@ ck_growing_season <- function(tavg, dates, lat = 50) {
 #' tavg <- c(5, 10, 15, 20, 8, 12, 18, 3, 25, 7)
 #' ck_heating_degree_days(tavg, dates)
 ck_heating_degree_days <- function(tavg, dates, base = 18, period = "annual") {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(tavg))
   period <- validate_period(period)
 
@@ -480,7 +480,7 @@ ck_heating_degree_days <- function(tavg, dates, base = 18, period = "annual") {
 #' tavg <- c(25, 30, 22, 20, 28, 19, 32, 17, 35, 27)
 #' ck_cooling_degree_days(tavg, dates)
 ck_cooling_degree_days <- function(tavg, dates, base = 18, period = "annual") {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(tavg))
   period <- validate_period(period)
 
@@ -508,7 +508,7 @@ ck_cooling_degree_days <- function(tavg, dates, base = 18, period = "annual") {
 #' tavg <- c(15, 20, 8, 12, 25, 9, 30, 11, 22, 18)
 #' ck_growing_degree_days(tavg, dates)
 ck_growing_degree_days <- function(tavg, dates, base = 10, period = "annual") {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_dates(dates, length(tavg))
   period <- validate_period(period)
 
@@ -536,12 +536,13 @@ ck_growing_degree_days <- function(tavg, dates, base = 10, period = "annual") {
 #' tmax <- c(5, 10, 6, 12, 4, 8, 9, 3, 7, 6)
 #' ck_diurnal_range(tmin, tmax, dates)
 ck_diurnal_range <- function(tmin, tmax, dates, period = "annual") {
-  validate_numeric(tmin, "tmin")
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmin, "tmin")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmin))
   if (length(tmin) != length(tmax)) {
     cli::cli_abort("{.arg tmin} and {.arg tmax} must have the same length.")
   }
+  validate_tmin_tmax(tmin, tmax)
 
   dtr <- tmax - tmin
   result <- aggregate_by_period(dtr, dates, period, mean)
@@ -575,7 +576,7 @@ ck_diurnal_range <- function(tmin, tmax, dates, period = "annual") {
 #' tail(ck_wsdi(tmax, dates))
 ck_wsdi <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
                     min_spell = 6L) {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
 
   thresholds <- .calendar_day_percentile(tmax, dates, 0.90,
@@ -610,7 +611,7 @@ ck_wsdi <- function(tmax, dates, ref_start = 1961L, ref_end = 1990L,
 #' tail(ck_csdi(tmin, dates))
 ck_csdi <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
                     min_spell = 6L) {
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmin))
 
   thresholds <- .calendar_day_percentile(tmin, dates, 0.10,
@@ -655,7 +656,7 @@ ck_csdi <- function(tmin, dates, ref_start = 1961L, ref_end = 1990L,
 #' tmax <- rnorm(365, mean = 20, sd = 5)
 #' ck_warm_spell(tmax, dates)
 ck_warm_spell <- function(tmax, dates, threshold = 0.9, period = "annual") {
-  validate_numeric(tmax, "tmax")
+  validate_temperature(tmax, "tmax")
   validate_dates(dates, length(tmax))
   period <- validate_period(period)
 

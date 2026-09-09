@@ -13,7 +13,7 @@
 #   T95           = 95th percentile of DMT over the reference period
 #   EHIsig(i)     = T(i, 3) - T95
 #   EHIaccl(i)    = T(i, 3) - T(i, 30)
-#   EHF(i)        = max(EHIsig(i), 1) * EHIaccl(i)
+#   EHF(i)        = EHIsig(i) * max(EHIaccl(i), 1)
 #
 # Reference: Nairn JR, Fawcett RJB (2013). Defining heatwaves: heatwave
 # defined as a heat-impact event servicing all community and business
@@ -27,12 +27,13 @@
 #' @noRd
 .ck_ehf_daily <- function(tmax, tmin, dates,
                           ref_start = 1961L, ref_end = 1990L) {
-  validate_numeric(tmax, "tmax")
-  validate_numeric(tmin, "tmin")
+  validate_temperature(tmax, "tmax")
+  validate_temperature(tmin, "tmin")
   validate_dates(dates, length(tmax))
   if (length(tmax) != length(tmin)) {
     cli::cli_abort("{.arg tmax} and {.arg tmin} must have the same length.")
   }
+  validate_tmin_tmax(tmin, tmax)
 
   dmt <- (tmax + tmin) / 2
   n <- length(dmt)
@@ -67,7 +68,11 @@
 
   ehi_sig  <- t3 - t95
   ehi_accl <- t3 - t30
-  ehf <- pmax(ehi_sig, 1) * ehi_accl
+  # Nairn & Fawcett (2013): the max(1, .) applies to the acclimatisation
+  # term, not the significance term. EHF is positive only when the recent
+  # 3-day mean exceeds T95, which is what makes it a heat metric;
+  # acclimatisation can only amplify an already-significant event.
+  ehf <- ehi_sig * pmax(ehi_accl, 1)
 
   list(dates = dates, dmt = dmt, t3 = t3, t30 = t30, t95 = t95,
        ehi_sig = ehi_sig, ehi_accl = ehi_accl, ehf = ehf)

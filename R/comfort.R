@@ -13,7 +13,7 @@
 #' @examples
 #' ck_wind_chill(tavg = c(-5, -10, 0), wind_speed = c(20, 30, 15))
 ck_wind_chill <- function(tavg, wind_speed) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_numeric(wind_speed, "wind_speed")
   if (length(tavg) != length(wind_speed)) {
     cli::cli_abort("{.arg tavg} and {.arg wind_speed} must have the same length.")
@@ -53,7 +53,7 @@ ck_wind_chill <- function(tavg, wind_speed) {
 #' @examples
 #' ck_heat_index(tavg = c(30, 35, 40), humidity = c(60, 70, 50))
 ck_heat_index <- function(tavg, humidity) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_numeric(humidity, "humidity")
   if (length(tavg) != length(humidity)) {
     cli::cli_abort("{.arg tavg} and {.arg humidity} must have the same length.")
@@ -117,7 +117,7 @@ ck_heat_index <- function(tavg, humidity) {
 #' @examples
 #' ck_humidex(tavg = c(30, 35), dewpoint = c(20, 25))
 ck_humidex <- function(tavg, dewpoint) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_numeric(dewpoint, "dewpoint")
   if (length(tavg) != length(dewpoint)) {
     cli::cli_abort("{.arg tavg} and {.arg dewpoint} must have the same length.")
@@ -158,10 +158,10 @@ ck_humidex <- function(tavg, dewpoint) {
 #'   precip = c(0, 5, 0)
 #' )
 ck_fire_danger <- function(tavg, humidity, wind_speed, precip) {
-  validate_numeric(tavg, "tavg")
+  validate_temperature(tavg, "tavg")
   validate_numeric(humidity, "humidity")
   validate_numeric(wind_speed, "wind_speed")
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
 
   lens <- c(length(tavg), length(humidity), length(wind_speed), length(precip))
   if (length(unique(lens)) != 1) {

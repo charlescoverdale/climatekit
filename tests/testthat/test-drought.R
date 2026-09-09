@@ -34,7 +34,9 @@ test_that("ck_spi rejects invalid scale", {
 })
 
 test_that("ck_spei returns data frame", {
-  dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
+  # Thirty years, so the log-logistic fit has enough data to succeed on
+  # every calendar month rather than warning its way to NA.
+  dates <- seq(as.Date("1990-01-01"), as.Date("2019-12-31"), by = "day")
   set.seed(42)
   precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
   pet <- rep(3, length(dates))

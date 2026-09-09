@@ -22,7 +22,7 @@
 #' precip <- c(0, 0, 5, 0, 0, 0, 2, 0, 0, 0)
 #' ck_dry_days(precip, dates)
 ck_dry_days <- function(precip, dates, threshold = 1, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -63,7 +63,7 @@ ck_dry_days <- function(precip, dates, threshold = 1, period = "annual") {
 #' precip <- c(5, 3, 0, 2, 8, 1, 0, 0, 4, 6)
 #' ck_wet_days(precip, dates)
 ck_wet_days <- function(precip, dates, threshold = 1, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -106,7 +106,7 @@ ck_wet_days <- function(precip, dates, threshold = 1, period = "annual") {
 #' ck_total_precip(precip, dates)
 ck_total_precip <- function(precip, dates, period = "annual",
                             wet_day_threshold = 1) {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
   if (!is.numeric(wet_day_threshold) || length(wet_day_threshold) != 1L ||
@@ -140,7 +140,7 @@ ck_total_precip <- function(precip, dates, period = "annual",
 #' precip <- c(0, 5, 12, 0, 15, 2, 0, 11, 4, 0)
 #' ck_heavy_precip(precip, dates)
 ck_heavy_precip <- function(precip, dates, threshold = 10, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -166,7 +166,7 @@ ck_heavy_precip <- function(precip, dates, threshold = 10, period = "annual") {
 #' precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
 #' ck_very_heavy_precip(precip, dates)
 ck_very_heavy_precip <- function(precip, dates, threshold = 20, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -191,7 +191,7 @@ ck_very_heavy_precip <- function(precip, dates, threshold = 20, period = "annual
 #' precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
 #' ck_max_1day_precip(precip, dates)
 ck_max_1day_precip <- function(precip, dates, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -216,7 +216,7 @@ ck_max_1day_precip <- function(precip, dates, period = "annual") {
 #' precip <- c(0, 5, 22, 0, 15, 25, 0, 11, 4, 30)
 #' ck_max_5day_precip(precip, dates)
 ck_max_5day_precip <- function(precip, dates, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -227,7 +227,10 @@ ck_max_5day_precip <- function(precip, dates, period = "annual") {
     idx <- which(periods == p)
     x <- precip[idx]
     n <- length(x)
-    if (n < 5) return(sum(x, na.rm = TRUE))
+    # A five-day maximum is undefined on fewer than five days. Returning
+    # the short-window sum here reported, for example, a three-day total as
+    # if it were an Rx5day value.
+    if (n < 5) return(NA_real_)
     rolling5 <- vapply(seq_len(n - 4), function(i) {
       sum(x[i:(i + 4)], na.rm = TRUE)
     }, numeric(1))
@@ -255,7 +258,7 @@ ck_max_5day_precip <- function(precip, dates, period = "annual") {
 #' precip <- c(0, 5, 12, 0, 15, 2, 0, 11, 4, 0)
 #' ck_precip_intensity(precip, dates)
 ck_precip_intensity <- function(precip, dates, period = "annual") {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 
@@ -329,7 +332,7 @@ ck_r99p <- function(precip, dates, ref_start = 1961L, ref_end = 1990L,
 #' @noRd
 .precip_pct_total <- function(precip, dates, percentile,
                               ref_start, ref_end, period, index_name) {
-  validate_numeric(precip, "precip")
+  validate_precip(precip, "precip")
   validate_dates(dates, length(precip))
   period <- validate_period(period)
 

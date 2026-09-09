@@ -10,6 +10,66 @@ if (!is.numeric(x)) {
   invisible(x)
 }
 
+#' Validate a precipitation vector
+#'
+#' Precipitation cannot be negative, so a negative value always signals bad
+#' input: most often a missing-data sentinel such as -999 that was never
+#' converted to `NA`. Left unchecked these are silently summed into totals
+#' and counted as dry days, so this errors rather than warns.
+#' @noRd
+validate_precip <- function(x, name = "precip") {
+  validate_numeric(x, name)
+  neg <- !is.na(x) & x < 0
+  if (any(neg)) {
+    cli::cli_abort(c(
+      "{.arg {name}} contains {sum(neg)} negative value{?s}; precipitation cannot be negative.",
+      "i" = "The smallest value is {min(x, na.rm = TRUE)}.",
+      "i" = "Convert missing-data sentinels such as -999 to {.val NA} before calling."
+    ))
+  }
+  invisible(x)
+}
+
+#' Validate a temperature vector
+#'
+#' Warns on values outside a generous physical range. The lowest and highest
+#' temperatures ever recorded on Earth are -89.2 and 56.7 degrees C, so
+#' anything beyond -100 to 70 is almost certainly a sentinel value rather
+#' than an observation. This warns rather than errors because a caller may
+#' legitimately be working with model output on another scale.
+#' @noRd
+validate_temperature <- function(x, name) {
+  validate_numeric(x, name)
+  odd <- !is.na(x) & (x < -100 | x > 70)
+  if (any(odd)) {
+    cli::cli_warn(c(
+      "{.arg {name}} contains {sum(odd)} value{?s} outside -100 to 70 degrees C.",
+      "i" = "The range is {min(x, na.rm = TRUE)} to {max(x, na.rm = TRUE)}.",
+      "i" = "Convert missing-data sentinels such as -999 to {.val NA} before calling."
+    ))
+  }
+  invisible(x)
+}
+
+#' Check that tmin never exceeds tmax
+#'
+#' A minimum above the maximum means the two columns have been swapped or
+#' the data are corrupt. Without this, indices such as DTR return negative
+#' values that look like real results.
+#' @noRd
+validate_tmin_tmax <- function(tmin, tmax) {
+  bad <- !is.na(tmin) & !is.na(tmax) & tmin > tmax
+  if (any(bad)) {
+    i <- which(bad)[1]
+    cli::cli_abort(c(
+      "{.arg tmin} exceeds {.arg tmax} on {sum(bad)} day{?s}.",
+      "i" = "First at position {i}: tmin = {tmin[i]}, tmax = {tmax[i]}.",
+      "i" = "Check that {.arg tmin} and {.arg tmax} have not been swapped."
+    ))
+  }
+  invisible(TRUE)
+}
+
 #' Validate dates vector
 #' @noRd
 validate_dates <- function(dates, n) {

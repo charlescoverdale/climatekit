@@ -58,10 +58,12 @@ test_that("ck_max_5day_precip returns max rolling sum", {
 })
 
 test_that("ck_max_5day_precip with fewer than 5 days", {
+  # A five-day maximum is undefined on three days. Up to v0.2.1 this
+  # returned the three-day sum (16) as though it were an Rx5day value.
   dates <- as.Date("2024-01-01") + 0:2
   precip <- c(5, 3, 8)
   result <- ck_max_5day_precip(precip, dates)
-  expect_equal(result$value, 16)
+  expect_true(is.na(result$value))
 })
 
 test_that("ck_precip_intensity computes mean of wet days", {

@@ -1,3 +1,65 @@
+# climatekit 0.2.2
+
+This release corrects three defects that produced wrong numbers in
+default code paths. All three were found by an audit that checked each
+index against its published definition rather than against the
+package's own tests.
+
+## Bug fixes
+
+* `ck_spei()` with the default `distribution = "log-logistic"` did not
+  return a standardised index. On an 80-year synthetic series it gave
+  mean 1.61 and standard deviation 3.10, where a standardised index is
+  standard normal by construction. Two errors in the L-moment fit were
+  responsible: the shape parameter was computed as
+  `tau3 * pi / (3 * sin(tau3 * pi / 3))` instead of `1 / tau3`, and the
+  scale parameter omitted a factor of the shape parameter
+  (Vicente-Serrano et al. 2010, appendix). Fitting to data simulated
+  from a known log-logistic now recovers its parameters; output is mean
+  0.00 and standard deviation 0.99. `ck_spi()` and
+  `distribution = "gev"` were unaffected.
+* The log-logistic fit now also rejects an L-skewness outside `(0, 1)`,
+  the range in which a three-parameter log-logistic exists. Calendar
+  months whose water balance is symmetric or left-skewed return `NA`
+  with a warning instead of a value drawn from a distribution that does
+  not describe them. Use `distribution = "gev"` for such series.
+* `ck_ehf()` had the two Excess Heat Factor terms the wrong way round.
+  It computed `max(EHIsig, 1) * EHIaccl`; Nairn and Fawcett (2013)
+  define `EHIsig * max(EHIaccl, 1)`. The consequence was that the sign
+  of the EHF was set by acclimatisation rather than by heat, so any
+  spell warmer than the preceding 30 days counted as a heatwave whether
+  or not it was hot. On a 30-year synthetic series 5,455 days were
+  flagged where 540 should have been, and 4,915 of those were below the
+  reference 95th percentile.
+* Extraterrestrial radiation selected the polar-day and polar-night
+  cases by hemisphere rather than by the sunset hour angle, so it
+  returned negative radiation at 80 degrees N in December and zero at
+  80 degrees S in December, when that is the polar-day maximum. At 80
+  degrees N on 21 December `ck_pet_pm()` returned 4,619,067 mm/day. The
+  hour-angle argument is now clamped to `[-1, 1]`, which resolves both
+  poles correctly and stops `acos()` emitting "NaNs produced" warnings.
+  This affected `ck_pet()`, `ck_pet_pm()`, and any `ck_spei()` built on
+  their output, at latitudes beyond about 66.5 degrees.
+* `ck_max_5day_precip()` returned the sum of a short period as though it
+  were a five-day maximum. A period of fewer than five days now returns
+  `NA`.
+
+## Input validation
+
+Physically impossible input was previously accepted and computed on.
+This mattered most for missing-data sentinels such as -999, which
+networks including GHCN use and which were being counted as frost days
+and subtracted from rainfall totals.
+
+* Negative precipitation is now an error, with a message pointing at
+  sentinel values as the usual cause.
+* A `tmin` above `tmax` is now an error; it means the two columns have
+  been swapped or the data are corrupt. Previously `ck_diurnal_range()`
+  returned a negative range.
+* Temperatures outside -100 to 70 degrees C now warn. The records are
+  -89.2 and 56.7, so anything beyond that range is almost certainly a
+  sentinel rather than an observation.
+
 # climatekit 0.2.1
 
 ## Bug fixes

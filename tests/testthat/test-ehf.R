@@ -60,7 +60,7 @@ test_that("ck_ehf rejects mismatched lengths and missing reference data", {
                "same length")
   dates <- seq(as.Date("2000-01-01"), as.Date("2000-12-31"), by = "day")
   tmax <- rnorm(length(dates), 20, 5)
-  tmin <- rnorm(length(dates), 10, 4)
+  tmin <- tmax - runif(length(dates), 5, 12)   # tmin must not exceed tmax
   expect_error(ck_ehf(tmax, tmin, dates, ref_start = 1961L, ref_end = 1990L),
                "reference period")
 })
