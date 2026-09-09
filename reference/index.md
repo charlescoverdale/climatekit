@@ -90,9 +90,9 @@ Rainfall and drought indices
 - [`ck_r99p()`](https://charlescoverdale.github.io/climatekit/reference/ck_r99p.md)
   : Extremely Wet Days Total (R99p)
 - [`ck_spi()`](https://charlescoverdale.github.io/climatekit/reference/ck_spi.md)
-  : Standardized Precipitation Index (SPI)
+  : Standardised Precipitation Index (SPI)
 - [`ck_spei()`](https://charlescoverdale.github.io/climatekit/reference/ck_spei.md)
-  : Standardized Precipitation-Evapotranspiration Index (SPEI)
+  : Standardised Precipitation-Evapotranspiration Index (SPEI)
 - [`ck_pet()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet.md)
   : Potential Evapotranspiration (Hargreaves Method)
 - [`ck_pet_pm()`](https://charlescoverdale.github.io/climatekit/reference/ck_pet_pm.md)
@@ -157,8 +157,13 @@ Compute any index by name; metadata; ETCCDI 27 audit; catalogue
   : climatekit Index Catalogue
 - [`ck_browse()`](https://charlescoverdale.github.io/climatekit/reference/ck_browse.md)
   : Browse the climatekit Index Catalogue
+
+## Deprecated
+
+Kept so existing scripts keep running; scheduled for removal
+
 - [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md)
-  : Clear Cache
+  : Clear Cache (Deprecated)
 
 ## Package
 

@@ -11,7 +11,7 @@ is selected at runtime."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,13 @@ vectors. Column names should match function argument names (e.g.
 
 <dt id="arg-index">index<a class="anchor" aria-label="anchor" href="#arg-index"></a></dt>
 <dd><p>Character. Name of the index to compute (e.g.
-<code>"frost_days"</code>). Use <code><a href="ck_available.html">ck_available()</a></code> to see valid names.</p></dd>
+<code>"frost_days"</code>). Use <code><a href="ck_available.html">ck_available()</a></code> to see valid names.</p>
+<p>Where ETCCDI and ET-SCI share an acronym, <code>climatekit</code> follows the
+meaning its own <code>ck_*</code> function carries: <code>"cwd"</code> is ET-SCI cold-wave
+duration (<code><a href="ck_cwd.html">ck_cwd()</a></code>), not ETCCDI consecutive wet days, and <code>"cdd"</code>
+is ETCCDI consecutive dry days (<code><a href="ck_dry_days.html">ck_dry_days()</a></code>), not cooling degree
+days. The unambiguous aliases <code>"consecutive_wet_days"</code>,
+<code>"consecutive_dry_days"</code> and <code>"cold_wave_duration"</code> are also accepted.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

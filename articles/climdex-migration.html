@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -236,6 +236,18 @@ canonical ETCCDI codes where possible.</p>
 </tr>
 </tbody>
 </table>
+<p>Two rows above are acronym traps. <code><a href="../reference/ck_cwd.html">ck_cwd()</a></code> is
+<strong>not</strong> the CWD in that table: it is the ET-SCI cold-wave
+duration index, and ETCCDI consecutive wet days is
+<code><a href="../reference/ck_wet_days.html">ck_wet_days()</a></code>. Likewise
+<code><a href="../reference/ck_cooling_degree_days.html">ck_cooling_degree_days()</a></code> is not ETCCDI CDD; consecutive dry
+days is <code><a href="../reference/ck_dry_days.html">ck_dry_days()</a></code>. <code><a href="../reference/ck_compute.html">ck_compute()</a></code> resolves
+<code>"cwd"</code> to cold-wave duration and <code>"cdd"</code> to
+consecutive dry days, following the meaning each <code>ck_*</code>
+function already carried, and also accepts
+<code>"consecutive_wet_days"</code>, <code>"consecutive_dry_days"</code>
+and <code>"cold_wave_duration"</code> when you would rather be
+explicit.</p>
 <p>Beyond ETCCDI 27, <code>climatekit</code> also exposes the ET-SCI
 heatwave family (<code><a href="../reference/ck_hwn.html">ck_hwn()</a></code>, <code><a href="../reference/ck_hwf.html">ck_hwf()</a></code>,
 <code><a href="../reference/ck_hwd.html">ck_hwd()</a></code>, <code><a href="../reference/ck_hwm.html">ck_hwm()</a></code>, <code><a href="../reference/ck_hwa.html">ck_hwa()</a></code>) and
@@ -330,8 +342,13 @@ Differences typically come from:</p>
 valid days per month) that <code>climatekit</code> does not enforce in
 v0.2.0.</li>
 <li>
-<strong>In-base bootstrap.</strong> As noted above, percentile
-indices for years 1961-1990 will differ slightly.</li>
+<strong>In-base bootstrap.</strong> Percentile indices differ inside
+the base period unless you ask for the correction. Pass
+<code>bootstrap = TRUE</code> to <code><a href="../reference/ck_tx10p.html">ck_tx10p()</a></code>,
+<code><a href="../reference/ck_tn10p.html">ck_tn10p()</a></code>, <code><a href="../reference/ck_tx90p.html">ck_tx90p()</a></code> or
+<code><a href="../reference/ck_tn90p.html">ck_tn90p()</a></code> to apply the Zhang et al. (2005) leave-one-out
+resampling that <code>climdex.pcic</code> uses by default. It is off by
+default here because it is expensive.</li>
 <li>
 <strong>Calendar leap-day handling.</strong> Both packages handle
 DOY 60 (29 February) without special-casing in v0.2.0.</li>

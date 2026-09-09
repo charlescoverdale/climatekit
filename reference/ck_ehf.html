@@ -19,7 +19,7 @@ metric used by the Australian Bureau of Meteorology."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -129,13 +129,13 @@ heatwaves. <em>Journal of Climate</em>, 26(13), 4500-4517.
 <span class="r-in"><span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fl">20</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dates</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fl">10</span> <span class="op">+</span>  <span class="fl">8</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dates</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="fu">ck_ehf</span><span class="op">(</span><span class="va">tmax</span>, <span class="va">tmin</span>, <span class="va">dates</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        period    value   index unit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26 1986-01-01 3.351686 ehf_max °C^2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27 1987-01-01 3.760517 ehf_max °C^2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28 1988-01-01 3.311125 ehf_max °C^2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29 1989-01-01 3.024947 ehf_max °C^2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 1990-01-01 3.067609 ehf_max °C^2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31 1991-01-01 3.301835 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        period     value   index unit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 1986-01-01 0.5258570 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 1987-01-01 0.4771864 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 1988-01-01 0.3107052 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 1989-01-01 1.6303299 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 1990-01-01 0.6692313 ehf_max °C^2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 1991-01-01 1.2386427 ehf_max °C^2</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

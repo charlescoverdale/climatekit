@@ -55,9 +55,7 @@ very large grids consider sub-setting first.
     r <- terra::rast(nrows = 2, ncols = 2, nlyrs = n,
                      xmin = 0, xmax = 2, ymin = 0, ymax = 2)
     set.seed(1)
-    for (i in seq_len(n)) {
-      terra::values(r[[i]]) <- rnorm(4, 15, 5)
-    }
+    terra::values(r) <- matrix(rnorm(4 * n, 15, 5), nrow = 4)
     txx_r <- ck_apply_grid(r, ck_txx, dates = dates, period = "annual")
     terra::nlyr(txx_r)
   }

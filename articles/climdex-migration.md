@@ -42,6 +42,21 @@ The function names mirror the canonical ETCCDI codes where possible.
 | R99p | `climdex.r99p()` / `climdex.r99ptot()` | [`ck_r99p()`](https://charlescoverdale.github.io/climatekit/reference/ck_r99p.md) |
 | PRCPTOT | `climdex.prcptot()` | [`ck_total_precip()`](https://charlescoverdale.github.io/climatekit/reference/ck_total_precip.md) |
 
+Two rows above are acronym traps.
+[`ck_cwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwd.md)
+is **not** the CWD in that table: it is the ET-SCI cold-wave duration
+index, and ETCCDI consecutive wet days is
+[`ck_wet_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_wet_days.md).
+Likewise
+[`ck_cooling_degree_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_cooling_degree_days.md)
+is not ETCCDI CDD; consecutive dry days is
+[`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md).
+[`ck_compute()`](https://charlescoverdale.github.io/climatekit/reference/ck_compute.md)
+resolves `"cwd"` to cold-wave duration and `"cdd"` to consecutive dry
+days, following the meaning each `ck_*` function already carried, and
+also accepts `"consecutive_wet_days"`, `"consecutive_dry_days"` and
+`"cold_wave_duration"` when you would rather be explicit.
+
 Beyond ETCCDI 27, `climatekit` also exposes the ET-SCI heatwave family
 ([`ck_hwn()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwn.md),
 [`ck_hwf()`](https://charlescoverdale.github.io/climatekit/reference/ck_hwf.md),
@@ -154,8 +169,16 @@ Differences typically come from:
 1.  **Default missing-day handling.** `climdex.pcic` has more elaborate
     rules (e.g. min number of valid days per month) that `climatekit`
     does not enforce in v0.2.0.
-2.  **In-base bootstrap.** As noted above, percentile indices for years
-    1961-1990 will differ slightly.
+2.  **In-base bootstrap.** Percentile indices differ inside the base
+    period unless you ask for the correction. Pass `bootstrap = TRUE` to
+    [`ck_tx10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx10p.md),
+    [`ck_tn10p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn10p.md),
+    [`ck_tx90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tx90p.md)
+    or
+    [`ck_tn90p()`](https://charlescoverdale.github.io/climatekit/reference/ck_tn90p.md)
+    to apply the Zhang et al. (2005) leave-one-out resampling that
+    `climdex.pcic` uses by default. It is off by default here because it
+    is expensive.
 3.  **Calendar leap-day handling.** Both packages handle DOY 60 (29
     February) without special-casing in v0.2.0.
 

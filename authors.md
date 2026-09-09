@@ -10,14 +10,14 @@ Source:
 [`inst/CITATION`](https://github.com/charlescoverdale/climatekit/blob/main/inst/CITATION)
 
 Coverdale C (2026). *climatekit: Unified Climate Indices for
-Temperature, Precipitation, and Drought*. R package version 0.2.0,
+Temperature, Precipitation, and Drought*. R package version 0.2.2,
 <https://CRAN.R-project.org/package=climatekit>.
 
     @Manual{,
       title = {{climatekit}: Unified Climate Indices for Temperature, Precipitation, and Drought},
       author = {Charles Coverdale},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.2.2},
       url = {https://CRAN.R-project.org/package=climatekit},
     }
 

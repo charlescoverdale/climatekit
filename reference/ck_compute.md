@@ -24,6 +24,17 @@ ck_compute(data, index, ...)
   [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md)
   to see valid names.
 
+  Where ETCCDI and ET-SCI share an acronym, `climatekit` follows the
+  meaning its own `ck_*` function carries: `"cwd"` is ET-SCI cold-wave
+  duration
+  ([`ck_cwd()`](https://charlescoverdale.github.io/climatekit/reference/ck_cwd.md)),
+  not ETCCDI consecutive wet days, and `"cdd"` is ETCCDI consecutive dry
+  days
+  ([`ck_dry_days()`](https://charlescoverdale.github.io/climatekit/reference/ck_dry_days.md)),
+  not cooling degree days. The unambiguous aliases
+  `"consecutive_wet_days"`, `"consecutive_dry_days"` and
+  `"cold_wave_duration"` are also accepted.
+
 - ...:
 
   Additional arguments passed to the underlying function (e.g. `period`,

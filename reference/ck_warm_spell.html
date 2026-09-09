@@ -15,7 +15,7 @@ reference period."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,10 @@ percentile).</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
 six-day spell rule), use <code><a href="ck_wsdi.html">ck_wsdi()</a></code>.</p>
+<p>The quantile is estimated with the Hyndman and Fan type 8 estimator,
+matching every other percentile in <code>climatekit</code>. Before v0.2.1 this
+function alone used R's default type 7. The two estimators differ by
+order 1/n, so counts rarely change on multi-year daily series.</p>
     </div>
 
     <div class="section level2">

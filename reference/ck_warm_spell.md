@@ -40,6 +40,11 @@ For the canonical ETCCDI WSDI definition (1961-1990 calendar-day base,
 six-day spell rule), use
 [`ck_wsdi()`](https://charlescoverdale.github.io/climatekit/reference/ck_wsdi.md).
 
+The quantile is estimated with the Hyndman and Fan type 8 estimator,
+matching every other percentile in `climatekit`. Before v0.2.1 this
+function alone used R's default type 7. The two estimators differ by
+order 1/n, so counts rarely change on multi-year daily series.
+
 ## Examples
 
 ``` r

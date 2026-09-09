@@ -1,4 +1,4 @@
-# Standardized Precipitation Index (SPI)
+# Standardised Precipitation Index (SPI)
 
 Compute the SPI by fitting a parametric distribution to rolling monthly
 precipitation accumulations and transforming to standard normal

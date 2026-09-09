@@ -212,11 +212,10 @@ percentile, plus cold-wave duals (TN below 10th percentile).
 | [`ck_catalogue()`](https://charlescoverdale.github.io/climatekit/reference/ck_catalogue.md) | Full implementation catalogue |
 | `ck_browse(sector, standard, search)` | Filter the catalogue |
 | `ck_compute(data, index, ...)` | Dispatch any index by name |
-| [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md), [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md) | Lightweight registry queries |
+| [`ck_available()`](https://charlescoverdale.github.io/climatekit/reference/ck_available.md), [`ck_metadata()`](https://charlescoverdale.github.io/climatekit/reference/ck_metadata.md) | Lightweight index lookups (all 54 indices) |
 | [`ck_convert_temp()`](https://charlescoverdale.github.io/climatekit/reference/ck_convert_temp.md) | Celsius / Fahrenheit / Kelvin |
 | `ck_apply_grid(x, fun, dates, ...)` | Apply any function over a [`terra::SpatRaster`](https://rspatial.github.io/terra/reference/SpatRaster-class.html) |
 | `ck_from_netcdf(path, var)` | Thin reader for netCDF input |
-| [`clear_cache()`](https://charlescoverdale.github.io/climatekit/reference/clear_cache.md) | Clear the user-data cache |
 
 ------------------------------------------------------------------------
 

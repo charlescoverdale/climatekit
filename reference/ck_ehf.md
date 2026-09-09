@@ -82,11 +82,11 @@ s <- 2 * pi * as.integer(format(dates, "%j")) / 365
 tmax <- 20 + 10 * sin(s) + rnorm(length(dates))
 tmin <- 10 +  8 * sin(s) + rnorm(length(dates))
 tail(ck_ehf(tmax, tmin, dates))
-#>        period    value   index unit
-#> 26 1986-01-01 3.351686 ehf_max °C^2
-#> 27 1987-01-01 3.760517 ehf_max °C^2
-#> 28 1988-01-01 3.311125 ehf_max °C^2
-#> 29 1989-01-01 3.024947 ehf_max °C^2
-#> 30 1990-01-01 3.067609 ehf_max °C^2
-#> 31 1991-01-01 3.301835 ehf_max °C^2
+#>        period     value   index unit
+#> 26 1986-01-01 0.5258570 ehf_max °C^2
+#> 27 1987-01-01 0.4771864 ehf_max °C^2
+#> 28 1988-01-01 0.3107052 ehf_max °C^2
+#> 29 1989-01-01 1.6303299 ehf_max °C^2
+#> 30 1990-01-01 0.6692313 ehf_max °C^2
+#> 31 1991-01-01 1.2386427 ehf_max °C^2
 ```

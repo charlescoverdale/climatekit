@@ -1,4 +1,4 @@
-# Standardized Precipitation-Evapotranspiration Index (SPEI)
+# Standardised Precipitation-Evapotranspiration Index (SPEI)
 
 Compute the SPEI by fitting a log-logistic distribution to the monthly
 climatic water balance (precipitation minus potential
@@ -34,6 +34,14 @@ ck_spei(precip, pet, dates, scale = 3, distribution = c("log-logistic", "gev"))
   al. 2010) or `"gev"` (Generalised Extreme Value, fitted by L-moments;
   preferred for water-balance series with heavy upper or lower tails).
 
+  The three-parameter log-logistic is fitted by L-moments, which
+  requires an L-skewness in `(0, 1)`. A calendar month whose water
+  balance is symmetric or left-skewed falls outside that range; the fit
+  warns and returns `NA` for that month rather than reporting a value
+  from a distribution that does not describe the data. Use
+  `distribution = "gev"`, which accommodates both tails, when this
+  happens often in your series.
+
 ## Value
 
 A data frame with columns `period`, `value`, `index`, and `unit`.
@@ -53,51 +61,41 @@ set.seed(42)
 precip <- rgamma(length(dates), shape = 0.5, rate = 0.1)
 pet <- rep(3, length(dates))
 ck_spei(precip, pet, dates, scale = 3)
-#>        period      value index          unit
-#> 3  2020-03-01  2.1193625  spei dimensionless
-#> 4  2020-04-01  1.4220682  spei dimensionless
-#> 5  2020-05-01 -0.3093550  spei dimensionless
-#> 6  2020-06-01  1.0631301  spei dimensionless
-#> 7  2020-07-01 -3.0902323  spei dimensionless
-#> 8  2020-08-01 -3.0902323  spei dimensionless
-#> 9  2020-09-01 -3.0902323  spei dimensionless
-#> 10 2020-10-01 -3.0902323  spei dimensionless
-#> 11 2020-11-01  0.6390013  spei dimensionless
-#> 12 2020-12-01  2.1442727  spei dimensionless
-#> 13 2021-01-01  3.5218786  spei dimensionless
-#> 14 2021-02-01  4.6125134  spei dimensionless
-#> 15 2021-03-01  2.6779788  spei dimensionless
-#> 16 2021-04-01  2.1264650  spei dimensionless
-#> 17 2021-05-01  2.1370960  spei dimensionless
-#> 18 2021-06-01  2.1400116  spei dimensionless
-#> 19 2021-07-01  3.6479147  spei dimensionless
-#> 20 2021-08-01  3.0167892  spei dimensionless
-#> 21 2021-09-01  0.6995575  spei dimensionless
-#> 22 2021-10-01 -3.0902323  spei dimensionless
-#> 23 2021-11-01 -3.0902323  spei dimensionless
-#> 24 2021-12-01  1.7721403  spei dimensionless
-#> 25 2022-01-01  3.2889542  spei dimensionless
-#> 26 2022-02-01  4.4196992  spei dimensionless
-#> 27 2022-03-01 -3.0902323  spei dimensionless
-#> 28 2022-04-01 -3.0902323  spei dimensionless
-#> 29 2022-05-01 -3.0902323  spei dimensionless
-#> 30 2022-06-01 -3.0902323  spei dimensionless
-#> 31 2022-07-01  3.4702767  spei dimensionless
-#> 32 2022-08-01  2.9164981  spei dimensionless
-#> 33 2022-09-01  2.2322146  spei dimensionless
-#> 34 2022-10-01  2.0394546  spei dimensionless
-#> 35 2022-11-01  2.1231246  spei dimensionless
-#> 36 2022-12-01  2.0759059  spei dimensionless
-#> 37 2023-01-01 -3.0902323  spei dimensionless
-#> 38 2023-02-01 -3.0902323  spei dimensionless
-#> 39 2023-03-01  2.1424597  spei dimensionless
-#> 40 2023-04-01 -3.0902323  spei dimensionless
-#> 41 2023-05-01  1.3252879  spei dimensionless
-#> 42 2023-06-01  0.7930845  spei dimensionless
-#> 43 2023-07-01  3.2530970  spei dimensionless
-#> 44 2023-08-01 -3.0902323  spei dimensionless
-#> 45 2023-09-01  1.5391048  spei dimensionless
-#> 46 2023-10-01  0.9768425  spei dimensionless
-#> 47 2023-11-01  1.0430753  spei dimensionless
-#> 48 2023-12-01 -3.0902323  spei dimensionless
+#> Warning: SPEI fitting failed: L-skewness out of range. Returning NAs.
+#> Warning: SPEI fitting failed: L-skewness out of range. Returning NAs.
+#> Warning: SPEI fitting failed: L-skewness out of range. Returning NAs.
+#> Warning: SPEI fitting failed: L-skewness out of range. Returning NAs.
+#>        period       value index          unit
+#> 3  2020-03-01  0.09350209  spei dimensionless
+#> 4  2020-04-01  0.65413050  spei dimensionless
+#> 5  2020-05-01 -0.13016494  spei dimensionless
+#> 6  2020-06-01  0.34906431  spei dimensionless
+#> 8  2020-08-01 -0.71839509  spei dimensionless
+#> 9  2020-09-01 -0.88961909  spei dimensionless
+#> 10 2020-10-01 -0.32470178  spei dimensionless
+#> 11 2020-11-01  0.15364327  spei dimensionless
+#> 15 2021-03-01  1.29161793  spei dimensionless
+#> 16 2021-04-01  1.56001783  spei dimensionless
+#> 17 2021-05-01  1.56249955  spei dimensionless
+#> 18 2021-06-01  1.58397556  spei dimensionless
+#> 20 2021-08-01  1.07585476  spei dimensionless
+#> 21 2021-09-01 -0.06492128  spei dimensionless
+#> 22 2021-10-01 -0.60473222  spei dimensionless
+#> 23 2021-11-01 -1.01052347  spei dimensionless
+#> 27 2022-03-01 -1.10655643  spei dimensionless
+#> 28 2022-04-01 -0.64567489  spei dimensionless
+#> 29 2022-05-01 -0.79241883  spei dimensionless
+#> 30 2022-06-01 -1.05023289  spei dimensionless
+#> 32 2022-08-01  0.71280617  spei dimensionless
+#> 33 2022-09-01  1.46483020  spei dimensionless
+#> 34 2022-10-01  1.74668897  spei dimensionless
+#> 35 2022-11-01  1.60458580  spei dimensionless
+#> 39 2023-03-01  0.12202701  spei dimensionless
+#> 40 2023-04-01 -0.41140329  spei dimensionless
+#> 41 2023-05-01  0.54261255  spei dimensionless
+#> 42 2023-06-01  0.18422503  spei dimensionless
+#> 44 2023-08-01 -0.86533087  spei dimensionless
+#> 45 2023-09-01  0.45254686  spei dimensionless
+#> 46 2023-10-01  0.67032696  spei dimensionless
+#> 47 2023-11-01  0.38821492  spei dimensionless
 ```

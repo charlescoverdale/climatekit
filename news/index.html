@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">climatekit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,50 @@
       <small>Source: <a href="https://github.com/charlescoverdale/climatekit/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.2" id="climatekit-022">climatekit 0.2.2<a class="anchor" aria-label="anchor" href="#climatekit-022"></a></h2>
+<p>This release corrects three defects that produced wrong numbers in default code paths. All three were found by an audit that checked each index against its published definition rather than against the package’s own tests.</p>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-2"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_spei.html">ck_spei()</a></code> with the default <code>distribution = "log-logistic"</code> did not return a standardised index. On an 80-year synthetic series it gave mean 1.61 and standard deviation 3.10, where a standardised index is standard normal by construction. Two errors in the L-moment fit were responsible: the shape parameter was computed as <code>tau3 * pi / (3 * sin(tau3 * pi / 3))</code> instead of <code>1 / tau3</code>, and the scale parameter omitted a factor of the shape parameter (Vicente-Serrano et al. 2010, appendix). Fitting to data simulated from a known log-logistic now recovers its parameters; output is mean 0.00 and standard deviation 0.99. <code><a href="../reference/ck_spi.html">ck_spi()</a></code> and <code>distribution = "gev"</code> were unaffected.</li>
+<li>The log-logistic fit now also rejects an L-skewness outside <code>(0, 1)</code>, the range in which a three-parameter log-logistic exists. Calendar months whose water balance is symmetric or left-skewed return <code>NA</code> with a warning instead of a value drawn from a distribution that does not describe them. Use <code>distribution = "gev"</code> for such series.</li>
+<li>
+<code><a href="../reference/ck_ehf.html">ck_ehf()</a></code> had the two Excess Heat Factor terms the wrong way round. It computed <code>max(EHIsig, 1) * EHIaccl</code>; Nairn and Fawcett (2013) define <code>EHIsig * max(EHIaccl, 1)</code>. The consequence was that the sign of the EHF was set by acclimatisation rather than by heat, so any spell warmer than the preceding 30 days counted as a heatwave whether or not it was hot. On a 30-year synthetic series 5,455 days were flagged where 540 should have been, and 4,915 of those were below the reference 95th percentile.</li>
+<li>Extraterrestrial radiation selected the polar-day and polar-night cases by hemisphere rather than by the sunset hour angle, so it returned negative radiation at 80 degrees N in December and zero at 80 degrees S in December, when that is the polar-day maximum. At 80 degrees N on 21 December <code><a href="../reference/ck_pet_pm.html">ck_pet_pm()</a></code> returned 4,619,067 mm/day. The hour-angle argument is now clamped to <code>[-1, 1]</code>, which resolves both poles correctly and stops <code><a href="https://rdrr.io/r/base/Trig.html" class="external-link">acos()</a></code> emitting “NaNs produced” warnings. This affected <code><a href="../reference/ck_pet.html">ck_pet()</a></code>, <code><a href="../reference/ck_pet_pm.html">ck_pet_pm()</a></code>, and any <code><a href="../reference/ck_spei.html">ck_spei()</a></code> built on their output, at latitudes beyond about 66.5 degrees.</li>
+<li>
+<code><a href="../reference/ck_max_5day_precip.html">ck_max_5day_precip()</a></code> returned the sum of a short period as though it were a five-day maximum. A period of fewer than five days now returns <code>NA</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="input-validation-0-2-2">Input validation<a class="anchor" aria-label="anchor" href="#input-validation-0-2-2"></a></h3>
+<p>Physically impossible input was previously accepted and computed on. This mattered most for missing-data sentinels such as -999, which networks including GHCN use and which were being counted as frost days and subtracted from rainfall totals.</p>
+<ul><li>Negative precipitation is now an error, with a message pointing at sentinel values as the usual cause.</li>
+<li>A <code>tmin</code> above <code>tmax</code> is now an error; it means the two columns have been swapped or the data are corrupt. Previously <code><a href="../reference/ck_diurnal_range.html">ck_diurnal_range()</a></code> returned a negative range.</li>
+<li>Temperatures outside -100 to 70 degrees C now warn. The records are -89.2 and 56.7, so anything beyond that range is almost certainly a sentinel rather than an observation.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="climatekit-021">climatekit 0.2.1<a class="anchor" aria-label="anchor" href="#climatekit-021"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-2-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-1"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_available.html">ck_available()</a></code> and <code><a href="../reference/ck_metadata.html">ck_metadata()</a></code> now know about every index the package computes. The index table had been maintained as three separate hand-written lists, and the twelve indices added in 0.2.0 (<code><a href="../reference/ck_hwn.html">ck_hwn()</a></code>, <code><a href="../reference/ck_hwf.html">ck_hwf()</a></code>, <code><a href="../reference/ck_hwd.html">ck_hwd()</a></code>, <code><a href="../reference/ck_hwm.html">ck_hwm()</a></code>, <code><a href="../reference/ck_hwa.html">ck_hwa()</a></code>, <code><a href="../reference/ck_cwn.html">ck_cwn()</a></code>, <code><a href="../reference/ck_cwf.html">ck_cwf()</a></code>, <code><a href="../reference/ck_cwd.html">ck_cwd()</a></code>, <code><a href="../reference/ck_cwm.html">ck_cwm()</a></code>, <code><a href="../reference/ck_cwa.html">ck_cwa()</a></code>, <code><a href="../reference/ck_ehf.html">ck_ehf()</a></code> and <code><a href="../reference/ck_pet_pm.html">ck_pet_pm()</a></code>) reached only the <code><a href="../reference/ck_compute.html">ck_compute()</a></code> list. <code><a href="../reference/ck_available.html">ck_available()</a></code> returned 42 rows instead of 54, and <code>ck_metadata("ehf")</code> failed with “Unknown index”. All four views (<code><a href="../reference/ck_available.html">ck_available()</a></code>, <code><a href="../reference/ck_metadata.html">ck_metadata()</a></code>, <code><a href="../reference/ck_catalogue.html">ck_catalogue()</a></code> and the <code><a href="../reference/ck_compute.html">ck_compute()</a></code> dispatch) are now derived from one internal table, so they cannot drift apart again. <code><a href="../reference/ck_catalogue.html">ck_catalogue()</a></code> and <code><a href="../reference/ck_etccdi_27.html">ck_etccdi_27()</a></code> are unchanged.</li>
+<li>
+<code><a href="../reference/ck_warm_spell.html">ck_warm_spell()</a></code> estimated its series quantile with R’s default Hyndman-Fan type 7. Every other percentile in the package uses type 8, the ‘ETCCDI’ convention. It now uses type 8 as well. The two estimators differ by order 1/n, so on a decade of daily data the threshold moves by around 0.003 degrees C and counts are typically unchanged; the gap is larger on short series.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecations-0-2-1">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-0-2-1"></a></h3>
+<ul><li>
+<code><a href="../reference/clear_cache.html">clear_cache()</a></code> is deprecated and will be removed in 0.4.0. It warns and returns <code>FALSE</code> invisibly. <code>climatekit</code> performs no I/O and has never written a cache, so the function never had anything to clear. Clear cached weather data with the package that downloaded it.</li>
+<li>
+<code>tools</code> is no longer a dependency; it was needed only by <code><a href="../reference/clear_cache.html">clear_cache()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-1"></a></h3>
+<ul><li>
+<code><a href="../reference/ck_dry_days.html">ck_dry_days()</a></code> and <code><a href="../reference/ck_wet_days.html">ck_wet_days()</a></code> now state their ‘ETCCDI’ codes and warn about the two acronym collisions in the literature: CWD is both consecutive wet days and cold-wave duration, and CDD is both consecutive dry days and cooling degree days. <code><a href="../reference/ck_compute.html">ck_compute()</a></code> keeps the meaning each <code>ck_*</code> function already carried, and additionally accepts the unambiguous aliases <code>"consecutive_wet_days"</code>, <code>"consecutive_dry_days"</code>, <code>"cold_wave_duration"</code>, <code>"cdd"</code> and the matching cold-wave names.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="climatekit-020">climatekit 0.2.0<a class="anchor" aria-label="anchor" href="#climatekit-020"></a></h2><p class="text-muted">CRAN release: 2026-05-09</p>
 <div class="section level3">
