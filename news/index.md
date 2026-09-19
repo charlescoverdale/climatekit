@@ -2,6 +2,8 @@
 
 ## climatekit 0.2.2
 
+CRAN release: 2026-09-09
+
 This release corrects three defects that produced wrong numbers in
 default code paths. All three were found by an audit that checked each
 index against its published definition rather than against the package’s
