@@ -1,3 +1,19 @@
+# climatekit 0.2.3
+
+## SPEI for months with negatively skewed water balance
+
+`ck_spei()` with the default log-logistic distribution returned `NA` for
+every value in a calendar month whose climatic water balance had zero or
+negative L-skewness, with the warning "L-skewness out of range". The
+three-parameter log-logistic of Vicente-Serrano et al. (2010) is the
+generalised logistic distribution (Hosking 1997) with shape equal to
+minus the L-skewness, but the package used the parameterisation
+`beta = 1 / tau3`, which only exists for positive skewness. The fit now
+uses the generalised logistic form, which covers any L-skewness between
+-1 and 1, as the SPEI package does. Values for months with positive
+skewness are unchanged (they agree to within 1e-13); months that were
+`NA` now have values.
+
 # climatekit 0.2.2
 
 This release corrects three defects that produced wrong numbers in

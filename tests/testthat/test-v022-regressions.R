@@ -108,3 +108,37 @@ test_that("Rx5day is NA when the period is shorter than five days", {
   expect_equal(
     ck_max_5day_precip(rep(2, 10), as.Date("2024-01-01") + 0:9)$value, 10)
 })
+
+test_that("negatively skewed water balances are fitted, not dropped", {
+  # Before 0.2.3 the log-logistic fit required L-skewness > 0 and returned
+  # NA for the whole month otherwise. The generalised logistic form covers
+  # -1 < tau3 < 1.
+  set.seed(11)
+  x <- 5 - rlnorm(500, 0, 0.6)   # L-skewness about -0.3
+  z <- climatekit:::.loglogistic_to_normal(x)
+  expect_true(all(is.finite(z)))
+  expect_lt(abs(mean(z)), 0.05)
+  expect_lt(abs(sd(z) - 1), 0.05)
+  expect_true(all(diff(z[order(x)]) >= 0))
+})
+
+test_that("the generalised logistic form matches the log-logistic one when tau3 > 0", {
+  # Vicente-Serrano et al. (2010): F(x) = 1 / (1 + ((x - xi) / alpha)^-beta)
+  # with beta = 1 / tau3 and alpha, xi from the gamma-function identities
+  set.seed(3)
+  x <- 2 + rlnorm(300, 0, 0.5)
+  xs <- sort(x - min(x) + 1)
+  n <- length(xs); r <- seq_len(n)
+  b0 <- mean(xs); b1 <- sum((r - 1) / (n - 1) * xs) / n
+  b2 <- sum((r - 1) * (r - 2) / ((n - 1) * (n - 2)) * xs) / n
+  l1 <- b0; l2 <- 2 * b1 - b0; t3 <- (6 * b2 - 6 * b1 + b0) / l2
+  beta <- 1 / t3
+  g <- gamma(1 + 1 / beta) * gamma(1 - 1 / beta)
+  alpha <- l2 * beta / g
+  xi <- l1 - alpha * g
+  a <- (x - min(x) + 1 - xi) / alpha
+  cdf <- ifelse(a <= 0, 0.001, 1 / (1 + a^(-beta)))
+  cdf <- pmin(pmax(cdf, 0.001), 0.999)
+  expect_equal(climatekit:::.loglogistic_to_normal(x), stats::qnorm(cdf),
+               tolerance = 1e-10)
+})

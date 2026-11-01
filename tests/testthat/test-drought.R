@@ -147,11 +147,18 @@ test_that("SPEI warns on fitting failure rather than silently falling back", {
   dates <- seq(as.Date("2020-01-01"), as.Date("2023-12-31"), by = "day")
   precip <- rep(5, length(dates))
   pet <- rep(3, length(dates))
-  # Constant difference -> zero variance -> should warn about fitting failure
-  expect_warning(
-    result <- ck_spei(precip, pet, dates, scale = 3),
-    "SPEI fitting failed"
+  # Constant difference -> zero variance -> should warn about fitting
+  # failure, once for each calendar month
+  msgs <- character(0)
+  result <- withCallingHandlers(
+    ck_spei(precip, pet, dates, scale = 3),
+    warning = function(w) {
+      msgs <<- c(msgs, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
   )
+  expect_true(length(msgs) > 0L)
+  expect_true(all(grepl("SPEI fitting failed", msgs)))
   expect_s3_class(result, "data.frame")
 })
 

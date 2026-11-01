@@ -631,41 +631,31 @@ ck_pet_pm <- function(tmin, tmax, lat, dates,
   }
   t3 <- l3 / l2  # L-skewness
 
-  # The three-parameter log-logistic has tau3 = 1 / beta (Vicente-Serrano
-  # et al. 2010, appendix). beta must exceed 1 for Gamma(1 - 1/beta) to be
-  # finite and positive, which requires 0 < tau3 < 1.
-  if (!is.finite(t3) || t3 <= 0 || t3 >= 1) {
+  # The three-parameter log-logistic of Vicente-Serrano et al. (2010) is
+  # the generalised logistic distribution (Hosking 1997) with shape
+  # k = -tau3. Their parameterisation, beta = 1 / tau3, needs tau3 > 0, so
+  # months whose water balance had zero or negative L-skewness came back as
+  # NA. The generalised logistic form covers -1 < tau3 < 1, as the SPEI
+  # package's fit does, and gives the same values when tau3 > 0.
+  if (!is.finite(t3) || abs(t3) >= 1) {
     cli::cli_warn("SPEI fitting failed: L-skewness out of range. Returning NAs.")
     return(result)
   }
-
-  beta_ll <- 1 / t3
-
-  if (is.na(beta_ll) || !is.finite(beta_ll) || beta_ll <= 0) {
-    cli::cli_warn("SPEI fitting failed: invalid shape parameter. Returning NAs.")
-    return(result)
+  k <- -t3
+  if (abs(k) < 1e-6) {
+    alpha_glo <- l2
+    xi_glo <- l1
+    y <- (xv_shifted - xi_glo) / alpha_glo
+  } else {
+    alpha_glo <- l2 * sin(k * pi) / (k * pi)
+    xi_glo <- l1 - alpha_glo * (1 / k - pi / sin(k * pi))
+    arg <- 1 - k * (xv_shifted - xi_glo) / alpha_glo
+    # Outside the support: below the lower bound (k < 0) the CDF is 0,
+    # above the upper bound (k > 0) it is 1
+    y <- ifelse(arg > 0, -log(pmax(arg, .Machine$double.xmin)) / k,
+                if (k > 0) Inf else -Inf)
   }
-
-  g1 <- gamma(1 + 1 / beta_ll)
-  g2 <- gamma(1 - 1 / beta_ll)
-  if (!is.finite(g1) || !is.finite(g2) || g1 * g2 == 0) {
-    cli::cli_warn("SPEI fitting failed: gamma function overflow. Returning NAs.")
-    return(result)
-  }
-
-  alpha_ll <- l2 * beta_ll / (g1 * g2)
-  xi <- l1 - alpha_ll * g1 * g2
-
-  if (is.na(alpha_ll) || alpha_ll <= 0) {
-    cli::cli_warn("SPEI fitting failed: invalid scale parameter. Returning NAs.")
-    return(result)
-  }
-
-  # Compute CDF for each observation (in original order)
-  cdf <- vapply(seq_along(xv), function(i) {
-    a <- (xv_shifted[i] - xi) / alpha_ll
-    if (a <= 0) 0.001 else 1 / (1 + a^(-beta_ll))
-  }, numeric(1))
+  cdf <- 1 / (1 + exp(-y))
 
   cdf[cdf <= 0] <- 0.001
   cdf[cdf >= 1] <- 0.999
