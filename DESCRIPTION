@@ -26,7 +26,6 @@ License: MIT + file LICENSE
 Language: en-GB
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
     cli (>= 3.6.0),
     stats
@@ -40,3 +39,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://charlescoverdale.github.io/climatekit/, https://github.com/charlescoverdale/climatekit
 BugReports: https://github.com/charlescoverdale/climatekit/issues
+Config/roxygen2/version: 8.1.0

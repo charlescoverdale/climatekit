@@ -64,5 +64,7 @@ export(ck_wind_chill)
 export(ck_winkler)
 export(ck_wsdi)
 export(clear_cache)
-importFrom(stats,pnorm)
-importFrom(stats,qnorm)
+importFrom(stats,
+  pnorm,
+  qnorm
+)
