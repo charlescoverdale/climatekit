@@ -32,3 +32,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Charles Coverdale <charlesfcoverdale@gmail.com>
+
+Authors:
+
+- Charles Coverdale <charlesfcoverdale@gmail.com>
