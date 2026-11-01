@@ -234,16 +234,16 @@ tmin <- sin(seq(0, 2 * pi, length.out = 365)) * 15 + 2
 
 # Annual frost days
 ck_frost_days(tmin, dates)
-#>       period value      index unit
-#>   2024-01-01   132 frost_days days
+#>      period value      index unit
+#>  2024-01-01   167 frost_days days
 
 # Monthly breakdown
 ck_frost_days(tmin, dates, period = "monthly")
-#>       period value      index unit
-#>   2024-01-01    25 frost_days days
-#>   2024-02-01    17 frost_days days
-#>   2024-03-01     4 frost_days days
-#>   ...
+#>      period value      index unit
+#>  2024-01-01     0 frost_days days
+#>  2024-02-01     0 frost_days days
+#>  2024-03-01     0 frost_days days
+#> ...
 ```
 
 ------------------------------------------------------------------------
@@ -255,11 +255,11 @@ ck_frost_days(tmin, dates, period = "monthly")
 # Heating degree days: cumulative warmth deficit below the base (default 18C).
 tavg <- sin(seq(0, 2 * pi, length.out = 365)) * 12 + 10
 ck_heating_degree_days(tavg, dates, period = "monthly")
-#>       period  value                index        unit
-#>   2024-01-01 481.10 heating_degree_days degree-days
-#>   2024-02-01 378.49 heating_degree_days degree-days
-#>   2024-03-01 244.53 heating_degree_days degree-days
-#>   ...
+#>      period    value               index        unit
+#>  2024-01-01 153.8846 heating_degree_days degree-days
+#>  2024-02-01  11.3085 heating_degree_days degree-days
+#>  2024-03-01   0.0000 heating_degree_days degree-days
+#> ...
 
 # Cooling degree days for air conditioning demand
 ck_cooling_degree_days(tavg, dates, base = 22)
@@ -285,7 +285,19 @@ head(spi)
 #>   ...
 
 # SPEI adds evapotranspiration to capture temperature-driven drought
-pet <- ck_pet(tmin, tmax, lat = 51.5, dates = dates)
+doy <- as.numeric(format(dates_long, "%j"))
+tmin_long <- 6 + 6 * sin(2 * pi * (doy - 110) / 365) + rnorm(length(dates_long))
+tmax_long <- tmin_long + 9
+pet <- ck_pet(tmin_long, tmax_long, lat = 51.5, dates = dates_long)
+
+# The default log-logistic fit needs a positively skewed water balance and
+# drops (with a warning) calendar months where it is not; the GEV fits all.
+spei <- ck_spei(precip, pet$value, dates_long, scale = 3, distribution = "gev")
+head(spei, 3)
+#>      period      value index          unit
+#>  2015-03-01 -0.3242512  spei dimensionless
+#>  2015-04-01  0.5646723  spei dimensionless
+#>  2015-05-01  0.6023488  spei dimensionless
 ```
 
 ------------------------------------------------------------------------
@@ -307,8 +319,8 @@ tmin_gs <- rnorm(length(dates_gs), mean = 12, sd = 3)
 tmax_gs <- tmin_gs + runif(length(dates_gs), 8, 15)
 
 ck_huglin(tmin_gs, tmax_gs, dates_gs, lat = 45)
-#>       period    value  index        unit
-#>   2024-01-01 2129.284 huglin degree-days
+#>      period    value  index        unit
+#>  2024-01-01 1976.338 huglin degree-days
 
 # Winkler index (wine region classification)
 tavg_gs <- (tmin_gs + tmax_gs) / 2
@@ -326,8 +338,8 @@ set.seed(42)
 tmin_year <- -10 + seq_along(dates_year) * 0.08 + rnorm(365, sd = 4)
 
 ck_last_frost(tmin_year, dates_year)
-#>       period value       date      index       unit
-#>   2024-01-01   120 2024-04-29 last_frost day of year
+#>      period value       date      index        unit
+#>  2024-01-01   177 2024-06-25 last_frost day of year
 
 ck_first_frost(tmin_year, dates_year)
 ```
@@ -340,11 +352,11 @@ ck_first_frost(tmin_year, dates_year)
 
 # Heat index = apparent temperature from T + RH. Above ~40C is dangerous.
 ck_heat_index(tavg = c(30, 33, 36, 39), humidity = c(60, 65, 70, 75))
-#>      value      index unit
-#>   32.94844 heat_index   °C
-#>   38.67052 heat_index   °C
-#>   47.57163 heat_index   °C
-#>   60.56858 heat_index   °C
+#>     value      index unit
+#>  32.83203 heat_index   °C
+#>  41.40348 heat_index   °C
+#>  54.15086 heat_index   °C
+#>  71.75599 heat_index   °C
 
 # Wind chill for cold conditions
 ck_wind_chill(tavg = c(-5, -10, -15), wind_speed = c(20, 30, 40))
@@ -404,12 +416,12 @@ ck_compute(weather, "total_precip", period = "monthly")
 
 # See all available indices
 ck_available()
-#>                 index      category          unit
-#>            frost_days   temperature          days
-#>              ice_days   temperature          days
-#>          summer_days    temperature          days
-#>    tropical_nights     temperature          days
-#>    ...
+#>                index      category          unit
+#>           frost_days   temperature          days
+#>             ice_days   temperature          days
+#>          summer_days   temperature          days
+#>      tropical_nights   temperature          days
+#> ...
 ```
 
 ------------------------------------------------------------------------
